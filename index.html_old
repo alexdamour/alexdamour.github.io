@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+        <meta name="description" content="Website of Andrew Miller" />
+        <meta name="keywords" content= "research, machine learning, bayesian statistics"/>
+
+        <link rel="stylesheet" type="text/css" href="/styles/global.css" media="all" />
+
+            <!--[if lte IE 7]>
+            <link rel="stylesheet" href="new2011/styles/np-ie67.css" type="text/css" media="all" />
+            <![endif]-->
+
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+            <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js""></script>
+            <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/jquery-throttle-debounce/1.1/jquery.ba-throttle-debounce.min.js"></script>
+            <script type="text/javascript" src="/js/layout.js"></script>
+            <script type="text/javascript" src="/js/common.js"></script>
+            <script type="text/javascript"
+                        src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+            </script>
+<title>Alexander D'Amour</title>
+</head>
+
+<body class="white">
+
+<div id="container">
+<div class="storey border-top"> 
+
+<div class="column w405 left">
+    <h1>Alexander D'Amour</h1>
+</div>
+    </div><div class="column w548 right extra-pad">
+
+      <div id="nav">
+        <!--<a href="#bio">Bio</a> <br>--><br>
+        <a href="/#publications">Publications</a> <br>
+        <a href="/#projects">Projects</a> <br>
+        <a href="/#talks">Talks</a> <br>
+        <a href="/blog">Blog</a> <br>
+
+        <div id="email-div" style="display:none; color:#000066;">
+            damour _at_ fas.harvard.edu
+        </div>
+
+      </div> <!-- #nav -->
+
+    </div> <!-- .column -->
+
+</div> <!-- .storey (header) -->
+
+</body>
+
+<script>
+$('#email-button').click(function() {
+      $('#email-div').toggle('slow', function() {
+              // Animation complete.
+            });
+});
+</script>
+
+<script>
+
+$( "div.pub-info" ).click(function(event) {
+        $(this).toggleClass("pub-full");
+});
+$( "div.pub-info" ).hover(function(event) {
+        $(this).toggleClass("pub-full");
+});
+</script>
+
+</html>
+
