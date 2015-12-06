@@ -1,0 +1,181 @@
+---
+title: "PQ_VS"
+author: "damour"
+date: "11/24/2014"
+output: html_document
+---
+```{r, echo=FALSE}
+library(mvtnorm)
+```
+#Perspectives on Model Selection
+
+###Why?
+* Stealth regularization (AIC, CV, LASSO)
+* Legitimate regularization (nonparametric regression)
+* Discovery of small set of "relevant" parameters (vaguely causal?)
+
+**This talk**: Find a model that provides the best predictive performance for our given sample size. Note that predictive performance includes estimation uncertainty, bias, and residual variation. *Attempt to circumvent the issues with high-dimensional priors*.
+
+
+#Perspectives on Model Selection
+
+###Is the truth...
+* Finite dimensional and sparse? (Donoho et al. Compressed sensing, fundamentally parametric.)
+* Infinite dimensional and dense? (Meng 2014, Everything is variation, fundamentally nonparametric.)
+
+**This talk**: The latter. There may exist a sparse set of predictors, but no reason to believe that the predictors as collected define the proper basis for such sparsity.
+
+#Perspectives on Model Selection
+
+###Is it a...
+* Inference problem? (LASSO)
+* Decision problem? (Carvalho)
+
+**This talk**: Design problem! Not a facet of the underlying system (so not inference). Done beforehand to define the problem, incorporating inferential constraints (so not decision). The formal question is: which available problem can we reliably solve?
+
+Formally, we express predictive loss as 
+$$
+E\left[\left(\hat Y^{rep}(Y, X, X^{rep}) - Y^{rep}\right)^2\right]
+$$
+
+Set up a simulation. As in Jiang et al 2013, let $X_i$  be a $p$-dimensional multivariate normal with covariance matrix $\Sigma$ defined so that $\Sigma_{k,l} = \rho^{|k-l|}$ for any components $X_{i,k}, X_{i,l}$.
+
+The first simulation we consider is
+$$
+Y = X_2 - \rho X_1 + 0.2 X_p + \sqrt 3 \mathcal N(0,1).
+$$
+This generating process is designed so that marginally $X_1$ is independent of $Y$, but has dependence on $Y$ conditional on $X_2$.
+
+Consider $N = 100$, $p=25$, $\rho = 0.75$.
+```{r}
+N <- 1e2
+p <- 25 
+rho <- 0.75
+covmat <- rho^as.matrix(dist(1:p))
+X <- rmvnorm(N, rep(0,p), covmat)
+sigma <- 3
+
+E_Y1 <- X[,2] - rho*X[,1] + 0.2*X[,p]
+Y1 <- X[,2] - rho*X[,1] + 0.2*X[,p] + rnorm(N, 0, sqrt(sigma))
+```
+
+Note that as the model is defined $(Y, X)$ is multivariate normal. Thus, the conditional expectation of $Y$ given any subset of $X$'s is "true" in the sense that the conditional expectation is well-defined and is linear. Taking $X_A$ to be any subset of predictors (columns) in $X$,
+$$
+E(Y | X_A) = \Sigma_{Y,A} \Sigma_{A}^{-1} X_A^{\top}.
+$$
+In this case, there is no bias from misspecification for any subset $A$ of predictors. Instead there is only additional residual variation, which is minimized when the "true" subset $(1,2,p)$ (or a superset thereof) is conditioned upon.
+
+We record the covariance of the outcome $Y$ with the predictors $X$:
+```{r}
+covmat0 <- sapply(1:p, function(i){ covmat[i,2]-rho*covmat[i,1] + 0.2*covmat[i,p] })
+
+true_betas <- c(-rho, 1, 0.2)
+marvar1 <- t(true_betas)%*%covmat[c(1,2,p),c(1,2,p)]%*%true_betas+sigma
+```
+
+Compute the estimation uncertainty and residual variance for each of the candidate models.
+```{r, echo=FALSE}
+MSE_test <- function(EY, covmat0, covmat, sigma, marvar, X, numreps = 1000) {
+    statmat <- matrix(NA, nc=5, nr=0)
+    for(i in 1:p){
+        X_cur <- X[,1:i,drop=FALSE]
+        proj_inv <- solve(covmat[1:i,1:i])
+        out_proj <- covmat0[1:i]
+        hat_proj <- X_cur%*%solve(t(X_cur)%*%X_cur)%*%t(X_cur)
+    
+        y_SE_obs_mat <- matrix(NA, nc=numreps, nr=N)
+        for(r in 1:numreps){
+            Yoth <- EY + rnorm(N, 0, sqrt(sigma))
+            Yoth2 <- EY + rnorm(N, 0, sqrt(sigma))
+            y_hat <- hat_proj%*%Yoth
+            y_SE_obs <- (y_hat-Yoth2)^2
+            #print(y_MSE)
+            y_SE_obs_mat[,r] <- y_SE_obs
+        }
+        y_MSE_obs <- mean(rowMeans(y_SE_obs_mat))
+        
+        y_bar <- out_proj%*%proj_inv%*%t(X_cur)
+        y_var <- as.vector(marvar-out_proj%*%proj_inv%*%out_proj)
+        y_exc_var <- (y_bar-E_Y1)^2
+        y_est_var <- diag(X_cur%*%(solve(t(X_cur)%*%X_cur)*sigma)%*%t(X_cur))
+        
+        y_MSE <- mean(y_var + y_est_var)
+        
+        statmat <- rbind(statmat, c(y_var, mean(y_exc_var), mean(y_est_var),
+                                    y_MSE, y_MSE_obs))
+    }
+    statmat
+}
+
+plot_statmat <- function(statmat){
+    par(mfrow=c(2,2), mar=c(3,3,2,1), mgp=c(2,.7,0), tck=-.01)
+    titles <- c("Residual Variance", "Excess Variance", "Estimation Variance", "MSE")
+    for(i in 1:4){
+        if(i!=4)
+            plot(statmat[,i], type='l', main=titles[i], ylab=NA, xlab="Model Index")
+        else
+            matplot(statmat[,4:5], type='l', main=titles[i], ylab=NA, xlab="Model Index")
+    }
+}
+```
+
+
+Consider the toy case where $X_1$ through $X_p$ have been "ranked" a priori under the assumption that if $X_k$ is included in the model, all $X_j$, $j < k$ should also be included in the model. (We make this assumption in this example to reduce the number of models to compare and to consider the situation where the minimal model is not included in the set of candidate models.)
+
+```{r, echo=FALSE}
+plot_statmat(MSE_test(E_Y1, covmat0, covmat, sigma, marvar1, X))
+```
+
+Based on these plots, it appears that model 2 is the best of the candidate models based on our mean-square prediction criterion (include only $X_1$ and $X_2$), because by the time we include the final "true" covariate $X_p$, we've increased the estimation variance too much to offset the reduction in residual variance.
+
+How can we choose such a desirable model in practice, without knowing the truth beforehand? Model selection.
+
+There are well-known problems with model selection. Post-selection inference is difficult, and some would argue impossible. In cases where sampling distributions are available, these results are strongly sensitive to model assumptions at best, and have dependence on true parameters that make them impossible to estimate at worst (Leeb, Potschner). In addition, the meaning of the hypothesis tests or invervals are difficult to discern and sensitive to assumptions at best.
+
+Some other proposals have been made for post-selection inference, including direct estimation of intervals for low-dimensional parameters by approximating the partial projection space for each covariate using a regularized projection, and PoSI intervals that correct for arbitrary selection intervals by finding the worst-case sampling variance for any sub-model that includes the given covariate. These do not rely explicitly on a method for model selection to maintain inferential guarantees, but the guarantees they do provide are again difficult to interpret.
+
+Wasserman proposes a more straightforward approach that maintains standard interpretations of inferential quantities and exhibits no sensitivity to the variable selection procedure. He suggests randomly splitting the data and using one half to select a model and using the other half to fit the selected model. This is akin to running a pilot study, doing exploratory data analysis, and then collecting new data to test the hypothesis generated from EDA. It is conceptually clean, and invokes *design* as a relevant topic for model selection.
+
+Can we bring notions from design to bear on this proposal? For example, what should the split sizes be? Can we do better than a random split?
+
+The answer here is yes! I'm giving one extremely simple example here that tries to do better than the random split.
+
+Consider predefining the nubmer of data-points in the model selection portion of the dataset, $n_1$, and the inference portion of the
+dataset, $n_2$. What is the optimal split that best balances the operating characteristics of the model-selection procedure and the inferential procedure?
+
+Consider moving away from randomness by taking advantage of $X$. We can design our split conditional on $X$. We are conditioning on $X$ anyway for our inferential question, so choosing which data are allocated to which procedure based on $X$ does no harm in terms of bias. This is a similar justification to use of matching and propensity score methods in causal experiments under strong ignorability.
+
+Suppose that we with to use a penalized log-likelihood information criterion to select a model (AIC, BIC, DIC, or other), then compute predictive intervals for $Y^{rep}$ using that model.
+
+Suppose that we use a standard information criterion of the form:
+$$myIC = -2\ell_A (\hat \beta_A, \hat \sigma_A^2) - 2g(p_A, N) + C$$
+to select a candidate model from some subset of models. Here, $C$ is a constant shared by all models, and $g$ is an arbitrary function of the model size and the sample size.
+
+Note that for linear regression likelihoods, the main RSS term from the log-likelihood reduces to a constant, so we are left with
+$$myIC = n\log \hat \sigma_A^2 + 2g(p_A, N) + C'.$$
+In the example considered above, where $(Y, X)$ are multivariate normal, we have a nice result. Because every sub-model involving an arbitrary $X_A$ has a valid "true" linear form, so that the residuals are independent normal and mean 0, we have that
+$$\hat \sigma_A^2 \sim \sigma^2_A \chi^2_{N-p_A},$$
+so that its distribution does not depend on $X$. Thus, any moments of $myIC$ taken with respect to $Y | X$ are independent of the sample points that are used in the model selection portion of the split, so its operating characteristics do not depend on the sample points included.
+
+On the other hand, the predictive intervals computed using $Y^{rep}$ depend on the predictive variance of the form:
+$$Var(Y) = X_A^{rep}(X_A^{\top}X_A)^{-1}X_A^{rep}^{\top} \sigma^2_A$$
+which, when $n_2$ is held fixed, depends critically on the leverage of the points included in the inference half of the data split.
+
+To set up a good splitting procedure, we can consider work in CUR matrix decompositions to compute approximate leverage and sample according to leverage-weighted values. Leverage requires a model specification to define, so we could use the leverage of the largest model, or use an adaptive design that takes batches of data in stages to choose a model, then allocates new points to the model selection group based on their (lack of) leverage in the most promising models so far.
+
+Thus, under the multivariate normal assumption, a clear design principle is to preserve as many high-leverage points in the inference set as possible while sending low-leverage points to the model selection set.
+
+This breaks down considerably under weaker assumptions. Even if $Y$ follows a standard OLS regression equation, if $(Y, X)$ are not multivariate normal (e.g., if the regression equation has interactions or non-linear terms), the distribution of $\hat \sigma^2_A$ includes a non-centrality parameter that accounts for the bias for sub-models that no longer have mean-zero residuals. $X$ plays a role in these non-centrality parameters, and so leverage must be allocated to model selection and inference according to some tradeoff.
+
+<!--
+Consider another simulation case, this time with a nonlinear interaction, excluding the truly multivariate normal case.
+In this case, if we only consider linear terms, no candidate OLS model is actually "true". Thus, this case has true bias and residual variance.
+$$
+Y = X_1X_2 + 0.2 X_p + \sqrt3 \mathcal N(0,1).
+$$
+
+```{r}
+E_Y2 <- X[,1]*X[,2] + 0.2*X[,p]
+Y2 <- E_Y2+rnorm(N, 0, sqrt(sigma)) 
+```
+-->

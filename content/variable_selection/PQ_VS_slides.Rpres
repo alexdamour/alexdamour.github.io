@@ -1,0 +1,244 @@
+Stat 300
+A Design-Based Perspective on Variable Selection
+========================================================
+author: Alex D'Amour
+date: November 25, 2014
+incremental: true
+
+Perspectives on Model Selection
+========================================================
+**Why?**
+* Stealth regularization (AIC, CV, LASSO)
+* Legitimate regularization (nonparametric regression)
+* Infer "relevant" parameters (vaguely causal?)
+
+**This talk**: Find a model that provides the best predictive performance for our given sample size. Note that predictive performance includes estimation uncertainty, bias, and residual variation.
+
+**Holy grail**: Eliminate high-dimensional nuisance without high-dimensional priors.
+
+Perspectives on Model Selection
+========================================================
+**Is the truth...**
+* Finite dimensional and sparse? (Donoho et al. Compressed sensing, fundamentally parametric.)
+* Infinite dimensional and dense? (Meng 2014, Everything is variation, fundamentally nonparametric.)
+
+**This talk**: The latter. There may exist a sparse set of predictors, but no reason to believe that the predictors as collected define the proper basis for such sparsity.
+
+<small>**More reading**: Liu and Yang, 2009. "Parametric or nonparametric? A parametricness index for model selection."</small>
+
+Aside: What is truth?
+========================================================
+**Example**
+Let $X_i$  be a $p$-dimensional multivariate normal with covariance matrix $\Sigma$ defined so that $\Sigma_{k,l} = \rho^{|k-l|}$, $0 < \rho < 1$.
+
+Consider:
+$$
+Y_i \sim X_{i,2} - \rho X_{i,1} + 0.2 X_{i,p} + \mathcal N(0,3).
+$$
+
+"True"" model includes covariates $(1,2,p)$.
+But for any subset $A \subset \{1,\cdots ,p\}$,
+$$
+Y_i | X_{i,A} \sim \beta_A^{\top} X_{i,A}\mathcal + N(0, \sigma_A).
+$$
+because $(Y_i,X_i)$ are jointly multivariate normal. 
+
+"Truth" only has special status because it has minimal residual variance.
+
+Aside: What is truth?
+========================================================
+
+Simulation: $N = 100$, $p=25$, $\rho = 0.75$.
+
+For simplicity, consider only growing models $A_k = \{1, \cdots, k\}$.
+
+```{r, echo=FALSE}
+library(mvtnorm)
+N <- 1e2
+p <- 25 
+rho <- 0.75
+covmat <- rho^as.matrix(dist(1:p))
+X <- rmvnorm(N, rep(0,p), covmat)
+sigma <- 3
+
+E_Y1 <- X[,2] - rho*X[,1] + 0.2*X[,p]
+Y1 <- X[,2] - rho*X[,1] + 0.2*X[,p] + rnorm(N, 0, sqrt(sigma))
+
+covmat0 <- sapply(1:p, function(i){ covmat[i,2]-rho*covmat[i,1] + 0.2*covmat[i,p] })
+
+true_betas <- c(-rho, 1, 0.2)
+marvar1 <- t(true_betas)%*%covmat[c(1,2,p),c(1,2,p)]%*%true_betas+sigma
+
+MSE_test <- function(EY, covmat0, covmat, sigma, marvar, X, numreps = 1000) {
+    statmat <- matrix(NA, nc=5, nr=0)
+    for(i in 1:p){
+        X_cur <- X[,1:i,drop=FALSE]
+        proj_inv <- solve(covmat[1:i,1:i])
+        out_proj <- covmat0[1:i]
+        hat_proj <- X_cur%*%solve(t(X_cur)%*%X_cur)%*%t(X_cur)
+    
+        y_SE_obs_mat <- matrix(NA, nc=numreps, nr=N)
+        for(r in 1:numreps){
+            Yoth <- EY + rnorm(N, 0, sqrt(sigma))
+            Yoth2 <- EY + rnorm(N, 0, sqrt(sigma))
+            y_hat <- hat_proj%*%Yoth
+            y_SE_obs <- (y_hat-Yoth2)^2
+            #print(y_MSE)
+            y_SE_obs_mat[,r] <- y_SE_obs
+        }
+        y_MSE_obs <- mean(rowMeans(y_SE_obs_mat))
+        
+        y_bar <- out_proj%*%proj_inv%*%t(X_cur)
+        y_var <- as.vector(marvar-out_proj%*%proj_inv%*%out_proj)
+        y_exc_var <- (y_bar-E_Y1)^2
+        y_est_var <- diag(X_cur%*%(solve(t(X_cur)%*%X_cur)*sigma)%*%t(X_cur))
+        
+        y_MSE <- mean(y_var + y_est_var)
+        
+        statmat <- rbind(statmat, c(y_var, mean(y_exc_var), mean(y_est_var),
+                                    y_MSE, y_MSE_obs))
+    }
+    statmat
+}
+
+plot_statmat <- function(statmat){
+    par(mfrow=c(2,2), mar=c(3,3,2,1), mgp=c(2,.7,0), tck=-.01)
+    titles <- c("Residual Variance", "Excess Variance", "Estimation Variance", "MSE")
+    for(i in 1:4){
+        if(i!=4)
+            plot(statmat[,i], type='l', main=titles[i], ylab=NA, xlab="Model Index")
+        else
+            matplot(statmat[,4:5], type='l', main=titles[i], ylab=NA, xlab="Model Index")
+    }
+}
+```
+```{r, echo=FALSE, fig.width=12, fig.height=6}
+plot_statmat(MSE_test(E_Y1, covmat0, covmat, sigma, marvar1, X))
+```
+
+Perspectives on Model Selection
+========================================================
+**Is it a...**
+* Inference problem? (LASSO)
+* Decision problem? (Carvalho)
+
+**This talk**: Design problem!
+* Not a facet of the underlying system (so not inference).
+* Done beforehand to define the problem, incorporating inferential constraints (so not decision).
+* Which available conditional distribution can we reliably estimate?
+
+Virtues of Design Perspective
+========================================================
+**Estimands mean something.**
+* $\beta_1$ is only meaningful in context of the rest of $A$.
+Cross-model inference about $\beta_1$ is awkward, requires meaningless symmetries (Berk et al).
+
+**Separation of selection inference.**
+* Arguably post-selection inference impossible without separation (Leeb and Potscher).
+* Where distributions exist, require strong assumptions, difficult hypotheses (Lockhart et al).
+
+Virtues of Design Perspective
+=========================================================
+**Separation of selection and inference.**
+* Garden of forking paths.
+<blockquote>[M]odels become stochastic in an opaque way when their
+selection is affected by human intervention based on post-hoc considerations such
+as "in retrospect only one of these two variables should be in the model" or "it turns
+out the predictive benefit of this variable is too weak to warrant the cost of collecting
+it." (Berk et al 2013).</blockquote>
+
+Seeds of Design Perspective
+==========================================================
+**Wasserman's HARNESS**
+* Response to Lockhart et al LASSO hypothesis testing paper.
+* Randomly split data.
+* Model selection with one half.
+* Conditional on selected model, standard inference on other half.
+
+Seeds of a Design Perspective
+===========================================================
+**Issues with Data Splitting**
+<blockquote>
+Some statisticians are uncomfortable with
+data-splitting. There are two common objections. The first is that the inferences
+are random: if we repeat the procedure we will get different answers. The second
+is that it is wasteful.(Wasserman in response to Lockhart et al.)
+</blockquote>
+
+(Finally) A Contribution
+============================================================
+**Principled Data Splitting**
+* Can we use design principles to improve data-splitting techniques?
+* Splitting can be skewed to alleviate concerns.
+* Optimization can be exchanged with randomization to navigate optimality/robustness tradeoff.
+
+**Key idea**: Inference is already conditional on $X$. "Splitting on observables"
+can be used to improve power, restrict randomization without biasing inference. 
+
+A Small Result
+===========================================================
+Assume $(Y_i, X_i)$ multivariate normal, as before.
+
+**Procedure**:
+* Use a penalized log-likelihood information criterion to select a model (AIC, BIC, DIC, or other)
+* Compute predictive intervals for $Y^{rep}$ using selected model.
+
+**Lemma**: 
+Under the multivariate normal model, for fixed split sizes in the model selection set $n_1$ and the inference set $n_2$, the optimal (oracle) splitting policy maximizes the leverage of the points in the inference set with respect to the selected model. 
+
+A Small Result
+=============================================================
+<small>
+**Proof**:
+Linear regression information criteria have the form
+$$myIC = n_1\log \hat \sigma_A^2 + 2g(p_A, n_1) + C,$$
+where $g$ is a function of model size and sample size, and $C$ is a constant shared by all models.
+
+Because of multivariate normality, residuals for any set $A$ are mean-zero normal, so
+$$\hat \sigma_A^2 \sim \sigma^2_A \chi^2_{n-p},$$
+so all expectations of $myIC$ do not depend on $X$.
+
+Meanwhile, the predictive variance has the form:
+$$Var(Y) = X_A^{rep}(X_A^{\top}X_A)^{-1}X_A^{rep\top} \sigma^2_A$$
+with trace decreasing in the *leverage* of inference set.
+</small>
+
+Tip of the Iceberg
+==============================================================
+
+**Achieving the (leverage) oracle**:
+* Sequential designs to maximize expected leverage for likely models.
+
+**Relaxed assumptions**:
+* Without MVN, model selection depends on $X$.
+* Selection/inference tradeoffs need to be formulated.
+
+Tip of the Iceberg
+===============================================================
+
+**Evaluation**:
+* Oracle model recovery is not the goal.
+* $p$ is infinite for all $N$? Stochastic process perspective for finite samples.
+
+**Cross-pollenation**:
+* Algorithms from CUR decompositions, algorithmic leveraging (Mohoney et al).
+* Leverage-based sampling from surveys.
+* Complementary model selection and inference methods.
+
+Summary
+================================================================
+
+**Goal**:
+* Select model to minimize predictive risk given the current sample size.
+* Report valid inferences conditional on this model.
+
+**Don't care if**:
+* Different model at different sample sizes.
+* True/false positives.
+
+**Achievable by**:
+* Separating model selection and inference.
+* Optimize using design principles.
+
+Thanks!
+==========

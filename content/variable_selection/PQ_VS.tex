@@ -1,0 +1,2318 @@
+\documentclass{beamer}
+%\documentclass[handout]{beamer}
+\usepackage{bm}
+\usepackage{amsmath,amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{cancel}
+\usepackage{fancyvrb}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+
+
+
+\usetheme{CambridgeUS}
+\usecolortheme{dove}
+\definecolor{mygray}{rgb}{0.9,0.9,0.9}
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamercolor*{block title}{fg=black, bg=mygray}
+\setbeamerfont*{block title}{shape=\bf}
+\setbeamerfont*{block title example}{shape=\normalfont}
+
+\makeatletter
+\setbeamertemplate{theorem begin}
+{%
+    \setbeamertemplate{blocks}[rounded][shadow=false]
+    \begin{block}
+    {%
+        \inserttheoremheadfont% uncomment if you want amsthm-like formatting
+        \inserttheoremname
+        \inserttheoremnumber
+        \ifx\inserttheoremaddition\@empty\else\ (\inserttheoremaddition)\fi%
+        \inserttheorempunctuation
+    }%
+}
+\setbeamertemplate{theorem end}
+{
+    \end{block}
+    \setbeamertemplate{blocks}[rounded][shadow=false]
+}
+\makeatother
+
+% Defining new commands
+\newcommand{\boldR}{\bm{R}}
+\newcommand{\RmisgivenRobs}{\tilde \boldR^{mis}}
+\newcommand{\txt}{\texttt}
+\newcommand{\mc}{\mathcal}
+\newcommand{\mbf}{\mathbf}
+\newcommand{\bv}{\begin{array}}
+\newcommand{\ev}{\end{array}}
+\newcommand{\bit}{\begin{itemize}}
+\newcommand{\eit}{\end{itemize}}
+\newcommand{\ben}{\begin{enumerate}}
+\newcommand{\een}{\end{enumerate}}
+\newcommand{\beq}{\begin{equation}}
+\newcommand{\eeq}{\end{equation}}
+\newcommand{\bvq}{\begin{eqnarray}}
+\newcommand{\evq}{\end{eqnarray}}
+\newcommand{\myfig}[1]{Figure~\ref{fig:#1}}
+\newcommand{\mytab}[1]{Table~\ref{tab:#1}}
+\newcommand{\mysec}[1]{Section~\ref{sec:#1}}
+\newcommand{\myeq}[1]{Equation~\ref{eq:#1}}
+\newcommand{\myalgo}[1]{Algorithm~\ref{algo:#1}}
+\newcommand{\myprop}[1]{Proposition~\ref{prop:#1}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\g}{\, | \,}
+\newcommand{\ptoq}{p \rightarrow q}
+\newcommand{\pfromq}{p \leftarrow q}
+\newcommand{\mybox}[4]{\centering \colorbox{lightgrey}{\parbox{#1\textwidth}{\centering \vskip #3 \begin{minipage}[t]{#2\textwidth} #4 \end{minipage} \vskip #3}}}
+
+\newcommand{\diag}[1]{\mathrm{diag}\left(#1\right)}
+\newcommand{\tr}[1]{\mathrm{tr}\left(#1\right)}
+\newcommand{\diagvec}[1]{\mathrm{\overrightarrow{diag}}\left(#1\right)}
+\newcommand{\unitmat}[0]{\vec{1}\vec{1}^T}
+\DeclareMathOperator{\argmax}{arg\,max}
+\newcommand{\dd}{\; \mathrm{d}}
+\DeclareMathOperator{\Unif}{Unif}
+\DeclareMathOperator{\Multinom}{Multinom}
+\DeclareMathOperator{\Bernoulli}{Bern}
+\DeclareMathOperator{\logit}{logit}
+\DeclareMathOperator{\Var}{\mathbb{V}ar}
+\DeclareMathOperator{\Cov}{\mathbb{C}ov}
+
+\newcommand{\Mult}{\mathrm{Mult}}
+\newcommand{\Gam}{\mathrm{Gamma}}
+\newcommand{\Dir}{\mathrm{Dir}}
+\newcommand{\Pois}{\mathrm{Pois}}
+\newcommand{\Bern}{\mathrm{Bern}}
+\newcommand{\Bin}{\mathrm{Bin}}
+\newcommand{\B}{\mathrm{Beta}}
+\newcommand{\BB}{\mathrm{BetaBinom}}
+\newcommand{\indep}{\perp\!\!\!\perp}
+
+%\theoremstyle{plain}
+\newtheorem{ex}{Example}
+%\newtheorem{conjecture}{Conjecture}
+\newtheorem{remark}{Remark}
+%\newtheorem{thm}{Theorem}
+\newtheorem{lem}{Lemma}
+%\newtheorem{fact}{Fact}
+%\newtheorem{note}{Note}
+%\newtheorem{definition}{Definition}
+%\newtheorem{assumption}{Assumption}
+%\newtheorem{problem}{Problem}
+
+\newcommand{\indfun}{\mathbb{I}}  % Indicator function
+\newcommand{\logitinv}{\mathrm{logit}^{-1}}
+
+% items enclosed in square brackets are optional; explanation below
+\title[Design for Data Splitting]{Design-Based Data Splitting for Model Selection and Estimation}
+\institute[Harvard Statistics]{Harvard University\\ Department of Statistics}
+\author[D'Amour/Airoldi]{Alexander D'Amour}
+\date[Stat 300 11/25/2014]{Stat 300\\ November 25, 2014}
+
+\begin{document}
+
+%--- the titlepage frame -------------------------%
+\begin{frame}[plain]
+  \titlepage
+ \end{frame}
+
+ \begin{frame}{Network Link Generation Problem}
+ %newline
+ \begin{columns}
+ \column{.55\textwidth}
+ \begin{figure}
+ \centering
+ \includegraphics[width=\linewidth]{images/buffalo_2_graph_7_real.pdf}
+ \end{figure}
+ %\pause
+
+ \column{.45\textwidth}
+ Sample of $n$ actors. 
+ \newline
+
+ Explain or predict pairwise outcomes $Y$ using pairwise covariates $X$.
+ \newline
+
+ $X$ may be observed or latent.
+ \end{columns}
+\end{frame}
+
+
+\begin{frame}{Network Sample Representation}
+    \framesubtitle{Generalized Random Graph}
+     %\alert{Generalized Random Graph}
+     %    \begin{itemize}
+     %        \item $V$: Set of actors.
+     %        \item $Y_V$: Pairwise interaction summary in \alert{arbitrary space}.
+     %        \item $X_V$: Attributes summarized in pairwise covariate vectors.
+     %        \item $Y_V$ and $X_V$ are matrix-like.
+     %    \end{itemize}
+ 
+     \begin{columns}
+         \column{.55\textwidth}
+    \begin{figure}
+        \centering
+     \includegraphics[width=0.9\linewidth]{images/adj_mat_correct.pdf}
+     \end{figure}
+
+     \column{.45\textwidth}
+         $Y$ entries in \alert{arbitrary sample space}
+         with some element $\bm 0$.
+         \newline
+
+         Binarized graph $A$ with $$A_{ij} \equiv \bm{1}_{Y_{ij} \neq \bm 0}.$$
+
+         Covariates $X$ combine observed, latent attributes,$$X_{ij} = f(C_i, C_j, D_{ij}).$$
+     \end{columns}
+ \end{frame}
+
+ \begin{frame}{Generative Network Models}
+     \only<1-2>{
+         \framesubtitle{Tradeoffs}
+         \alert{Local structure:} Homophily, Heterophily, Transitivity, etc.
+         \newline
+
+         \alert{Global structure:} Sparsity, Percolation, etc.
+         \newline
+         \onslide<2>{
+             \begin{center}Local structure dominates generative network modeling.\end{center}
+         }
+     }
+     \only<3-4>{
+         \framesubtitle{Common local approaches}
+         Conditionally independent dyads (regression):
+         $$
+         P(Y \mid X) = \prod_{i<j<n} P(Y_{ij} \mid X_{ij}).
+         $$
+         Infinitely exchangeable dyads (Aldous-Hoover):
+         $$
+         P(Y\mid X) = \int_{\mathcal C} \prod_{i<j<n} P(Y_{ij} \mid X_{ij}(C_i, C_j)) dF(C).
+         $$
+         \onslide<4>{
+             \begin{center}Do not capture global features, e.g., sparsity. Does this matter?\end{center}
+         }
+     }
+ \end{frame}
+ 
+ \begin{frame}{Inference Paradigms}
+     \begin{columns}[T]
+         \begin{column}{0.45\textwidth}
+         \begin{center}\alert{Finite/Fixed Population}\end{center}
+         For a fixed set of actors
+         \begin{itemize}
+             \item Impute unmeasured links.
+             \item Project forward in time. 
+         \end{itemize}
+         %\vspace{4em}
+          \pause
+      \end{column}
+          \vrule
+          \hspace{1.5em}
+         \column{0.45\textwidth}
+         \begin{center}\alert{Superpopulation}\end{center}
+         For differing sets of actors
+         \begin{itemize}
+             \item Compare networks.
+             \item Pool information or predict across networks.
+             \item Scale local intuition to global network.
+         \end{itemize}
+         ~
+     \end{columns}
+     \pause
+     \begin{columns}
+         \column{0.45\textwidth}
+         \begin{center}\alert{Smoothing}\end{center}
+         \column{0.45\textwidth}
+         \begin{center}\alert{Extrapolating}\end{center}
+     \end{columns}
+ \end{frame}
+
+\begin{frame}{Network Superpopulation Inference}
+    \only<1-3>{
+        \framesubtitle{What is a network superpopulation?}
+        \onslide<2-3>{
+        Intuiviely, require common generative process to ``bridge'' unlike samples.
+        \newline
+
+        Infinite network population defnied as stochastic process (Rinaldo and Shalizi 2013).
+        \newline
+
+        Observed samples are finite subgraphs of population graph. 
+        \newline
+        }
+        \onslide<3>{
+        \begin{definition}[Generalized Random Graph Process]
+            A {generalized random graph process} $Y_{\mathbb V}$ is a stochastic process indexed
+            by a countably infinite vertex set $\mathbb V$ whose finite-dimensional distribution for any
+            finite subset $V \subset \mathbb V$ defines a generalized random graph $Y_V$ with vertex set $V$.
+        \end{definition}
+        }
+    }
+
+    \only<4-6>{
+        \framesubtitle{Inferential procedure and assumptions}
+        \onslide<5-6>{
+        \alert{Likelihood inference procedure}
+        \begin{enumerate}
+            \item Propose a model family $\mc P$ of models $P_{\beta, \gamma}$. 
+            \item $\mc P$ implies a log-likelihood $L_{\beta,\gamma,n}$ on the sampled index set.
+                Compute
+            \begin{align}
+                \hat \beta_n,\hat \gamma_n &= \argmax_{B,\Gamma} L_{\beta,\gamma,n}(Y_n).
+            \end{align}
+        \item Interpret $\hat \beta_n$ as a population parameter estimate.
+            ~
+            \newline
+    \end{enumerate}
+        }
+
+        \onslide<6>{
+            Step 3 requires \alert{coherence} between inferences from different samples drawn from same population.
+        }
+    }
+
+    \only<7-11>{
+        \framesubtitle{Assessing coherence}
+        \onslide<8->{
+        Intuitively, procedure is coherent if \alert{object of estimation} is invariant to sampling.
+        \newline
+
+        }
+        \onslide<9->{
+        \alert{Effective estimand} is the object of estimation for all $n$,
+        \begin{align}
+            \bar \beta_n,\bar \gamma_n &= \argmax_{B,\Gamma} \E_0(L_{\beta,\gamma,n}(Y_n)).
+        \end{align}
+        where $\E_0$ is expectation with respect to the true process.
+        \newline
+
+        }
+        \onslide<10->{
+            For coherent procedures, effective estimand is invariant to sampling.
+            \newline
+
+        }
+        \onslide<11>{
+            \begin{center}
+                Under misspecified global structure?
+            \end{center}
+        }
+    }
+
+\end{frame}
+
+\begin{frame}{Sparsity}
+    \only<1>{
+        \framesubtitle{Illustration}
+    \begin{figure}
+         \centering
+         \includegraphics[width=\textwidth]{images/Boston_zipspar_cropped.pdf}
+     \end{figure}
+    }
+    \only<2->{
+        \framesubtitle{Formally}
+        \onslide<3->{
+        Define the \alert{density operator}
+        \[
+            D(Y_{V}) = \frac{\sum_{ij} A_{ij}}{{|V| \choose 2}}.
+        \]
+        }
+
+        \onslide<4->{
+        \begin{definition}[Sparse Generalized Random Graph Process]
+        Let $Y_{\mathbb V}$ be a generalized random graph process on $\mathbb V$. $Y_{\mathbb V}$ is
+        \emph{sparse} if and only if for any $\epsilon > 0$, there exists an $n$ such that for
+        any subset of vertices $V \in \mathbb V$ with $|V| > n$
+        the corresponding finite dimensional generalized random graph $Y_{V}$ has the property $\E(D(Y_{V})) < \epsilon$.
+        \end{definition}
+        }
+        \onslide<5->{
+            ~
+            \newline
+        Also, \alert{sparsity rate} $\epsilon(n)$.
+        }
+    }
+\end{frame}
+
+\begin{frame}{Sparsity Misspecification}
+    \only<1-3>{
+        \framesubtitle{Definition}
+        \onslide<2-3>{
+    A model family $\mathcal P_{\beta, \gamma}$ is \alert{sparsity misspecfied} iff
+    \[
+        \frac{\E_{\beta, \gamma}(D(Y_n))}{\E_0(D(Y_n))} \rightarrow 0 \textrm{ or } \infty.
+    \]
+    \newline
+
+}
+\onslide<3>{
+    For example,
+    \begin{itemize}
+        \item For CID (under regularity) and exchangeable models, population extension is \alert{dense} or \alert{empty} (e.g., Orbanz and Roy, 2013).
+        \item For process models, most lock in a given form for $\epsilon(n)$ (e.g., power law for preferential attachment).
+    \end{itemize}
+}
+}    
+\only<4->{
+    \framesubtitle{Consequences}
+    %\onslide<5->{
+    %A model is \emph{responsive} to a statistic $T(Y_n)$ with respect to a true generating process $P_{0,n}$ when 
+    %\[
+    %            |\E_{\bar\beta_n,\bar\gamma_n}(T(Y_n)) - \E_0(T(Y_n))| = o_p(1).
+    %\]
+    %}
+    \onslide<5->{
+    \begin{theorem}[Moving target theorem]
+        \label{thm:moving target}
+        Suppose that the following hold:
+        \begin{enumerate}
+            \item The inferential family $\mc P$ is sparsity misspecified for the true population process $P_0$.
+            \item The marginal distribution of the binarized data $A$ identifies $\beta$ in the presenece of nuisance parameters $\gamma$ in $\mc P$.
+            \item The inferential model is \alert{responsive} to the sample density $D(Y_n)$ under the true population process and
+            \begin{align}
+                |\E_{\bar\beta_n, \bar\gamma_n}(D(Y_n)) - \E_0(D(Y_n))| &\in O(\epsilon_0(n)).
+            \end{align}
+        \end{enumerate}
+        Then, for any $n$, there exists an $n' > n$ such that
+        $\bar \beta_n \neq \bar \beta_{n'}$.
+    \end{theorem}
+}
+}
+
+\end{frame}
+
+\begin{frame}[fragile]{Example: Real Model Output}
+     \alert{Cox PH regression.} (Perry and Wolfe, 2013)     
+     \newline
+     Inventor coauthorships in Michigan's motor industry 1982-1988.
+     \newline
+     \newline
+     Covariates (Coefs are log-ratios):
+     \begin{itemize}
+         \item \texttt{post85}: After 1985.
+         \item \texttt{asgnum}: Work for same firm.
+         \item \texttt{Ng0}: Have worked together before.
+     \end{itemize}
+     
+     \begin{verbatim}
+                           lower    est  upper 
+        post85             15.49  15.84  16.20
+        asgnum              4.65   4.83   5.02
+        Ng0                11.36  11.73  12.10
+        post85:asgnum      -4.77  -4.40  -4.03
+        post85:Ng0        -14.57 -14.00 -13.44
+        asgnum:Ng0         -5.56  -5.16  -4.76
+        post85:asgnum:Ng0   3.91   4.52   5.13
+     \end{verbatim}
+\end{frame}
+
+\begin{frame}{Example: Simulation}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{images/sims_out.pdf}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Partial Resolution}
+    \only<1>{
+        \framesubtitle{Salvaging conditional independence}
+        Conditional independence assumptions are desirable.
+        \newline
+        
+        Can propose more complex latent structures $R$ that induce conditional independence on conditional process.
+        \newline
+
+        Changes question:
+        $$P_{\beta, \gamma}(Y \mid X) \rightarrow P_{\beta}(Y \mid R, X).$$
+    }
+    \only<2>{
+    \framesubtitle{Conditionally Independent Relationship model}
+    \begin{figure}
+        \begin{minipage}{0.29\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{{images/soc.struct.graph_cropped}.pdf}
+            \newline
+            Unobservable Relationship/Risk
+        \end{minipage}
+        \hspace{0.2cm}
+        \vrule
+        \hspace{0.2cm}
+        \begin{minipage}{0.29\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{{images/both.graph_cropped}.pdf}
+            \newline
+            Both
+        \end{minipage}
+        \hspace{0.2cm}
+        \vrule
+        \hspace{0.2cm}
+        \begin{minipage}{0.29\linewidth}
+            \centering
+            \includegraphics[width=\linewidth]{{images/itx.graph_cropped}.pdf}
+            \newline
+            Observable Interactions
+        \end{minipage}
+    \end{figure}
+    }
+    \only<3-7>{
+        \framesubtitle{Partial likelihood inference}
+        \onslide<4-7>{
+        Exploit conditional distribution $P_\beta(Y \mid A, X)$, or \alert{zero-truncated likelihood}.
+        \newline
+
+        }
+        \onslide<5-7>{
+        Invariant to marginal distribution of $R$.
+        \newline
+
+        }
+        \onslide<6-7>{
+        Under regularity conditions, recovers cohrent procedure for $\beta$.
+        \newline
+        }
+        \onslide<7>{
+
+            Bonus: Computation is $O(\sum_{ij} A)$.
+        }
+    }
+
+    \only<8>{
+        \framesubtitle{Simulated success}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{images/sims_out.pdf}
+    \end{figure}
+    }
+\end{frame}
+
+\begin{frame}{Discussion}
+    \alert{Network modeling is hard.}
+\begin{itemize}
+    \item Local intuition may contradict global structure.
+    \item Misspecified global structure gives incoherent inference for interesting superpopulation questions.
+\end{itemize}
+~
+\pause
+
+    \alert{Hope for network superpopulation inference?}
+\begin{itemize}
+    \item Invariance approaches for smaller questions.
+    \item More flexible global models for general questions.
+\end{itemize}
+~
+\pause
+
+    \alert{Assessing coherence of sample-wise inferences is important.}
+\begin{itemize}
+    \item Box: ``Remember that all models are wrong; the practical question is how wrong do they have to be to not be useful.''
+\end{itemize}
+\end{frame}
+\end{document}
+
+\begin{frame}{More Misspecification}
+    \begin{figure}
+        \begin{minipage}{0.45\linewidth}
+            \includegraphics[width=\linewidth]{images/too_dense.pdf}
+        \end{minipage}
+        \hspace{0.5cm}
+        \begin{minipage}{0.45\linewidth}
+            \includegraphics[width=\linewidth]{images/too_sparse.pdf}
+        \end{minipage}
+    \end{figure}
+\end{frame}
+
+
+
+
+
+\end{document}
+
+ \begin{frame}{Story Arc}
+     Network Population Inference Problem
+     \pause
+     \begin{block}{Episode II: Sparsity}
+     \end{block}
+     \pause
+     \begin{block}{Episode III: Debbie Downer}
+         \begin{itemize}
+             \item Most simple approaches answer the wrong question.
+             \item Approaches that answer the right question are fragile.
+         \end{itemize}
+     \end{block}
+     \pause
+     \begin{block}{Episode IV: A New Hope}
+         \begin{itemize}
+             \item Rephrasing the question so it can't be wrong.
+             \item Truncation as a partial likelihood approach.
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+
+  
+
+ 
+ \begin{frame}{Questions that Demand Network Population Inference}
+     \begin{block}{Hypothesis Testing}
+         Do legal changes change patterns of inventor collaborations? 
+     \end{block}
+     \pause
+     \begin{block}{Joint Estimation}
+         We have data from tens of thousands of companies, thousands of zipcodes,
+         fifty states. Can we apply shrinkage estimation to the parameters of the inventor
+         collaboration process?
+     \end{block}
+     \pause
+     \begin{block}{Out-of-Sample Prediction}
+         We have observed how inventors interact in a particular municipality.
+         Can we use this to predict how inventors will interact in another?
+     \end{block}
+ \end{frame}
+
+ \begin{frame}{Key Idea: Models and Population Inference}
+     \begin{block}{Embedding}
+         In population inference, models do double duty
+         \begin{itemize}
+             \item Explain variability in sample.
+             \item Embed sample in a population.
+         \end{itemize}
+         \pause
+         Embedding implies samples from the same population share population parameters.
+     \end{block}
+     \pause
+     \begin{block}{Take Home Message}
+         When the population is highly constrained,
+         \pause
+         \begin{itemize}
+             \item misspecifying the embedding can be disastrous.
+                 \pause
+             \item specifying a correct embedding is challenging.
+                 \pause
+             \item violating the likelihood principle can help.
+         \end{itemize}
+     \end{block}
+ \end{frame}
+         
+  \begin{frame}{Episode II: Sparsity}
+     \begin{figure}
+         \centering
+         \includegraphics[width=\textwidth]{images/Boston_zipspar_cropped.pdf}
+     \end{figure}
+ \end{frame}
+
+ \begin{frame}{Sparsity In Words}
+     \begin{block}{Observations}
+         \begin{itemize}
+             \item
+             Compatibility/homophily alone does not explain interaction patterns.
+             \pause
+             \item People interact in social ``neighborhoods''.
+             \pause
+             \item These neighborhoods are ``small'' compared to the population, resulting in
+                 vanishing density in large network samples.
+         \end{itemize}
+     \end{block}
+     \pause
+     \begin{block}{Formally...}
+         \begin{itemize}
+             \item Population is a \alert{stochastic process} indexed on sets of actors whose FDD's 
+                 are random interaction networks between a set of actors.
+             \item Population is \alert{sparse} if any growing sequence of FDD's has \alert{density}
+                 $\sum_{ij} A/ {N \choose 2}$ that coverges in probability to zero.
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+  \begin{frame}{Episode III: Debbie Downer}
+     \begin{figure}
+         \includegraphics[width=\textwidth]{images/debbiedowner.png}
+     \end{figure}
+ \end{frame}
+
+ \begin{frame}{Modeling Approach}
+     \begin{block}{Process}
+         \begin{itemize}
+             \item Assume $\bm X$ makes sampling scheme ignorable.
+                 \pause
+             \item Propose a model for network sample.
+                 \pause
+             \item Infer parameters from sample.
+                 \pause
+             \item Assume model for sample is an FDD of the population process.
+                 \pause
+             \item Use parameters inferred from sample to answer population questions.
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+ \begin{frame}{Conditionally Independent Dyad (CID) Models}
+     \begin{center}
+     \scalebox{2.3}{
+         $P_\beta(\bm Y \mid \bm X) = \prod_{ij} P_\beta(Y_{ij} \mid X_{ij})$
+     }
+     \pause
+     \newline
+     \newline
+     \Huge{So simple it just might work?}
+ \end{center}
+ \end{frame}
+
+ \begin{frame}
+     \begin{figure}
+         \includegraphics[width=\textwidth]{images/NOPE.jpg}
+     \end{figure}
+ \end{frame}
+
+%  \begin{frame}{Applied Example: Cox PH Regression}
+%     \begin{block}{Cox Proportional Hazard Regression}
+%         \begin{itemize}
+%             \item Let $Y_{ij}$ be a counting process of interactions between actors $i$ and $j$.
+%             \item Let $X_{ij}(t)$ be potentially time-varying covariates.
+%             \item Innovations in $Y_{ij}(t)$ given $X_{ij}(t)$ conditionally independent.
+%         \end{itemize}
+%     \end{block}
+%                 \pause
+%     \begin{block}{Model}
+%         \begin{align*}
+%             Y_{ij}(t) \mid X_{ij}(t), \mc F(t) &\sim \mathrm{PoisProc}(\lambda_{ij}(t))\\
+%                   \log \lambda_{ij}(t) &\equiv \log \lambda_0(t) + X_{ij}(t)\beta
+%         \end{align*}
+%     \end{block}
+% \end{frame}
+%
+% \begin{frame}{Applied Example: Cox Partial Likelihood}
+%    \begin{block}{Partial Likelihood}
+%        Maximum partial likelihood estimator $\hat \beta_{CPL}$ (Cox Partial Likelihood) proposed by Cox 1972.
+%        Maximize
+%        \begin{align*}
+%            PL(\bm Y \mid \beta) &= \prod_t \prod_{ij} \left(\frac{\lambda_{ij}(t)}{\sum_{ij \in \mc R(t)}\lambda_{ij}(t)}\right)^{Y_{ij}(t)},
+%        \end{align*}
+%        where $\mc R(t)$ is the ``risk set'', units at risk of generating a point observation at $t$. 
+%    \end{block}
+%    \pause
+%    \begin{block}{Network Application}
+%        \begin{itemize}
+%            \item Perry and Wolfe 2011: Consistent, asymptotically normal for \alert{$N$ fixed, $T \rightarrow \infty$}.
+%             \item \textbf{Idea}: Compare $\hat \beta_{CPL}$ for each region-period to compute diffs-in-diffs.
+%         \end{itemize}
+%     \end{block}
+% \end{frame}
+
+ \begin{frame}{Clearly Misspecified}
+     \begin{block}{With some regularity on model/covariates...}
+         \begin{enumerate}
+     \item Define a ``good'' set in the space of covariate vectors where, for all $\beta \in B$, $P_\beta(Y_{ij} \mid X_{ij})$ is
+         not deterministically zero if $X_{ij}$ is in this set.
+     \item Assume that a positive proportion $\delta > 0$ of covariate vectors in the sequence $\bm X$ lie
+         in this good set.
+              \end{enumerate}
+              \textbf{In English}: the covariate sequence does not make the model assume that almost all dyads
+              are deterministically zero.
+     \end{block}
+     \pause
+     \begin{lemma}[Generative CID Non-sparsity]
+         If a graph process has CID finite-dimensional distributions and the above regularity conditions are met,
+         the graph process cannot be sparse.
+     \end{lemma}
+ \end{frame}
+ 
+ \begin{frame}{Sure, But Box Said...}
+     \pause
+     Is this model useful?
+     \pause
+     \begin{figure}
+         \includegraphics[width=0.9\textwidth]{images/NOPE.jpg}
+     \end{figure}
+     \pause
+     The wrong embedding in a popluation inference problem!
+ \end{frame}
+
+ \begin{frame}{Misspecified Embedding in CID}
+     \begin{block}{Inkonsistency}
+         \begin{itemize}
+             \item Take an increasing sequence of network samples from a sparse population.
+                 \pause
+             \item Apply an estimation procedure that has an implied predictive distribution
+                  assumes independent dyads, captures graph density
+                 converging to zero (i.e., sample-wise PPC's don't fail), and is consistent
+                 until normal conditions.
+                 \pause
+             \item Then Lemma 1 implies that the sequence of estimated predictive distributions
+                 cannot be a Kolmogorov consistent (\alert{konsistent}) stochastic process, meaning
+                 \pause
+             \item Networks of different size are embedded in \alert{separate popluations}, making their
+                 parameter estimates \alert{inkomparable}.
+         \end{itemize}
+     \end{block}
+     \pause
+     \begin{center}\alert{A dire konsequence!}\end{center}
+ \end{frame}
+
+ \begin{frame}{A Bad Embedding: Simple Example}
+    \begin{block}{Model}
+        Assume given $\bm X$ that the entries of $\bm Y$ are independent, and distributed according to
+        \begin{align*}
+            Y_{ij} \sim \mathrm{Pois}(\exp(\beta_0 + X_{ij} \beta_1)) \qquad \forall i < j < n.
+        \end{align*}
+    \end{block}
+    \begin{block}{Estimators}
+        Ratios of sample means of between- and within-firm interactions.
+        \begin{align}
+            \hat\beta_0 &= \log\left(\frac{\sum Y_{ij}(1-X_{ij})}{\sum(1-X_{ij})}\right)\label{eq:b0}\\
+            \hat\beta_1 &= \log\left(\frac{\sum Y_{ij}X_{ij}}{\sum X_{ij}}
+                           \left / \frac{\sum Y_{ij}(1-X_{ij})}{\sum(1-X_{ij})}\right.\right).\label{eq:b1}
+        \end{align}
+    \end{block}
+ \end{frame}
+ 
+  \begin{frame}{A Bad Embedding: Simple Example}
+    \begin{block}{Sparsity implies...}
+        \begin{itemize}
+            \item At least one sample mean goes to 0.
+                \pause
+            \item E.g., Firm sizes $o(N)$: Ratio in Eq \ref{eq:b0} $\rightarrow 0$, $\hat \beta_0 \rightarrow -\infty$.
+                \pause
+            \item If convergent estimator, contradicts conditional invariance: 
+                $P(Y_{ij} \mid 0)$ and $P(Y_{ij} \mid 1)$ must both depend on $n$.
+                \pause
+        \end{itemize}
+    \end{block}
+    \pause
+    \begin{block}{In English...}
+        \begin{itemize}
+            \item We have assumed all people ``know'' each other.
+            \item If this is true, then the results of ``knowing'' somebody cannot remain stable
+                as the graph gets large while still maintaining sparsity.
+            \item We are estimating a different quantity at different network sizes.
+        \end{itemize}
+    \end{block}
+ \end{frame}
+
+
+
+ \begin{frame}{A Better Embedding and Estimand?}
+     \begin{block}{``Sparsifying'' Relationship Process}
+        \begin{itemize}
+            \item To be at risk of generating an interaction, two actors much have a \alert{relationship} between them.
+            \item Conditional on being at risk, pairs interact according to $P_\beta(Y_{ij} \mid X_{ij}, R_{ij})$.
+            \item Changes question to ask, ``How do people who know each other interact?''
+        \end{itemize}
+    \end{block}
+    \begin{figure}
+        \begin{minipage}{0.25\linewidth}
+            \includegraphics[width=\linewidth]{{images/soc.struct.graph_cropped}.pdf}
+        \end{minipage}
+        \hspace{0.25cm}
+        \vrule
+        \hspace{0.25cm}
+        \begin{minipage}{0.25\linewidth}
+            \includegraphics[width=\linewidth]{{images/both.graph_cropped}.pdf}
+        \end{minipage}
+        \hspace{0.25cm}
+        \vrule
+        \hspace{0.25cm}
+        \begin{minipage}{0.25\linewidth}
+            \includegraphics[width=\linewidth]{{images/itx.graph_cropped}.pdf}
+        \end{minipage}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Conditionally Independent Relationship (CIR) Models}
+    \begin{center}
+    \scalebox{1.5}{
+        $P_{\beta, \gamma}(\bm Y \mid \bm X) = \displaystyle\sum\limits_{\bm R : \bm Y \in \bm R}
+        P_\beta(\bm Y \mid \bm R, \bm X) P_\gamma(\bm R \mid \bm X)$
+    }
+    \end{center}
+    \pause
+    \begin{block}{Example Model: Independent Risk Imputation}
+         \begin{align*}
+             R_{ij} \mid X_{ij}(t) &\sim \mathrm{Bern}(\eta_{ij})\\
+                         \eta_{ij} &\equiv X_{ij}\gamma\\\\
+             Y_{ij} \mid R_{ij}, X_{ij} &\sim \mathrm{Pois}(R_{ij} \lambda_{ij})\\
+                   \log \lambda_{ij}(t) &\equiv \beta_0 + X_{ij}\beta
+         \end{align*}
+     \pause
+     Inference via EM to integrate out $\bm R$.
+     \end{block}
+ \end{frame}
+
+ \begin{frame}{When do CIR Models Work?}
+     %\begin{lemma}
+     %    If the process $\bm Y$ has FDD's given by CIR specifications, assuming regularity conditions,
+     %    $\bm Y$ and $\bm R$ have the same \alert{sparsity rate}.
+     %\end{lemma}
+     \begin{block}{Setting}
+        \begin{itemize}
+            \item Specify a sparse relationship process $\bm R_\gamma$, with $\bm R_0$ the truth.
+            \item Given $\bm R^{obs}$, say $\bm R^{mis}$ is distributed as $\RmisgivenRobs$.
+            \item Suppose that for all values of $\gamma$, the following holds
+                \begin{align*}
+                        \frac{D(\RmisgivenRobs_0)}{D(\RmisgivenRobs_\gamma)} \stackrel{p}{\rightarrow} S(\gamma) \in [0, \infty].
+                \end{align*}
+                where $D(\cdot)$ is the graph density of a random graph.
+        \end{itemize}
+    \end{block}
+    
+    \pause
+    \begin{block}{Common Situation}
+    Most known sparse graph processes have a fixed functional form for the sparsity rate
+    (e.g. power law, $\log(N)/N$).
+    \end{block}
+\end{frame}
+
+\begin{frame}{When do CIR Models Work?}
+    \begin{theorem}{CIR Sensitivity}
+        If $S(\gamma)$ estists and is either 0 or $\infty$ for all $\gamma \in \Gamma$, under regularity
+        and identification conditions, the MLE for $\hat \beta$ is inconsistent.
+    \end{theorem}
+    \pause
+    \begin{block}{In English...}
+        CIR models only work if you guess the correct sparsity rate.
+    \end{block}
+    \pause
+    \begin{block}{Inconsistency by Inkonsistency}
+         MLE for $\beta$ converges to either
+         \begin{itemize}
+             \item Point in the closure of $B$ that minimizes KL divergence with the empty graph process.
+             \item Point that assumes observed nonzero interactions are the only nonzero interactions.
+         \end{itemize}
+         Arise from inkonsistent model sequences along the growing sequence of samples.
+     \end{block}
+ \end{frame}
+
+ \begin{frame}{Why is this so hard?}
+     \begin{block}{Sparse networks are unusual}
+         \begin{itemize}
+             \item In most statistical settings, assume population given by a \alert{stationary} stochastic process.
+                 This makes embedding simple.
+                 \pause
+             \item Sparsity requires embedding network samples of \alert{nonstationary} density into a coherent
+                 stochastic process.
+                 \pause
+             \item Exchangeable and stationary processes do not embed sample appropriately into sparse
+                 populations.
+         \end{itemize}
+     \end{block}
+
+     \begin{block}{Inkonsistency is pernicious...}
+         \begin{itemize}
+             \item Model may be a priori konsistent (unlike ERGM's).
+             \item Model description of current sample may be satisfactory -- standard PPC's would pass.
+             \item Requires out-of-sample predictive checks along the embedded sequence (or asymptotics) to detect.
+         \end{itemize}
+     \end{block}
+
+      \end{frame}
+
+ \begin{frame}{Episode IV: A New Hope}
+     \begin{figure}
+         \includegraphics[width=\textwidth]{images/newhope.png}
+     \end{figure}
+ \end{frame}
+
+ \begin{frame}{Rephrasing the Question}
+    \begin{block}{Recovering Stationarity}
+         \begin{itemize}
+             \item CIR models attempt define a stationary process conditional on $\bm R$, but full inference
+                 requires guessing the embedding of $\bm R$ instead.
+                 \pause
+             \item In essence, requires knowing how to rescale the density at each size.
+                 \pause
+             \item In English, requires you to guess the right definition of ``knowing somebody''.
+                 \pause
+             \item \alert{Can we estimate the parameters of the stationary process without guessing at $\bm R$?}
+                 \pause
+             \item What if we only focus on pairs that we know have relationships?
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+
+ \begin{frame}{Partial Likelihood}
+     \begin{block}{Partial Likelihood in General}
+         \begin{itemize}
+             \item Technique for high-dimensional nuisance.
+             \item Instead of integrating out unknowns, find an aspect
+                 of the data (e.g., a sequence of sub-experiments) that \alert{informs the parameter of interest}
+                 and \alert{is invariant to nuisance}.
+             \item Conditioning is a key tool.
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+ \begin{frame}{Truncation: A Partial Likelihood Approach}
+    \begin{block}{Truncation as Partial Likelihood for CIR}
+    Transform the data
+    $\bm Y \mapsto (\bm A, \bm Y)$, and condition on $\bm A$. Use the conditional likelihood
+    \begin{align*}
+        P_\beta(\bm Y \mid \bm X, \bm A) &= \prod_{ij} P_\beta(Y_{ij} \mid X_{ij}, A_{ij})^{A_{ij}}\\
+                                                         &= P_\beta(\bm Y \mid \bm X, \bm A)\notag
+    \end{align*}
+    \end{block}
+    \pause
+    \begin{block}{Notes}
+    \begin{itemize}
+        \item This is the truncated likelihood, assuming we were not able to observe zeros at all.
+        \item We would multiply by $P_{\beta, \gamma}(\bm A, \mid \bm X)$ to recover the full likelihood.
+        \item Conditional on $\bm A$, $Y$ does not depend on $\bm R$ or $\gamma$.
+        \item We could consider $\gamma$ to be infinite-dimensional and retain the same transformation.
+    \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Results for Partial Likelihood}
+    \begin{block}{Truncated estimator is consistent, asymptotically normal if...}
+        \begin{itemize}
+            \item Left-over entropy after conditioning on $\bm A$.
+            \item $\sum \bm R_0 \rightarrow \infty$ and regularity conditions ensure
+                $\sum \bm A \rightarrow \infty$.
+            \item Some technical conditions (essential compactness, CLT conditions).
+            \item Conditions adapted from Wong 1986.
+        \end{itemize}
+    \end{block}
+    \pause
+    \begin{block}{Pros/Cons}
+        \begin{itemize}
+            \item \textbf{+} Recovers stationary population process for trivial embedding, by defining
+                ``knowing somebody'' as ``what people who interact have''.
+            \item \textbf{+} Computation scales in number of nonzero dyads, so vanishing complexity compared to full
+                correctly specified.
+                \pause
+            \item \textbf{-} Violate likelihood principle -- we throw away data!
+            \item \textbf{-} Lower efficiency in terms of discriminatory information by a constant factor.
+                \pause
+            \item \textbf{++} Higher rate of information accumulation -- information per observation diverges.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Testing on Simulations}
+    \begin{block}{Simulation}
+        \begin{itemize}
+            \item Simulated networks of size ranging from 100 to 2000 actors.
+            \item Each actor and assigned a ``zipcode'' and a ``firm''.
+            \item Simulated expected number of at-risk dyads proportional to $N \log N/{N \choose 2}$.
+            \item At-risk dyads followed a Poisson Process with intensity
+\begin{align*}
+    \lambda_{ij}(t) = \log(10^{-5})+\mbf1_{\mathrm{Zip_i=Zip_j}}\cdot 0+\mbf1_{\mathrm{Asg_i=Asg_j}}\cdot 0.2 + \mbf1_{Y_{ij}(t) > 0}\cdot 3
+\end{align*}
+            \item Observed 500 interactions per simulation.
+        \end{itemize}
+    \end{block}
+    \begin{block}{Techniques}
+         Tested Cox Partial Likelihood, Homogeneous Poisson Process, Truncated Poisson Process. Augmentation
+         not shown.
+     \end{block}
+\end{frame}
+
+\begin{frame}{Simulation Study}
+    \begin{block}{Estimation}
+    \centering
+    \includegraphics[width=\linewidth]{images/ests_cropped}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}{Simulation Study}
+    \begin{block}{Coverage of 95\% Interval}
+    \centering
+    \includegraphics[width=\linewidth]{images/coverage_cropped}
+\end{block}
+\end{frame}
+
+\begin{frame}{Discussion} 
+    \begin{block}{Optimality-Robustness tradeoff}
+        \begin{itemize}
+            \item Truncation throws away some data, but sensitivity of augmentation strategies
+                can make this a fair trade.
+            \item Common theme in Bayesian and Likelihood inference when high-dimensional nuisance parameters
+                are present.
+            \item Flexible, estimable sparse graph process models could help.
+        \end{itemize}
+     \end{block}
+     \pause
+
+     \begin{block}{Asymptotic Constraints are Different}
+         \begin{itemize}
+             \item Unusual regime for statisticians. More familiar in Stat Mech.
+             \item Makes the embedding role of models paramount.
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+ \begin{frame}{Discussion}
+    \begin{block}{Networks are Hard!}
+        \begin{itemize}
+            \item Had to redefine the estimand for simple models to be useful.
+            \item Solutions presented here have limited applicability for prediction, binary networks.
+            \item Familiar invariance properties (e.g., exchangeability) are probably inadequate descriptions.
+            \item Structural information necessary beyond actor-level attributes.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+
+\begin{frame}{}
+    \begin{center}
+        \Huge Thanks!
+    \end{center}
+\end{frame}
+
+
+
+
+\end{document}
+
+\begin{frame}{Modeling the Risk Set}
+    \begin{block}{Data Augmentation}
+        \[
+            P(\bm Y \mid \bm X) = \sum_{\bm R : \bm Y \in \bm R} P(\bm Y \mid \bm R, \bm X) P(\bm R \mid \bm X)
+        \]
+    \end{block}
+    \pause
+    \begin{block}{Example Model: Serially Independent Risk Imputation}
+         \begin{align*}
+             R_{ij}(t) \mid X_{ij}(t) &\sim \mathrm{Bern}(\eta_{ij}(t))\\
+                         \eta_{ij}(t) &\equiv X_{ij}(t)\gamma\\\\
+             Y_{ij}(t) \mid R_{ij}(t), X_{ij}(t), \mc F(t) &\sim \mathrm{PoisProc}(R_{ij}(t) \lambda_{ij}(t))\\
+                   \log \lambda_{ij}(t) &\equiv \log \lambda_0(t) + X_{ij}(t)\beta
+         \end{align*}
+     \pause
+         Inference via EM, using Cox Partial Likelihood and integrating over $\bm R$.
+     \end{block}
+ \end{frame}
+
+ \begin{frame}{A Failed Fix}
+     \begin{block}{Problems}
+         \begin{itemize}
+             \item Regardless of augmentation (independent, exchangeable, Markovian), strange
+                 effects still remained.
+                 \pause
+             \item Behavior highly sensitive to regularization on $\gamma$.
+                 \pause
+             \item Computationally prohibitive, with slow convergence.
+         \end{itemize}
+     \end{block}
+     \pause
+     \begin{block}{Explanations?}
+         \begin{itemize}
+             \item Dependency structure needs to be stronger? \pause \alert{Perhaps.}
+                 \pause
+             \item Cox Partial Likelihood lacks information necessary? \pause \alert{Lossy, not fatal.}
+                 \pause
+             \item Not all augmentations are sparsity-compatible. \pause \alert{No simple ones are.}
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+
+\begin{frame}{The Hail Mary: Truncation}
+    \begin{block}{Truncation vs Augmentation}
+        \begin{itemize}
+            \item Zeros are the only ``confounded'' interactions that require special treatment.
+                \pause
+            \item Truncation approach ignores zeros, adjusts likelihood.
+        \end{itemize}
+    \end{block}
+                \pause
+    \begin{block}{Formally}
+        Augmentation:
+            \[
+                P(\bm Y \mid \bm X) = \sum_{\bm R : \bm Y \in \bm R} P(\bm Y \mid \bm R, \bm X) P(\bm R \mid \bm X)
+            \]
+            \pause
+        Truncation:
+            \[
+                P(\bm Y \mid \bm X)  = P(\bm Y \mid \bm X, \bm 1_{\bm Y \neq 0})
+                \cancel{\sum_{\bm R : \bm Y \in \bm R} P(\bm 1_{\bm Y \neq 0}  \mid \bm R, \bm X) P(\bm R \mid \bm X)}
+            \]
+    \end{block}
+\end{frame}
+
+\begin{frame}{Truncation for Poisson Processes}
+    For homogeneous Poisson Process:
+    \begin{align*}
+        L^{tr}(\bm Y \mid \beta) &= \underbrace{\prod_{ij : Y_{ij}(T) > 0}}_{\textrm{Implies $R_{ij}=1$}} \frac{\overbrace{\exp\left(-\lambda_{ij} T\right)
+\prod_{k=1}^{Y_{ij}(T)} \lambda_{ij}\left(t_{ij}^{(k)}\right)}^{P(Y_{ij} \mid R_{ij}=1)}}
+{\underbrace{1-\exp( -\lambda_{ij} T)}_{1-P(Y_{ij}(T) = 0 \mid R_{ij}=1)}}
+    \end{align*}
+    \pause
+
+    For general Poisson Process:
+    \begin{align*}
+        L^{tr}(\bm Y \mid \beta) &= \prod_{ij : Y_{ij}(T) > 0} \frac{\exp\left(-\int_0^T \lambda_{ij}(s) ds\right)
+\prod_{k=1}^{Y_{ij}(T)} \lambda_{ij}\left(t_{ij}^{(k)}\right)}
+{1-\exp\left(-\int_0^T \lambda^*_{ij}(s) ds\right)}
+    \end{align*}
+\end{frame}
+
+\begin{frame}{Truncation Summary}
+    \begin{block}{Truncation Allows...}
+        \begin{itemize}
+        \item Estimation of unconfounded regression parameters.
+        \item Robustness to risk set specification.
+        \item Efficient computation ($\mc O(|\mc E|)$ vs $\mc O(N^2)$ or $\mc O(N|\mc E|)$).
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{More Questions than Answers}
+    \begin{block}{Why?}
+        \begin{itemize}
+            \item What makes regression in the sparse network context so different? 
+                \pause
+            \item How do the standard models fail in general?
+                \pause
+            \item Why didn't the augmentation strategy work?
+                \pause
+            \item Is there a principle behind truncation?
+        \end{itemize}
+    \end{block}
+    \pause
+    \begin{center}To answer, we need to start at the very beginning.\end{center}
+\end{frame}
+
+\begin{frame}{Roadmap to Some Answers}
+    \begin{block}{Framework}
+    \begin{itemize}
+        \item Defining the exact estimation problem.
+        \item Defining basic statistical concepts in this context.
+        \item Specifying the general class of models to study.
+    \end{itemize}
+    \end{block}
+    \pause
+    \begin{block}{Answers}
+        \begin{itemize}
+            \item Identify what makes networks special.
+            \item Contradictions and sensitivities in augmentation schemes.
+            \item Principles behind truncation schemes.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Finite Population or Superpopulation?}
+     \begin{block}{Finite Population}
+         \begin{itemize}
+             \item Draw inferences about this particular set of actors.
+             \item Use case: project these actors into the future.
+             \item $N$ finite, $T \rightarrow \infty$.
+             \item Latent space models, stochastic blockmodels, MMSB, ExGM, etc.
+         \end{itemize}
+     \end{block}
+     \pause
+     \begin{block}{Superpopulation}
+         \begin{itemize}
+             \item Draw inferences about the \alert{population} from which this sample
+                 was drawn.
+             \item Use cases:
+                 \begin{itemize}
+                     \item Compare separate network samples.
+                     \item Predict interactions between another set of actors based on current sample of actors.
+                     \item Pool information between network samples.
+                 \end{itemize}
+             \item Little work. Closest are Shalizi and Rinaldo, Neville.
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+\begin{frame}{Framework: What is a Sample? What is a Population?}
+    \begin{definition}[Generalized Random Graph (Sample)]
+        A \emph{generalized random graph} $G_{V}$ is a graph-like object consisting of
+        an ordered pair $(V, \bm Y)$, where $V$ is a finite set of vertices, and
+        $\bm Y$ is a ${|V| \choose 2}$-dimensional multivariate random object whose components
+        correspond to the unique pairs of elements in $V$.
+    \end{definition}
+    \pause
+    \begin{definition}[Generalized Random Graph Process (Population)]
+        A {generalized random graph process} $G_{\mathbb V}$ is a stochastic process indexed
+        by a countably infinite vertex set $\mathbb V$ whose finite-dimensional distribution for any
+        finite subset $V \subset \mathbb V$ defines a generalized random graph $G_V$ with vertex set $V$.
+    \end{definition}
+ \end{frame}
+
+\begin{frame}{Framework: What does a larger sample look like?}
+ \begin{definition}[Increasing Subgraph Sequence (Asymptotic Regime)]
+        Let $G_{\mathbb V}$ be a generalized random graph process, and 
+        $(V_n)_{n \in \mathbb N}$ be an increasing sequence of subsets of $\mathbb V$ ordered by subset inclusion.
+
+        The induced sequence of generalized random graphs $(G_{V_n})_{n \in \mathbb N}$ is an \emph{increasing subgraph sequence}.
+    \end{definition}
+ \end{frame}
+
+\begin{frame}{Disclaimer}
+     Sampling schemes from here on are assumed to be \alert{ignorable}.
+     That is, \alert{inclusion indicator} $\bm I$ has property
+     \begin{align*}
+         P(\bm I \mid \bm Y, \bm X) &= P(\bm I \mid \bm Y^{obs}, \bm X)
+     \end{align*}
+     Inclusion in sample only depends on observed quantities.
+
+     \begin{example}[Michigan Sample]
+     Sample all inventors with a Michigan home address, as long as we condition
+     on this ``live in Michigan'' indicator in building a model for $\bm Y^{obs}$.
+     \end{example}
+ \end{frame}
+
+ \begin{frame}{Model: What is the model?}
+     \begin{block}{Recall: Risk Set Model}
+     Conditionally Independent Relationship (CIR) model, with augmented form
+         \begin{align*}
+            P(\bm R, \bm Y \mid \bm X) &= P(\bm R \mid \bm X)\prod P(Y_{ij} \mid R_{ij}=1, X_{ij})^{R_{ij}},
+         \end{align*}
+         and integrated form
+         \begin{align*}
+            P(\bm Y \mid \bm X) &= \sum_{R^{mis}} P(\bm R \mid \bm X) \prod_{ij} P(Y_{ij} \mid R_{ij}, X_{ij}).
+         \end{align*}
+         where $R^{mis}$ are the relationship indicators we do not observe.\newline
+         \pause
+     \end{block}
+
+     \begin{block}{Special Cases}
+         \begin{itemize}
+             \item $R_{ij}$'s independent, Conditionally Independent Dyad (CID) model.
+             \item GLM's set $R_{ij}$'s deterministically 1.
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+\begin{frame}{What are we estimating?}
+    \begin{block}{Parameters}
+        \begin{itemize}
+            \item $\beta$ characterizes $P(Y_{ij} \mid R_{ij}, X_{ij})$, or how actors interact with
+                actors they know. \pause \alert{This is what we care about.}
+                \pause
+            \item $\gamma$ characterizes $P(\bm R \mid \bm X)$, or how actors come get to know each other.
+                \pause \alert{This is nuisance, too hard to care about.}
+                \pause
+            \item Implicit in $P(\bm R \mid \bm X)$ is what is means to ``know'' somebody.
+        \end{itemize}
+    \end{block}
+    \pause
+     \begin{block}{Invariance of Superpopulation Parameters}
+         \begin{itemize}
+             \item Conditional distributions $P(Y_{ij} \mid R_{ij}, X_{ij})$ are property of \alert{population},
+                   invariant to (ignorable) sampling scheme.
+             \item Same superpopulation $\Rightarrow$ same $\beta$. 
+             \item \alert{In English,} people should interact with people they know in the same way, regardless of the scale of the sample.
+         \end{itemize}
+     \end{block}
+ \end{frame}
+ 
+ \begin{frame}{What is Sparsity?}
+     \begin{block}{Recall: Sparsity}
+         \begin{itemize}
+             \item Empirically, the larger the sample, the ``sparser'' the sample.
+                 \pause
+             \item Let $A_{ij} = \bm 1_{Y_{ij} \neq 0}$. Heuristically, as $n \rightarrow \infty$,
+                 $\sum A_{ij}/{n \choose 2} \rightarrow 0$.
+                 \pause
+             \item Asymptotic property of the population.
+         \end{itemize}
+     \end{block}
+     \pause
+        \begin{definition}[Sparse Generalized Random Graph Process]
+        Let $G_{\mathbb V}$ be a generalized random graph process.
+        $G_{\mathbb V}$ is
+        \emph{sparse} if and only if for any $\epsilon > 0$ and any $\delta > 0$, there exists an $N$ such that for
+        any subset of vertices $V \in \mathbb V$ with $|V| > N$
+        the corresponding finite dimensional generalized random graph $G_{V}$ has the property $P(D(G_{V}) > \epsilon) < \delta$.
+    \end{definition}
+\end{frame}
+
+\begin{frame}{Sparse Networks are Unusual}
+    Standard augmentation context is underdetermined:
+    \[
+        \underbrace{P(\bm Y \mid \bm X)}_{???} =
+        \sum_{\bm R : \bm Y \in \bm R} \underbrace{P(\bm Y \mid \bm R, \bm X)}_{\textrm{Invariant}}
+        \underbrace{P(\bm R \mid \bm X)}_{\textrm{Guessed}}
+    \]
+    \pause
+
+     Network augmentation context is determined:
+    \[
+        \underbrace{P(\bm Y \mid \bm X)}_{\textrm{Sparse}} =
+        \sum_{\bm R : \bm Y \in \bm R} \underbrace{P(\bm Y \mid \bm R, \bm X)}_{\textrm{Invariant?}}
+        \underbrace{P(\bm R \mid \bm X)}_{\textrm{Guessed}}
+    \]
+    \pause
+
+     Possible contradictions can arise if the guessed augmentation $P(\bm R)$ implies $\beta$ cannot be
+     invariant with $\bm Y$ being sparse. When this contradiction arises, we say the augmentation
+     is \alert{invalid}.
+\end{frame}
+
+\begin{frame}{Invalidity: Simple Example}
+    \begin{block}{Model}
+        Assume given $\bm X$ that the entries of $\bm Y$ are independent, and distributed according to
+        \begin{align*}
+            Y_{ij} \sim \mathrm{Pois}(\exp(\beta_0 + X_{ij} \beta_1)) \qquad \forall i < j < n.
+        \end{align*}
+    \end{block}
+    \begin{block}{Estimators}
+        Ratios of sample means of between- and within-firm interactions.
+        \begin{align}
+            \hat\beta_0 &= \log\left(\frac{\sum Y_{ij}(1-X_{ij})}{\sum(1-X_{ij})}\right)\label{eq:b0}\\
+            \hat\beta_1 &= \log\left(\frac{\sum Y_{ij}X_{ij}}{\sum X_{ij}}
+                           \left / \frac{\sum Y_{ij}(1-X_{ij})}{\sum(1-X_{ij})}\right.\right).\label{eq:b1}
+        \end{align}
+    \end{block}
+ \end{frame}
+ 
+  \begin{frame}{Invalidity: Simple Example}
+    \begin{block}{Sparsity implies...}
+        \begin{itemize}
+            \item At least one sample mean goes to 0.
+                \pause
+            \item E.g., Firm sizes $o(N)$: Ratio in Eq \ref{eq:b0} $\rightarrow 0$, $\hat \beta_0 \rightarrow -\infty$.
+                \pause
+            \item If convergent estimator, contradicts conditional invariance: 
+                $P(Y_{ij} \mid 0)$ and $P(Y_{ij} \mid 1)$ must both depend on $n$.
+                \pause
+        \end{itemize}
+    \end{block}
+    \pause
+    \begin{block}{In English...}
+        \begin{itemize}
+            \item We have assumed all people ``know'' each other.
+            \item If this is true, then the results of ``knowing'' somebody cannot remain stable
+                as the graph gets large while still maintaining sparsity.
+            \item We are estimating a different quantity at different network sizes.
+        \end{itemize}
+    \end{block}
+ \end{frame}
+
+ \begin{frame}{General Invalidity Result} 
+    \begin{theorem}[CIR Augmentation Validity]
+    Under a canonical CIR specification when the population is sparse,
+    the augmentation for estimating $\beta$ is valid only if
+    the assumed population relationship process $\bm R$ is itself sparse.
+    %\begin{proof}
+    %    Given the canonical representation of a CIR model, we know $P(A_{ij} \mid R_{ij}=1, X_{ij}) > 0$ for all $ij$.
+    %    Thus by the law of large numbers, $\sum \bm A / \sum \bm R \rightarrowp c > 0$, so the sparsity rate of $\bm A$
+    %    is the same as the sparsity rate of $\bm R$, and $\bm A$ is only sparse if $\bm R$ is sparse.
+    %\end{proof}
+    \pause
+    \end{theorem}
+    \begin{corollary}[CID Invalidity]
+        Under a CID specification when the population is sparse, if as $N \rightarrow \infty$,
+        the fraction of dyads for which $P(R_{ij}=1 \mid X) > 0$ approaches some $\delta > 0$,
+        the augmentation is invalid for estimating $\beta$.
+    \end{corollary}
+    \pause
+    \begin{corollary}[GLM Invalidity]
+        GLM's constitute a trivial but invalid augmentation for estimating $\beta$.
+    \end{corollary}
+\end{frame}
+
+\begin{frame}{Valid Misspecification}
+    \begin{block}{It gets worse...}
+        \begin{itemize}
+            \item Suppose we specify a sparse relationship process $\bm R$.
+            \item Given $\bm R^{obs}$, say $\bm R^{mis}$ is distributed as $\RmisgivenRobs$.
+            \item Suppose that for all values of $\gamma$, the following holds
+                \begin{align*}
+                        \frac{D(\RmisgivenRobs_0)}{D(\RmisgivenRobs_\gamma)} \stackrel{p}{\rightarrow} S(\gamma) \in [0, \infty].
+                \end{align*}
+                where $\RmisgivenRobs_0$ is the true relationship process and $\RmisgivenRobs_\gamma$ is a
+                member of the family we guessed.
+        \end{itemize}
+    \end{block}
+    \pause
+
+    \begin{theorem}
+        If $S(\gamma)$ estists and is either 0 or $\infty$ for all $\gamma \in \Gamma$, under identification
+        conditions, the MLE for $\hat \beta$ is inconsistent.
+    \end{theorem}
+\end{frame}
+
+\begin{frame}{More Common than You'd Hope}
+    \begin{example}[One specification/truth combo]
+        We assume a family of models $\bm R_\Gamma$ whose density scales as a power law for all $\gamma$.
+        The true generative process has density that scales as $\log N/N$. 
+    \end{example}
+    \pause
+
+    \begin{block}{Sparse processes}
+        Difficulties
+             \begin{itemize}
+                 \item Fixed decay rates.
+                     \pause
+                 \item Order dependence.
+                 \item Etc...
+             \end{itemize}
+             \pause
+             Can we circumvent this?
+     \end{block}
+ \end{frame}
+        
+\end{document}
+
+\end{document}
+ 
+ \begin{frame}{Disclaimer}
+     Sampling schemes from here on are assumed to be \alert{ignorable}.
+     That is, \alert{inclusion indicator} $\bm I$ has property
+     \begin{align*}
+         P(\bm I \mid \bm Y, \bm X) &= P(\bm I \mid \bm Y^{obs}, \bm X)
+     \end{align*}
+     Inclusion in sample only depends on observed quantities.
+     \pause
+
+     \begin{example}[Michigan Sample]
+     Sample all inventors with a Michigan home address, as long as we condition
+     on this ``live in Michigan'' indicator in building a model for $\bm Y^{obs}$.
+     \end{example}
+ \end{frame}
+
+ \begin{frame}{Insight 1: Sample Invariance}
+     \begin{block}{Regression Assumption}
+         \begin{itemize}
+             \item Conditional distributions $P(Y_{ij} \mid X_{ij})$ are property of \alert{population},
+                   invariant to (ignorable) sampling scheme.
+             \item Same superpopulation $\Rightarrow$ same $\theta$. 
+         \end{itemize}
+     \end{block}
+     \pause
+     \begin{block}{Sparse Reality}
+         \begin{itemize}
+             \item Empirically, the larger the sample, the ``sparser'' the sample.
+                 \pause
+             \item Let $A_{ij} = \bm 1_{Y_{ij} \neq 0}$. Heuristically, as $n \rightarrow \infty$,
+                 $\sum A_{ij}/{n \choose 2} \rightarrow 0$.
+                 \pause
+             \item Asymptotic property of the population.
+         \end{itemize}
+     \end{block}
+     \pause
+     \begin{block}{Question}
+         \begin{itemize}
+             \item \alert{Estimand}: Is $P(A_{ij} \mid X_{ij})$ invariant between samples if population sparse?
+             \item \alert{Estimators}: Can we estimate such invariant properties?
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+ \begin{frame}{Insight 1: Sample? Population?}
+    \begin{definition}[Generalized Random Graph (Sample)]
+        A \emph{generalized random graph} $G_{V}$ is a graph-like object consisting of
+        an ordered pair $(V, \bm Y)$, where $V$ is a finite set of vertices, and
+        $\bm Y$ is a ${|V| \choose 2}$-dimensional multivariate random object whose components
+        correspond to the unique pairs of elements in $V$.
+    \end{definition}
+    \pause
+    \begin{definition}[Generalized Random Graph Process (Population)]
+        A {generalized random graph process} $G_{\mathbb V}$ is a stochastic process indexed
+        by a countably infinite vertex set $\mathbb V$ whose finite-dimensional distribution for any
+        finite subset $V \subset \mathbb V$ defines a generalized random graph $G_V$ with vertex set $V$.
+    \end{definition}
+ \end{frame}
+
+ \begin{frame}{Insight 1: Sparsity? Asymptotics?}
+        \begin{definition}[Sparse Generalized Random Graph Process]
+        Let $G_{\mathbb V}$ be a generalized random graph process.
+        $G_{\mathbb V}$ is
+        \emph{sparse} if and only if for any $\epsilon > 0$ and any $\delta > 0$, there exists an $N$ such that for
+        any subset of vertices $V \in \mathbb V$ with $|V| > N$
+        the corresponding finite dimensional generalized random graph $G_{V}$ has the property $P(D(G_{V}) > \epsilon) < \delta$.
+    \end{definition}
+    \pause
+ \begin{definition}[Increasing Subgraph Sequence (Asymptotic Regime)]
+        Let $G_{\mathbb V}$ be a generalized random graph process, and 
+        $(V_n)_{n \in \mathbb N}$ be an increasing sequence of subsets of $\mathbb V$ ordered by subset inclusion.
+
+        The induced sequence of generalized random graphs $(G_{V_n})_{n \in \mathbb N}$ is an \emph{increasing subgraph sequence}.
+    \end{definition}
+ \end{frame}
+
+ \begin{frame}{Insight 1: Simple Example Under Sparsity}
+    \begin{block}{Poisson Regression Redux}
+        \begin{align}
+            \hat\theta_0 &= \log\left(\frac{\sum Y_{ij}(1-X_{ij})}{\sum(1-X_{ij})}\right)\label{eq:b0}\\
+            \hat\theta_1 &= \log\left(\frac{\sum Y_{ij}X_{ij}}{\sum X_{ij}}
+                           \left / \frac{\sum Y_{ij}(1-X_{ij})}{\sum(1-X_{ij})}\right.\right).\label{eq:b1}
+        \end{align}
+    \end{block}
+    \pause
+    \begin{block}{Sparsity implies...}
+        \begin{itemize}
+            \item At least one sample mean goes to 0.
+                \pause
+            \item E.g., Firm sizes $o(n)$: Ratio in Eq 3 $\rightarrow 0$, $\hat \theta_0 \rightarrow -\infty$.
+                \pause
+            \item Convergent estimator contradicts conditional invariance --
+                $P(Y_{ij} \mid 0)$ and $P(Y_{ij} \mid 1)$ must both depend on $n$.
+                \pause
+            \item Catch 22: Estimator or estimand, but not both!
+        \end{itemize}
+    \end{block}
+ \end{frame}
+
+\begin{frame}{Cute}
+     \begin{figure}
+     \centering
+     \includegraphics[height=0.75\textheight]{images/heisenberg.jpg}
+     \end{figure}
+ \end{frame}
+
+ \begin{frame}{Insight 1: The Punchline (Estimand)}
+     There can exist no conditonal invariance in conditionally independent dyad models
+     unless some conditional distributions are degenerately zero.
+     \pause
+\begin{theorem}[CID Dense Graph Limit]
+    \label{thm:ciddens}
+    Suppose $G^\theta_\mathbb{V}$ ia a population graph process whose finite dimensional distribution for any index subset
+    $V$ has a conditionally independent dyad distribution parameterized by some fixed paramter vector $\theta$.
+    Let $\mc Z$ be the set of dyads $\{ij : p_{ij}(\theta) =  0\}$, and assume that $C_{\mc Z} \equiv \limsup |\mc Z|/M < 1$.
+
+    Then, there exists a $c > 0$ such that the sequence $(D(G^\theta_V)) \stackrel{p}{\rightarrow} c$ for any increasing subgraph
+    sequence derived from $G^\theta_\mathbb{V}$.
+    \end{theorem}
+
+    \pause
+    \begin{corollary}[Conditions for CID Sparsity]
+    \label{cidspars}
+    A CID graph process can be sparse only if $C_{\mc Z} \rightarrow 1$, that is, only if in the limit all but a vanishing proportion
+    of dyads are deterministically zero.
+    \end{corollary}
+\end{frame}
+
+\begin{frame}{Insight 1: The Punchline (Estimator)}
+    The MLE will converge to a degenerate estimate.
+    \pause
+    \begin{theorem}[MLE Degeneracy]
+        Under regularity conditions, the MLE $\hat \theta$ derived from a CID model will converge
+        to a point in an equivalence class of parameters that minimize the KL divergence between
+        $G_{\mathbb V}^{\theta}$ and the degenerately zero graph process.
+    \end{theorem}
+    \pause
+    \begin{corollary}[GLM Divergence]
+        If the CID model is a GLM that obeys standard regularity conditions, and if there
+        is an intercept in the model $\|\hat \theta\| \rightarrow \infty$.
+    \end{corollary}
+\end{frame}
+
+\begin{frame}{Insight 1: The Punchline (Figures)}
+    \begin{block}{Estimation}
+    \centering
+    \includegraphics[width=\linewidth]{images/ests_cropped}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Insight 1: The Punchline (Figures)}
+\begin{block}{Coverage of 95\% Interval}
+    \centering
+    \includegraphics[width=\linewidth]{images/coverage_cropped}
+\end{block}
+\end{frame}
+
+\begin{frame}{New Direction 1: Where do we go from here?}
+    \begin{block}{Conditionally Independent Relationship (CIR) Models}
+        \begin{itemize}
+            \item An unobservable \alert{relationship} between two actors is a prerequisite for an
+                observable non-zero interaction between them.
+            \item If relationships are sparse $P(Y_{ij} \mid \mathrm{rel}, X_{ij})$ can be invariant!
+        \end{itemize}
+    \end{block}
+        \begin{figure}
+\begin{minipage}{0.35\linewidth}
+        \includegraphics[width=\linewidth]{{images/both.graph_cropped}.pdf}
+    \end{minipage}
+    \hspace{0.5cm}
+    \vrule
+    \hspace{0.5cm}
+    \begin{minipage}{0.35\linewidth}
+        \includegraphics[width=\linewidth]{{images/itx.graph_cropped}.pdf}
+    \end{minipage}
+    \caption{(Left) CIR model, with relationships in gray. (Right) Observed data.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{New Direction 1: CIR Model}
+    Formally, let $\beta$ and $\gamma$ be new parameter vectors.
+\begin{align*}
+    \bm R \mid \bm X, \gamma &\sim F_{\bm R}\\
+    Y_{ij} \mid X_{ij}, R_{ij}, \beta &\sim \left\{ \begin{array}{lcr} \delta_{\bm 0} &\textrm{ if }& R_{ij}=0\\
+                                                       F_Y(X_{ij},\beta) &\textrm{ if }& R_{ij}=1\end{array}\right..
+\end{align*}
+    $\beta$ corresponds most closely to the estimand of interest (in small samples equivalent to $\theta$).
+\end{frame}
+
+
+\begin{frame}{New Direction 1: Estimating the Risk Set}
+    \begin{block}{Inspiration from Cox}
+        Recall the original Cox partial likelihood had a risk set. Collapsing:
+        \begin{align*}
+            PL(\bm Y \mid \theta) &= \prod_t \prod_{ij} \left(\frac{\lambda_{ij}(t)}{\sum_{ij}R_{ij}(t)\lambda_{ij}(t)}\right)^{Y_{ij}(t)}\\,
+                &= \prod_t \prod_{c} \left(\frac{\lambda_{c}(t)}{\sum_{c}S_{c}(t)\lambda_{c}(t)}\right)^{Y_{c}(t)} 
+        \end{align*}
+        \pause
+        Rubin: Integrate over uncertainty in $\bm S$, stupid!
+    \end{block}
+\end{frame}
+
+\begin{frame}{FAIL 2}
+    Not identified.
+    \pause
+    \begin{itemize}
+        \item For each value of $S_c$, can find a value of $\lambda_c$ to obtain same likelihood (scaling invariance group).
+            \pause
+        \item Any ``insight'' gained about the risk set is implicit in the prior
+            and model constraints on $\bm S$.
+            \pause
+        \item Spent a year writing imputation algorithms, and getting back the prior (d'oh!).
+    \end{itemize}
+    \pause
+    Raised questions about sensitivity to priors on $\bm R$ or $\bm S$.
+\end{frame}
+
+\begin{frame}{Insight 2: The General Model}
+    \begin{block}{Simplify and Generalize}
+        \begin{itemize}
+            \item Treat $\mc R$ as static in time and represent as binary network.
+            \item Suppose $\bm R_{\mathbb V}$ is a random graph process following an arbitrary
+                distribution.
+        \end{itemize}
+    \end{block}
+    \pause
+    \begin{block}{Convenient Breakdown}
+    \begin{align*}
+        \bm R \mid \gamma, \bm X &\sim F_{\bm R}(\bm X, \gamma)\\
+        A_{ij} \mid \beta, X_{ij}, R_{ij} &\sim \left\{ \begin{array}{lcr} \delta_{\bm 0} &\textrm{ if }& R_{ij}=0\\
+                                                                   \Bern(p(X_{ij},\beta)) & \textrm{ if } & R_{ij}=1\end{array}\right.\\
+          Y_{ij} \mid \beta,X_{ij},A_{ij} &\sim \left\{ \begin{array}{lcr} \delta_{\bm 0} &\textrm{ if }& A_{ij}=0\\
+                                                  F(X_{ij},\beta) \mid Y_{ij} \neq \bm 0) &\textrm{ if }& A_{ij}=1\end{array}\right.,
+    \end{align*}
+\end{block}
+\end{frame}
+
+\begin{frame}{Insight 2: ``Principled'' Inference}
+    Complete data likelihood
+\begin{align}
+    P(\bm R, \bm A, \bm Y \mid \bm X, \gamma, \beta)
+        &= \begin{aligned}[t]
+    &P(\bm R^{obs} \mid \gamma, \bm X)P(\bm R^{mis} \mid \bm X, \gamma, \bm R^{obs})\times\\
+        &\prod_{i<j\in V} \begin{aligned}[t] &\left(p_{ij}^{A_{ij}}(1-p_{ij})^{(1-A_{ij})}\right)^{R_{ij}}\times\\
+                                             &\times P(Y_{ij} \mid \beta, X_{ij}, Y_{ij}\neq \bm 0)^{A_{ij}}\\
+        \end{aligned}
+        \end{aligned}\label{eq:zlik}\\
+    \intertext{Yielding observed likelihood}
+    P(\bm{R}^{obs}, \bm A, \bm Y \mid \bm X, \gamma, \beta)
+    &= \begin{aligned}[t]
+        &P(\bm{R}^{obs} \mid \bm X, \gamma)\times\\
+        &\left[\sum_{\mc{R}^{mis}} P(\bm{R}^{mis} \mid \bm X, \gamma, \bm{R}^{obs})
+        \prod_{ij}(1-p_{ij})^{R_{ij}(1-A_{ij})}\right]\times\\
+        &\times \prod_{ij} p_{ij}^{A_{ij}} \prod_{ij}P(Y_{ij} \mid \beta, X_{ij}, Y_{ij}\neq\bm 0)^{A_{ij}} \label{eq:obslik}
+    \end{aligned}
+\end{align}
+\end{frame}
+
+\begin{frame}{Insight 2: Downsides (Sensitivity)}
+    \begin{block}{One Interesting Case}
+    Let $\mc R^\Gamma_{\mathbb V}$ be a family of binary graph processes parameterized by $\gamma \in \Gamma$,
+    and let $\bm R_\gamma$ be the process generated by $\gamma$. Let $\bm R_0$ be the true risk generating process.
+    Assume that for all $\gamma$ where $P_\gamma(\sum \bm R_0 > 0) \rightarrow 1$ the risk ratio limit given by
+    \begin{align*}
+        \lim_{M \rightarrow \infty} \frac{\sum \bm R^{mis}_0}{\sum \bm R^{mis}_\gamma} \in [0, \infty]
+    \end{align*}
+    exists and is deterministic.
+\end{block}
+\begin{example}[One specification/truth combo]
+    We assume a family of models $\bm R^\Gamma_{\mathbb V}$ whose density scales as a power law.
+    The true generative process has density that scales exponentially. 
+\end{example}
+\end{frame}
+\begin{frame}{Insign 2: Downsides (Sensitivity Cont)}
+    \begin{theorem}[Risk Sparsity Rate Condition]
+    Let $\mc Y^B_{R}$ be the conditional interaction process indexed by $\beta \in B$. Assume that
+    for all $\beta \in B$, $0 < P(A_{ij} = 1 \mid R_{ij}=1) < 1$.
+
+    Assume that $\bm A$ identifies at least one component of $\beta$.
+
+    Then, a necessary condition for the consistency of $\hat \beta$ is that there must exist at least one
+    $\gamma \in \Gamma$ such that
+    \begin{align*}
+        \lim_{M \rightarrow \infty} \frac{\sum \bm R^{mis}_0}{\sum \bm R^{mis}_\gamma} = c 
+    \end{align*}
+    for some $0 < c < \infty$.
+\end{theorem}
+\pause
+The above example would not work!
+\end{frame}
+
+\begin{frame}{FAIL 3?}
+    \pause
+    Nope! Theory saved me this time.
+\end{frame}
+
+\begin{frame}{Triumph: Partial Data Inference}
+    \begin{block}{Partial Data Inference}
+Transform the data
+$\bm Y \mapsto (\bm A, \bm Y)$, and condition on $\bm A$. Use the conditional likelihood
+\begin{align}
+    P(\bm Y \mid \beta, \gamma, \bm X, \bm R, \bm A) &= \prod_{ij} P(Y_{ij} \mid \beta, X_{ij}, A_{ij})^{A_{ij}}\label{eq:partlik}\\
+                                                     &= P(\bm Y \mid \beta, \bm X, \bm A)\notag
+\end{align}
+\end{block}
+\pause
+\begin{block}{Properties}
+    \begin{itemize}
+            \pause
+        \item Poof! No dependence on missing data.
+            \pause
+        \item Consistent and asymptotically normal!
+            \pause
+        \item Robust!
+            \pause
+        \item Computationally efficient!
+            \pause
+        \item Almost as efficient...
+    \end{itemize}
+\end{block}
+\end{frame}
+\end{document}
+
+
+\begin{frame}
+\begin{align}
+    P(\bm R, \bm A, \bm Y \mid \bm X, \gamma, \theta)
+    &= \begin{aligned}[t]
+        &P(\bm{R}^{obs} \mid \bm X, \gamma) P(\bm{R}^{mis} \mid \bm X, \gamma, \bm{R}^{obs})
+        \prod_{ij}(1-p_{ij})^{R_{ij}(1-A_{ij})}\times\\
+        &\times \prod_{ij} p_{ij}^{A_{ij}} \prod_{ij}P(Y_{ij} \mid \beta, X_{ij}, Y_{ij}\neq\bm 0)^{A_{ij}}
+    \end{aligned}\\
+    \intertext{Yielding observed likelihood}
+    P(\bm{R}^{obs}, \bm A, \bm Y \mid \bm X, \gamma, \beta)
+    &= \begin{aligned}[t]
+        &P(\bm{R}^{obs} \mid \bm X, \gamma) \left[\sum_{\mc{R}^{mis}} P(\bm{R}^{mis} \mid \bm X, \gamma, \bm{R}^{obs})
+        \prod_{ij}(1-p_{ij})^{R_{ij}(1-A_{ij})}\right]\times\\
+        &\times \prod_{ij} p_{ij}^{A_{ij}} \prod_{ij}P(Y_{ij} \mid \beta, X_{ij}, Y_{ij}\neq\bm 0)^{A_{ij}} \label{eq:obslik}
+    \end{aligned}
+\end{align}
+\end{frame}
+
+
+\end{document}
+\begin{frame}
+\begin{block}
+    \begin{align}
+    P(\bm R, \bm A, \bm Y \mid \bm X, \gamma, \theta)
+    &= P(\bm R \mid \gamma, \bm X)P(\bm A \mid \beta, \bm X, \bm R)P(\bm Y \mid \beta, \bm X, \bm A)\\
+    &\propto \begin{aligned}[t]
+        &P(\bm R \mid \gamma, \bm X)\times\\
+        &\prod_{i<j\in V} \begin{aligned}[t] &(\bm 1_{A_{ij}=0})^{(1-R_{ij})} \left(p_{ij}^{A_{ij}}(1-p_{ij})^{(1-A_{ij})}\right)^{R_{ij}}\times\\
+                                             &\times(\bm 1_{Y_{ij}=0})^{(1-A_{ij})}P(Y_{ij} \mid \theta, X_{ij}, Y_{ij}\neq \bm 0)^{A_{ij}}\\
+        \end{aligned}
+        \end{aligned}\label{eq:zlik}
+    \end{align}
+\end{block}
+\end{frame}
+
+
+
+\begin{frame}{Thing}
+        \begin{align}
+            L^{com}(\bm Y, \bm R \mid \bm X, \beta, \gamma) &= P(\bm Y \mid \bm R, \bm X, \beta) P(\bm R \mid \bm X, \gamma)
+        \end{align}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Insight 2: Binary Projection}
+    \begin{block}{Observed Likelihood}
+        \begin{align}
+            L^{com}(\bm Y, \bm R \mid \bm X, \beta, \gamma) &= P(\bm Y \mid \bm R, \bm X, \beta) P(\bm R \mid \bm X, \gamma)
+        \end{align}
+    \end{block}
+\end{frame}
+
+
+\end{document}
+
+\begin{frame}{Takeaways} 
+    \begin{block}{Networks are Different!}
+        \begin{itemize}
+                \pause
+            \item Realistic networks have constraints that make standard independence assumptions dubious.
+                \pause
+            \item Some constraints are fundamentally aysmptotic, which can obscure their influence 
+                on finite samples. 
+                \pause
+            \item Estimands must be evaluated in light of these constraints.
+                \pause
+            \item Estimands and estimators with an invariance to sparsity are desirable.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+
+
+
+
+
+   
+
+
+
+ \begin{frame}{The Work: End Goals}
+     \begin{block}{Goals}
+         Two that we consider here are
+         \begin{itemize}
+             \item \textbf{Between-Sample Comparison}: Did these two samples come from a population with the same network formation parameters?
+             \item \textbf{Out-of-sample Prediction}: Assuming these two samples were generated by the same network formation process, what would
+                 we expect this new network to look like?
+             \item \textbf{For example,} perform inference on network in one county, then
+                 \begin{itemize}
+                     \item test whether conditions in another county are the different, or
+                     \item propagate inference via prediction or pooling.
+                 \end{itemize}
+         \end{itemize}
+     \end{block}
+     \pause
+     \begin{block}{Not Goals}
+         Contrast with case of comparing or predicting within same set of actors.
+     \end{block}
+ \end{frame}
+
+
+
+ \begin{frame}{Problem?}
+     \begin{columns}
+         \column{0.55\linewidth}
+     \begin{block}{With real datasets}
+         \begin{itemize}
+             \item Comparative estimands yield nonsensical results.
+             \item Predictive tasks require calibration to predict correct density.
+             \item Biases become worse as differences in size and composition between
+                 samples under comparison grow.
+         \end{itemize}
+     \end{block}
+          \column{0.45\linewidth}
+        \pause
+         \centering
+         \includegraphics[width=\linewidth]{images/trollface.png}
+     \end{columns}
+ \end{frame}
+
+ \begin{frame}{The Big Claim}
+\begin{block}{Trolled by Sparsity}
+         \begin{itemize}
+             \item Real social network data are sparse.
+             \item Sparsity makes comparative estimands logically inconsistent.
+             \item As a result, the corresponding estimator is statistically inconsistent.
+         \end{itemize}
+     \end{block}
+     \pause
+     \begin{block}{Sparsity is...}
+         \begin{itemize}
+                 \pause
+             \item An asymptotic idea.
+                 \pause
+             \item A property of a whole network.
+                 \pause
+                 \begin{itemize}
+                 \item What is the sample space?
+                 \item What is the population?
+                 \item What is a growing sample?
+                 \end{itemize}
+         \end{itemize}
+     \end{block}
+ \end{frame}
+
+
+ 
+ \begin{frame}{Random Graphs (Definition 1 of 3)}
+     What is the sample space?
+     \pause
+         \begin{definition}[Random Labeled Graph]
+A \emph{random labeled graph} $G$ of size $n$ is an ordered set of objects $(\bm V, \bm Y)$,
+        where $\bm V$ is a set of $n$ labeled vertices, and
+            $\bm Y$ is an ${n \choose 2}$-dimensional multivariate random object whose components
+            correspond to the unique pairs of elements in $\bm V$.
+        \end{definition}
+\end{frame}
+
+\begin{frame}{Random Graph Processes (Definition 2 of 3)}
+    What does it mean to collect a larger sample from the same source?
+    \pause
+        \begin{definition}[Random Labeled Graph Process]
+            A \emph{random labeled graph process} is a stochastic process on the space of labeled graphs
+            $\mc G = \{G_n : n \in \mathbb N\}$ , where $G_n$ is a labeled process graph of size $n$, and $G_{n'}$ is constrained to contain $G_{n}$ for all $n' > n$.
+        \end{definition}
+        \begin{remark}
+        This is more easily defined on the increments of the graph process.
+        \end{remark}
+\end{frame}
+
+\begin{frame}{Sparsity (Definition 3 of 3)}
+    What is sparsity? Why do you talk about it so much?
+    \pause
+    \begin{definition}[Sparse Graph Process]
+        Let $\mc G = \{G_n : n \in \mathbb N\}$ be a random graph process, and let $\bm Y_n$
+        be the generalized adjacency matrix of $G_n$.
+        Define a particular element in the support of $Y_{ij}$ to be zero,
+        and let $A_n$ be the number of nonzero observations in $\bm Y_n$.
+        Then $\mc G$ is a sparse graph process
+        if and only if, as $n \rightarrow \infty$, $A_n/{n \choose 2}
+        \rightarrow 0$ in probability.
+    \end{definition}
+\end{frame}
+
+\begin{frame}{Constructing a Dream Regime}
+    \begin{block}{A Sparse, Infinite Population by Assumption}
+        \pause
+        \begin{itemize}
+        \item The population is an infinite labeled random graph, $G^{pop}$ with
+            actor population $\bm V^{pop}$.
+            \pause
+        \item Define the population distribution in terms of a random labeled
+            graph process $\mc G^{pop} = \{G_M^{pop} : M \in \mathbb N\}$, taking
+            $G^{pop}$ to be a function of the sample path.
+        \pause
+        \item Assume that any random graph sequence $\mc G^{pop}$ used to construct $G^{pop}$ is sparse.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Constructing a Dream Regime}
+    \begin{block}{Construct a Subgraph Sample}
+        \pause
+        \begin{itemize}
+            \item Using any sampling scheme, draw $\bm V^{obs}$, a sample of $n$
+                vertices from $\bm V^{pop}$.
+                \pause
+            \item Observe the elements $\bm Y^{obs}$ from $\bm Y^{pop}$, corresponding to the pairs of actors in $\bm V^{pop}$.
+                \pause
+            \item Construct $G^{obs} = (\bm V^{obs}, \bm Y^{obs})$.
+        \end{itemize}
+    \end{block}
+    \pause
+    \begin{block}{Construct a Sugraph Sample Sequence}
+        \begin{itemize}
+                \pause
+            \item By taking a growing sample of actors from $\bm V^{pop}$, construct the observed random graph process $\mc G^{obs} = \{G^{obs}_n : n \in \mathbb N\}$.
+                \pause
+            \item The observed graph process $\mc G^{obs}$ is also sparse -- if it can be
+                coupled with a valid $\mc G^{pop}$ such that $\frac{n}{m} \rightarrow \epsilon > 0$.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Taking a Step Back}
+    \begin{block}{What was the point of that again?}
+        \pause
+        \begin{itemize}
+                \pause
+            \item Formalized the inclusion of sparsity as an assumpton.
+                \pause
+            \item Concretely, allows us to assume that asymptotically the
+                number of nonzero edges $A_n/{n \choose 2}$ approaches zero.
+                \pause
+            \item More subtley, changes the meaning of the estimand.
+        \end{itemize}
+    \end{block}
+    \pause
+    \begin{block}{Is this relevant?}
+        \pause
+        \begin{example}
+            We have a patent database of several million inventors.
+            The time of observation is fixed, but we can draw a growing sample
+            of inventor collaboration networks from this database, which corresponds
+            to sampling more and more interaction timeseries.
+        \end{example}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Taking the Regime for a Spin: Estimator Edition}
+    \begin{block}{Poisson Regression Redux}
+        Recall the Poisson Regression estimators:
+        \begin{align*}
+            \hat\beta_0 &= \log\left(\frac{\sum Y_{ij}-\sum Y_{ij}X_{ij}}{{n \choose 2}-\sum X_{ij}}\right)\\
+            \hat\beta_1 &= \log\left(\frac{\sum Y_{ij}X_{ij}}{\sum X_{ij}}
+                           \left / \frac{\sum Y_{ij}-\sum Y_{ij}X_{ij}}{{n\choose 2}-\sum X_{ij}}\right.\right).
+        \end{align*}
+    \end{block}
+    \pause
+    \begin{block}{Scenarios}
+        \begin{itemize}
+                \pause
+            \item Assume $P(\bar Y < \infty) \rightarrow 1$.
+                \pause
+            \item Firm sizes finite: ${n \choose 2} - \sum X_{ij} \rightarrow \infty$, and $\hat \beta_0 \rightarrow \infty$.
+                \pause
+            \item Firm sizes scale: both sample means approach 0, $\beta_0$ diverges.
+                \pause
+            \item $\hat \beta_1$ limit determined by rate of change with respect to $n$.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Taking the Regime for a Spin: Estimand Edition}
+    \begin{block}{What is the estimand?}
+        \begin{itemize}
+                \pause
+            \item Sparsity constraint induces \emph{dependence} that makes marginal quantities
+                incomparable.
+                \pause
+            \item $\beta_0$ defines the marginal distribution of a dyad. Under a sparse regime,
+                this is dominated by network sample size.
+                \pause
+            \item $\beta_1$ defines the marginal ratio of means. Under a sparse regime, this
+                is dominated by covariate composition and sample size.
+                    \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Conditionally Independent Dyad (CID) Models}
+    \begin{block}{In General, in the sparse graph limit}
+        \begin{itemize}
+                \pause
+            \item \alert{Estimand Confusion}: Sparsity makes the marginal
+                estimates from conditionally independent models useless between sample.
+                \pause
+        \item \alert{Degeneracy}: 
+            With regularity conditions on the covariates and the conditional distributions of
+            $Y_{ij} | Y_{ij} > 0$, MLE will imply that at least one observed nonzero interaction
+            should be \alert{deterministically} zero.
+            \pause
+        \item \alert{Inconsistency for GLM's}:
+            Under standard GLM link function conditions, this degeneracy implies that coefficient
+            estimates will diverge, and are thus inconsistent.
+    \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Conditionally Independent Relationship (CIR) Models}
+    \begin{block}{One simple option}
+        Imagin that relationships are formed by some complicated process, but that
+        interactions conditional on relationships follow a conditionally independent process.
+    \end{block}
+        \begin{figure}
+\begin{minipage}{0.35\linewidth}
+        \includegraphics[width=\linewidth]{{images/both.graph_cropped}.pdf}
+    \end{minipage}
+    \hspace{0.5cm}
+    \vrule
+    \hspace{0.5cm}
+    \begin{minipage}{0.35\linewidth}
+        \includegraphics[width=\linewidth]{{images/itx.graph_cropped}.pdf}
+    \end{minipage}
+    \caption{(Left) CIR model, with relationships in gray. (Right) Observed data.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{Takeaways} 
+    \begin{block}{Networks are Different!}
+        \begin{itemize}
+                \pause
+            \item Realistic networks have constraints that make standard independence assumptions dubious.
+                \pause
+            \item Some constraints are fundamentally aysmptotic, which can obscure their influence 
+                on finite samples. 
+                \pause
+            \item Estimands must be evaluated in light of these constraints.
+                \pause
+            \item Estimands and estimators with an invariance to sparsity are desirable.
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Thanks!}
+\end{frame}
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}{What regimes do we care about?}
+    \begin{table}
+        \centering
+        \begin{tabular}{L{0.4\textwidth} c L{0.4\textwidth}}
+            Samples never have same size.               & $\Longleftrightarrow$   &   Large $n$ regime.\\\\
+            Sample never have same composition.         & $\Longleftrightarrow$   &   Regression conditions on covariates.\\\\
+            Model is almsot never correctly specified.  & $\Longleftrightarrow$   &   Do not specify particular model.\\\\
+            Data are sparse.                            & $\Longleftrightarrow$   &   Put conditions on data sequence directly.\\\\
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Constructing our Dream Regime}
+    \begin{block}{What is our sample space?}
+    \begin{definition}[Random Labeled Process Graph]
+        A \emph{labeled process graph} $G$ of size $n$ is an ordered set of objects $(\bm V, \bm Y(\cdot))$,
+        where $\bm V$ is a set of $n$ labeled vertices, and
+            $\bm Y(\cdot)$ is an ${n \choose 2}$-dimensional multivariate stochastic processes indexed by $t$ in $[0,T)$ whose components
+            correspond to the unique pairs of elements in $\bm V$.
+    \end{definition}
+    \end{block}
+    \begin{remark}
+        $\bm Y(\cdot)$ plays the role of a generalized adjacency matrix, allowing dyads to take values in ${0,1}$ (e.g., traditional random graph models),
+        edges weights (e.g., count models), or full sample paths (e.g., counting process models).
+    \end{remark}
+\end{frame}
+
+\begin{frame}{Constructing Our Dream Regime}
+    \begin{block}{What generates the population?}
+        \begin{definition}[Random Labeled Process Graph Process]
+            A \emph{random labeled process graph process} is a stochastic process on the space of labeled graph processes
+            $\mc G = (G_1, G_2, \cdots)$ indexed by $n \in \mathbf N$, where $G_n$ is a labeled process graph of size $n$, and $G_{n'}$ is constrained to contain $G_{n}$ for all $n' > n$.
+        \end{definition}
+    \end{block}
+        %\begin{remark}
+        %    I'm going to call these random graph processes from here on out.
+        %\end{remark}
+        \begin{remark}
+            It may be better to define the stochastic process on increments (rows of $\bm Y$) and define $G_n$ as the sample path up to $n$ of the row process $\mc R$,
+            and define the marginal distribution of $G_n$ as the finite-dimensional distribution of $(R_1,\cdots R_n)$.
+        \end{remark}
+\end{frame}
+
+\begin{frame}{Constructing Our Dream Regime}
+    \begin{block}{What is a sparse population?}
+    \begin{definition}[Sparse Graph Process]
+        Let $\mc G = \{G_n : n \in \mathbb N\}$ be a random graph process.
+        Define a particular sample path in the support of this process to be zero.
+        Let $\mc A_m$ be the set of nonzero-edges in $G_n$.
+        Then $\mc G$ is a sparse graph process
+        if and only if, as $n \rightarrow \infty$, $|\mc A_m|/{m \choose 2}
+        \rightarrow 0$ in probability.
+    \end{definition}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Constructing Our Dream Regime}
+    \begin{block}{What is a sample?}
+    \begin{itemize}
+        \item Suppose the population graph is generated by a random graph process $\mc G^{pop}$. Call this the \emph{population graph process}.
+        \item Draw a subgraph from an element of this process, $G^{pop}_M$.
+        \item Ignorably sample $n$ vertices in $G^{pop}_M$ and retain only processes corresponding to these pairs.
+        \item Call the retained graph $G^{obs}$.
+    \end{itemize}
+    In most data analysis problems, we only get to draw one sample $G^{obs}$, and we assume $M$ to be infinite.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Constructing Our Dream Regime}
+    \begin{block}{What is a growing sample?}
+        We can define the \emph{observed graph process} to be a random graph
+        process $\mc G^{obs} = (G^{obs}_1, \cdots, G^{obs}_M)$ indexed by $n \in 1,\cdots M$, where each $G^{obs}_n$ is generated as above.
+    \end{block}
+    \begin{example}
+        We have a patent database of several million inventors.
+        The time of observation is fixed, but we can draw a growing sample
+        of inventor collaboration networks from this database, which corresponds
+        to sampling more and more interaction timeseries.
+    \end{example}
+\end{frame}
+
+\begin{frame}{Large samples of sparse populations are sparse}
+    \begin{lemma}
+        Let $\mc G^{pop}$ be a sparse graph process, and $\mc G^{obs}$ a graph process constructed by sampling growing
+    subgraphs ignorably from $G^{pop}_M$. Then as $M \rightarrow \infty$, $\mc G^{obs}$ will be a sparse graph
+    process.
+    \begin{proof}
+        Because $\mc G^{pop}$ is a sparse graph process, we have that $|\mc A_M|/{M\choose 2} \rightarrow 0$ as $M \rightarrow \infty$.
+        Then, if for each $M$, $\frac{n}{M} > \epsilon$ for some $\epsilon > 0$,
+        \[
+            \frac{|\mc A^{obs}_n|}{{n\choose 2}} \leq
+            \frac{{M\choose 2}}{{n \choose 2}} \frac{|\mc A^{pop}_M|}{{M \choose 2}} \rightarrow
+            \frac{1}{\epsilon^2}\cdot 0
+        \].
+    \end{proof}
+\end{lemma}
+\end{frame}
+
+ \begin{frame}{The Target: Conditionally Independent Dyad Models}
+     \begin{block}{The Good}
+    \begin{itemize}
+        \item Interpretable.
+        \item Projective. The missing data (from the sampling operation) are independent of the observed data.
+    \end{itemize}
+\end{block}
+\begin{block}{The Bad}
+    \begin{itemize}
+        \item In large samples, density converges to a constant by LLN.
+        \item Cannot generate a sparse graph limit.
+        \item If the population is sparse, this induces \emph{degeneracy},
+            where estimated parameters force parts of the data 
+            to become deterministic.
+    \end{itemize}
+\end{block}
+ \end{frame}
+
+ \begin{frame}{Example: Corporate Effect}
+     \begin{block}{Setting}
+         \begin{itemize}
+             \item There is an infinite population of inventors, any subset of which we can observe over a period of length $T$.
+             \item Each inventor works for a single firm for the entire observation period.
+             \item Draw a sample of $n$ inventors and observe the interactions that take place.
+             \item Estimate relative rate interactions occuring within firm vs between firm.
+         \end{itemize}
+     \end{block}
+     \begin{block}{Data}
+         \begin{itemize}
+             \item $\bm Y$ is a matrix of interaction counts.
+             \item Let $\bm X$ be the ``within firm'' covariate matrix so that
+                \begin{align*}
+                X_{ij} \equiv \left\{\begin{array}{ll} 1 & \textrm{if $i$ and $j$ belong to the same firm}\\
+                                                       0 & \textrm{otherwise}\end{array}\right.
+                \end{align*}
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Example: Corporate Effect}
+    \begin{block}{Model}
+        Assume given $\bm X$ that the entries of $\bm Y$ are independent, and distributed according to
+        \begin{align*}
+            Y_{ij} \sim \mathrm{Pois}(\exp(\beta_0 + X_{ij} \beta_1)T) \qquad \forall i < j < n.
+        \end{align*}
+    \end{block}
+    \begin{block}{Estimators}
+\begin{align}
+    \hat\beta_0 &= \log\left(\frac{\sum_{i < j \in \mc X^c} Y_{ij}}{|\mc X^c|T}\right)\label{eq:b0}\\
+    \hat\beta_1 &= \log\left(\frac{\sum_{i < j \in \mc X}Y_{ij}}{|\mc X|T}\right)-\hat\beta_0.\label{eq:b1}
+\end{align}
+\end{block}
+\end{frame}
+
+\begin{frame}{Example: Regime Change}
+    \begin{block}{Assumptions}
+        Sparsity
+        \begin{itemize}
+            \item Recall, $\mc A = \{i,j: Y_{ij} > 0\}$.
+            \item $|\mc A|/{n \choose 2} \rightarrow 0$ in probability as sample grows large.
+        \end{itemize}
+        Finiteness
+        \begin{itemize}
+            \item $P\left(\frac{\sum_{i < j} Y_{ij}}{{n \choose 2}} < \infty \right) = 1$.
+    \end{itemize}
+        Finite Firm Size
+        \begin{itemize}
+            \item $|\mc X| / {n \choose 2} \rightarrow 0$
+        \end{itemize}
+    \end{block}
+    \begin{block}{Implications}
+        \[
+            \hat \beta_0 \rightarrow -\infty \qquad \hat \beta_1 \rightarrow ???
+        \]
+    \end{block}
+\end{frame}
+
+\begin{frame}{General Case}
+    To the board!
+\end{frame}
+
+\end{document}
