@@ -9,20 +9,21 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Alexander D'Amour's Academic Website</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link href="assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="starter-template.css" rel="stylesheet">
+    <link href="theme.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
+    <script src="js/ie-emulation-modes-warning.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -31,48 +32,172 @@
     <![endif]-->
   </head>
 
-  <body>
+  <body role="document">
+   <div class="container" role="main">
+    <div class="row" style="padding:20px">
 
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Project name</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </nav>
-
-    <div class="container">
-
-      <div class="starter-template">
-        <h1>Bootstrap starter template</h1>
-        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+       <div class="hidden-xs col-sm-3 col-md-2" id="sidebar" role="navigation",
+		style = "margin:20px 0 0 0">
+        <ul class="nav nav-pills nav-stacked">
+          <li><a href="#papers">Papers</a></li>
+          <li><a href="#talks">Talks and Media</a></li>
+          <li><a href="#consulting">Consulting</a></li>
+        </ul>
       </div>
 
-    </div><!-- /.container -->
+      <div class="col-xs-10 col-sm-8 col-md-8">
+
+        <div class="row">
+          <img src="headshot.png" class="pull-left" style="margin:20px
+          20px 20px 0; height:140px; width:140px" />
+          <h1>Alexander D'Amour</h1>
+          <p class="lead">
+            Ph.D. Candidate, Department of Statistics, Harvard University<br>
+			damour@fas.harvard.edu<br>
+		  </p>
+		  <p>
+			<a href="damour_CV.pdf">Curriculum Vitae</a>
+		  </p>
+        </div><!-- row -->
+
+		<hr>
+		<div class="row">
+			I am a PhD candidate in the Department of Statistics at Harvard University, where I am advised by <a href="http://www.people.fas.harvard.edu/~airoldi/">Edoardo Airoldi</a>. I am a member of the&nbsp;<a href="http://applied.stat.harvard.edu">Harvard Laboratory for Applied Statistical Methodology &amp; Data Science</a>. I work on a wide variety of Statistics and Machine Learning problems with the goal of developing foundational principles for applied statistics and Data Science that unify themes in design, modeling, inference, and decision rules that cut across application areas and methodologies. I am particularly interested in applied problems that involve large, highly dependent systems that push the boundaries of classical statistical methodology -- for example, those that produce network, event, and spatial data.</p>
+			<p></p>
+			<p>I am a active member of the <a href="http://www.people.fas.harvard.edu/~bornn/xyhoops/" data-url="http://www.people.fas.harvard.edu/~bornn/xyhoops/">XY Research</a>&nbsp;group, which conducts research in sports statistics with a focus on player-tracking data.</p>
+		</div>
+
+		<div class="row"><h2 class="text-muted">Details</h2>
+		<hr>
+		<ul class="list-inline">
+		<li><a href="research_statement.pdf">Research Statement</a>
+		<li><a href="teaching_statement.pdf">Teaching Statement</a>
+		</ul>
+			<p><strong>Dissertation.&nbsp;</strong>My dissertation research is about the statistical analysis of social network data, particularly the logical difficulties that arise from the sparse scaling behavior of social networks. This work spans the full stack arguments and methods that are employed in a scientific investigation of social networks, from the logical role that misspecified models play in an investigation, to new modeling and inference methodologies for drawing predictive and causal inferences from the network data.</p>
+			<p><strong>Applications.&nbsp;</strong>Through my academic and consulting work, I have completed projects in a wide range of fields, including document disambiguation, text analysis, epidemiology, education technology, digital marketing, customer modeling in e-commerce, and credit access in developing economies.</p>
+			<p><strong>Background.</strong>&nbsp;&nbsp;I currently hold AB and SM degrees in Applied Mathematics, also from Harvard University.</p>
+		</div>
+
+		<div class="row">
+		<h2 class="text-muted"><a name="papers"></a>Papers</h2>
+		<hr>
+		<p><span class="lead">Dissertation</span></p>
+		<p>
+			<strong>Misspecification, Sparsity, and Superpopulation Inference for Sparse Social Networks</strong><br>
+			<span class="text-muted">Theoretical characterization of how the sparse scaling of social networks undermines superpopulation investigations when the sparsity is not modeled exactly.
+			Proposes sparsity-invariant modeling and inference methodology.</span><br>
+			<strong>Alexander D'Amour</strong> and Edoardo Airoldi<br>
+			<ul class="list-inline">
+			<li><a href="damour_jobmkt.pdf">Paper</a>
+			<li><a href="JSM_2014.pdf">Slides</a>
+			</ul>
+		</p>
+		<p>
+			<strong>Causal Inference with Sparse Social-Interaction-Valued Outcomes</strong><br>
+			<span class="text-muted">Extension of sparsity-invariant methodology for network data to causal settings.</span><br>
+			<strong>Alexander D'Amour</strong> and Edoardo Airoldi<br>
+			<ul class="list-inline">
+			<li class="text-danger">In preparation.
+			</ul>
+		</p>
+		<p>
+			<strong>Measuring the Causal Effect of the Michigan Anti-trust Reform Act of 1986 on Inventor Collaboration Dynamics in Michigan</strong><br>
+			<span class="text-muted">Sparsity-invariant methodology applied in a causal policy evaluation using the US patent coauthorship network.</span>
+			<strong>Alexander D'Amour</strong>, Edoardo Airoldi, and Lee Fleming<br>
+			<ul class="list-inline">
+			<li class="text-danger">In preparation.
+			</ul>
+		</p>
+		<p>
+			<strong>The Effective Estimand</strong><br>
+			<span class="text-muted">A framework for characterizing the scientific usefulness of an estimator derived from a misspecified model.
+			Generalizes the work on networks to general modeling tasks.</span><br>
+			<strong>Alexander D'Amour</strong> and Edoardo Airoldi<br>
+			<ul class="list-inline">
+			<li class="text-danger">In preparation.
+			</ul>
+		</p>
+
+		<p><span class="lead">To Appear</span></p>
+		<p>
+			<strong>A Multiresolution Stochastic Process Model for Predicting Basketball Possession Outcomes</strong><br>
+			<span class="text-muted">Methodology for computing Expected Possession Value, an instantaneous expected point value for a basketball possession.</span><br> 
+			Daniel Cervone, <strong>Alexander D'Amour</strong>, Luke Bornn, and Kirk Goldsberry<br>
+			<em>JASA</em>
+			<ul class="list-inline">
+			<li><a href="http://arxiv.org/abs/1408.0777">Journal Paper</a>
+			<li><a href="http://www.sloansportsconference.com/?p=13017">Conference Presentation</a>
+			<li><a href="http://grantland.com/features/expected-value-possession-nba-analytics/">Grantland Feature</a>
+			</ul>
+		</p>
+
+		<p><span class="lead">Published</span></p>
+		<p>
+			<strong>Disambiguation and Co-authorship Networks of the U.S. Patent Inventor Database</strong><br>
+			<span class="text-muted">A supervised learning approach to adding unique inventor identifiers to the US patent database.</span><br>
+			G. Li, R. Lai, <strong>Alexander D'Amour</strong>, D. Doolin, Y. Sun, V. Torvik, A. Yu, and L. Fleming<br>
+			<em>Research Policy</em>, 2014.
+			<ul class="list-inline">
+			<li><a href="http://www.sciencedirect.com/science/article/pii/S0048733314000225">Paper</a>
+		    </ul>
+		</p>
+		<p>
+			<strong>Estimating Rates of Carriage Acquisition and Clearance and Competitive Ability for Pneumococcal Serotypes in Kenya With a Markov Transition Model</strong><br>
+			<span class="text-muted">Markov model approach to estimating epideiological properties of <em>pneumococcal</em> serotypes using periodic testing data from Kenyan schoolchildren.</span><br>
+			M. Lipsitch, O. Abdullani, <strong>Alexander D'Amour</strong>, W. Xie, D. Weinberger, E. Tchetgen, and J. Scott<br>
+			<em>Epidemiology</em>, 2012.	
+			<ul class="list-inline">
+			<li><a href="http://www.ncbi.nlm.nih.gov/pubmed/22441543">Paper</a>
+		    </ul>
+		</p>
+		<p>
+			<strong>Improving Major League Park Factor Estimates</strong><br>
+			<span class="text-muted">An ANOVA approach to estimating park factors in Major League Baseball. Written in conjunction with the Harvard Sports Analysis Collective.</span><br>
+			R. Acharya, A. Ahmed, <strong>Alexander D'Amour</strong>, H. Lu, C. Morris, B. Oglevee, A. Peterson, and R. Swift<br>
+			<ul class="list-inline">
+			<li><a href="http://www.degruyter.com/view/j/jqas.2008.4.2/jqas.2008.4.2.1108/jqas.2008.4.2.1108.xml">Paper</a>
+			</ul>
+		</p>
+		</div>
+
+		<div class="row"><a name="talks"></a><h2 class="text-muted">Talks and Media</h2>
+		<hr>
+		<p><strong>Prediction is Not Enough: Designing decision-support statistics for causal inference and attribution</strong><br>
+		<span class="text-muted">Exploration of Statistical applications where the objective requires more than the ability to predict future replications of the observe data stream.</span><br>
+		Invited talk at <em>Lumos Labs</em> in San Francisco, CA<br>	
+		<ul class="list-inline">
+		<li><a href="https://docs.google.com/presentation/d/1qxsMZ2vkOcBsbnDt_GDbm_POVLzNNtAM2ZdfflaVm20/pub?start=false&loop=false&delayms=3000">Slides</a>
+		</ul>
+		</div>
+
+		<div class="row"><a name="consulting"></a><h2 class="text-muted">Consulting</h2>
+		<hr>
+			I field many applied statistical problems from industry in an active Data Science consulting practice. I am a founding partner of&nbsp;<a href="http://www.damyata.co">Damyata, LLC</a>, a consultancy that I founded with two tech industry veterans. Our mission is to establish best practices in Data Science by delivering state-of-the art data-driven systems to our clients. A core part of our mission is to foster academic-industry research partnerships.</p>
+		<p>Former and current consulting clients include
+		<ul>
+		<li><a href="https://www.blueapron.com/">Blue Apron</a>
+		<li><a href="http://www.legendary.com/">Legendary Pictures</a>
+		<li><a href="http://www.firstaccessmarket.com/">First Access</a>
+		<li><a href="http://www.three-ships.com/">Three Ships, Inc</a>
+		<li><a href="https://www.knewton.com/">Knewton, Inc</a>
+		<li><a href="http://www.hsph.harvard.edu/">Harvard T.H. Chan School of Public Health</a>
+		</ul>
+		</div>
+
+	  </div> <!-- col -->
+	</div> <!-- row -->
+
+</div> <!-- /container -->
 
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="../../dist/js/bootstrap.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/docs.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+    <script src="js/ie10-viewport-bug-workaround.js"></script>
   </body>
 </html>
-
-
