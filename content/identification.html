@@ -197,16 +197,16 @@ To summarize, for any fixed vector of parameters <span class="math inline">\((\a
 <div id="example-of-asymptotic-behavior" class="section level2">
 <h2>Example of Asymptotic Behavior</h2>
 <p>The ignorance region does not in general disappear in the large sample (large-<span class="math inline">\(n\)</span>) or large treatment number (large-<span class="math inline">\(m\)</span>) limits. To see this for the large-<span class="math inline">\(n\)</span> limit, note that we have constructed the ignorance region above from population quantities, not sample quantities, so the calculations in the previous section already take place in the infinite-data limit. For the large-<span class="math inline">\(m\)</span> limit, we construct a simple example here where the ignorance region maintains the same (multiplicative) size even as <span class="math inline">\(m\)</span> goes to infinity.</p>
-<p><span class="math inline">\(Y\)</span> here is a scalar outcome, the <span class="math inline">\(m\)</span>-vector <span class="math inline">\(X\)</span> is a set of treatments, and the latent variable <span class="math inline">\(Z\)</span> is some background characteristic that drives both treatments and outcomes. In many applications, we expect the limit where <span class="math inline">\(m \rightarrow \infty\)</span> to be representative of what might occur in a real data analysis problem. This motivates our asymptotic setup, where we consider a sequence of problems where the number of SNP’s analyzed in each problem is increasing in the sequence. Each problem has its own DGP, with some structural parameters indexed by <span class="math inline">\(m\)</span>: <span class="math inline">\((\alpha_m, \beta_m, \gamma, \sigma^2_Z, \sigma^2_{X,m}, \sigma^2_Y)\)</span>. We keep the scalar parameters not indexed by <span class="math inline">\(m\)</span> fixed.</p>
+<p><span class="math inline">\(Y\)</span> here is a scalar outcome, the <span class="math inline">\(m\)</span>-vector <span class="math inline">\(X\)</span> is a set of treatments, and the latent variable <span class="math inline">\(Z\)</span> is some background characteristic that drives both treatments and outcomes. In many applications, we expect the limit where <span class="math inline">\(m \rightarrow \infty\)</span> to be representative of what might occur in a real data analysis problem. This motivates our asymptotic setup, where we consider a sequence of problems where the number of treatments analyzed in each problem is increasing in the sequence. Each problem has its own DGP, with some structural parameters indexed by <span class="math inline">\(m\)</span>: <span class="math inline">\((\alpha_m, \beta_m, \gamma, \sigma^2_Z, \sigma^2_{X,m}, \sigma^2_Y)\)</span>. We keep the scalar parameters not indexed by <span class="math inline">\(m\)</span> fixed.</p>
 <p>We will consider the marginal variance of each <span class="math inline">\(X\)</span> to be fixed, so for some fixed scalar <span class="math inline">\(s^2_0\)</span>, for each problem <span class="math inline">\(m\)</span>, <span class="math display">\[
 \sigma^2_{X,m} =\mathbb{1}_{m\times 1} s^2_0.
 \]</span></p>
-<p>Likewise, we expect the marginal variance of <span class="math inline">\(Y\)</span> to be relatively stable, no matter how mwny SNP’s we choose to analyze. Given our setup, this means that if the number of SNP’s is large, the effect of each individual SNP on average needs to become smaller as <span class="math inline">\(m\)</span> grows large, or else the variance of <span class="math inline">\(Y\)</span> would increase in <span class="math inline">\(m\)</span> (this is clear from the specification of <span class="math inline">\(\Sigma_{YY}\)</span>). To handle this, we fix some constant scalars <span class="math inline">\(a_0\)</span> and <span class="math inline">\(b_0\)</span> assume that, for problem <span class="math inline">\(m\)</span>, <span class="math display">\[
+<p>Likewise, we expect the marginal variance of <span class="math inline">\(Y\)</span> to be relatively stable, no matter how mwny treatments we choose to analyze. Given our setup, this means that if the number of treatments is large, the effect of each individual treatment on average needs to become smaller as <span class="math inline">\(m\)</span> grows large, or else the variance of <span class="math inline">\(Y\)</span> would increase in <span class="math inline">\(m\)</span> (this is clear from the specification of <span class="math inline">\(\Sigma_{YY}\)</span>). To handle this, we fix some constant scalars <span class="math inline">\(a_0\)</span> and <span class="math inline">\(b_0\)</span> assume that, for problem <span class="math inline">\(m\)</span>, <span class="math display">\[
 \alpha_m = \mathbb{1}_{m\times 1} \cdot a_0 / \sqrt{m};\quad 
 \beta_m = \mathbb{1}_{m\times 1} \cdot b_0 / \sqrt{m}.
 \]</span></p>
 <p>Thus, as <span class="math inline">\(m \rightarrow \infty\)</span>, the norm of <span class="math inline">\(\alpha_m\)</span> and the inner product <span class="math inline">\(\alpha_m' \beta_m\)</span>, which appear in the expression for the marginal variance of <span class="math inline">\(Y\)</span>, <span class="math inline">\(\Sigma_{YY}\)</span>, remain fixed.</p>
-<p><em>Note: This is not the only way to maintain stable variance in <span class="math inline">\(Y\)</span> as <span class="math inline">\(m\)</span> increases. In particular, one could specify the sequence of coefficience <span class="math inline">\(\alpha^{(k)}\)</span> for each subsequent SNP added to the analysis if one wanted to model the case where an investigator is sequentially adding SNP’s from the same underlying DGP. Our setup here is simpler.</em></p>
+<p><em>Note: This is not the only way to maintain stable variance in <span class="math inline">\(Y\)</span> as <span class="math inline">\(m\)</span> increases. In particular, one could specify the sequence of coefficience <span class="math inline">\(\alpha^{(k)}\)</span> for each subsequent treatment added to the analysis if one wanted to model the case where an investigator is sequentially adding SNP’s from the same underlying DGP. Our setup here is simpler.</em></p>
 <p>Under this setup, the interval of valid values for the latent scaling factor <span class="math inline">\(c\)</span> remains fixed for any value of <span class="math inline">\(m\)</span>, because this interval only depends on inner products and norms of <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> vectors. Thus, we can fix <span class="math inline">\(c\)</span> at some valid in this interval, and examine how the corresponding shift vector <span class="math inline">\(\Delta_{\beta, m}(c)\)</span> behaves as <span class="math inline">\(m\)</span> grows large. The components of the shift <span class="math inline">\(\Delta_{\beta, m}(c)\)</span> scale as <span class="math inline">\(m^{-1/2}\)</span>. <span class="math display">\[
 \begin{align}
 \Delta_{\beta,m}(c) &amp;= \Sigma_{XX}^{-1}\alpha_m \cdot \gamma\sigma^2_Z\left(1-\frac{1}{c}\right)\\
@@ -265,9 +265,9 @@ make_covmat &lt;- function(alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y){
 print(cov(cbind(t(mmdat$X), mmdat$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covariance:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.209027 1.210408  8.232489
-## [2,] 1.210408 3.208835  8.222497
-## [3,] 8.232489 8.222497 59.767370</code></pre>
+## [1,] 3.186320 1.198715  8.164322
+## [2,] 1.198715 3.209849  8.227705
+## [3,] 8.164322 8.227705 59.819805</code></pre>
 <pre class="r"><code># Theoretical covariance matrix from structural model
 XX_theory &lt;- alpha %*% t(alpha) * sigma2_Z + diag(sigma2_X)
 XY_theory &lt;- XX_theory %*% beta + sigma2_Z * gamma * alpha
@@ -329,9 +329,9 @@ mmdat1 &lt;- gendat2(N, alpha * hi_par$cc, hi_par$beta1, gamma,
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from High-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.199013 1.185116  8.163026
-## [2,] 1.185116 3.195283  8.209966
-## [3,] 8.163026 8.209966 59.848745</code></pre>
+## [1,] 3.216720 1.196075  8.244606
+## [2,] 1.196075 3.190194  8.219042
+## [3,] 8.244606 8.219042 60.111276</code></pre>
 <pre class="r"><code># Do the same for the low-end of cc.
 Sigma_lo &lt;- make_covmat(alpha * lo_par$cc, lo_par$beta1, gamma, sigma2_Z / lo_par$cc^2,
                         sigma2_X, lo_par$sigma2_Y1)
@@ -348,9 +348,9 @@ print(Sigma_lo[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from Low-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.205588 1.195161  8.184561
-## [2,] 1.195161 3.212181  8.207155
-## [3,] 8.184561 8.207155 59.839720</code></pre>
+## [1,] 3.200868 1.193728  8.201352
+## [2,] 1.193728 3.197854  8.225460
+## [3,] 8.201352 8.225460 60.187527</code></pre>
 <p>Examine the extreme parameter estimates:</p>
 <pre class="r"><code>res &lt;- rbind(c(beta[1], hi_par$beta1[1], lo_par$beta1[1]),
             c(1, hi_par$beta[1] / beta[1], lo_par$beta1[1] / beta[1]))
@@ -474,7 +474,8 @@ print(lapply(ss_ignorance, function(x) round(x, 3)))</code></pre>
 <h1>Takeaways</h1>
 <div id="latent-variable-identification-and-causal-identification" class="section level2">
 <h2>Latent Variable Identification and Causal Identification</h2>
-<p>We have shown in a very simple, concrete case that causal effects cannot be identified in general in the presence of a latent confounder, even if that confounder is shared by an infinite number of treatments. Here, we examined a simple DGP where the structural equations were all linear with Gaussian noise. In this case, there is no causal point identification because the latent factor model itself is not identified: there is a free scale latent parameter <span class="math inline">\(c\)</span>, and this scale parameter matters because it determines how much of the variation in the outcome results from the latent confounder versus from the observed treatments. In more general contexts, the ignorance region can have much more complex structure, as there are many more unobservable degrees of freedom that can combine to explain the same observable data distribution. Thus, making the model more general here is not a solution: in our analysis, we considered a well-specified model, and even in that small model class, we had noidentification.</p>
+<p>We have shown in a very simple, concrete case that causal effects cannot be identified in general in the presence of a latent confounder, even if that confounder is shared by an infinite number of treatments. Here, we examined a simple DGP where the structural equations were all linear with Gaussian noise. In this case, there is no causal point identification because the latent factor model itself is not identified: there is a free scale latent parameter <span class="math inline">\(c\)</span>, and this scale parameter matters because it determines how much of the variation in the outcome results from the latent confounder versus from the observed treatments.</p>
+<p>In more general contexts, the ignorance region can have much more complex structure, as there are many more unobservable degrees of freedom that can combine to explain the same observable data distribution. Thus, making the model more general here is not a solution: in our analysis, we considered a well-specified model, and even in that small model class, we had noidentification.</p>
 <p>When there is a non-trivial ignorance region (also called “lack of point identification”), consistent estimation is not possible. In standard estimation theory for the MLE and Bayesian compuation (e.g., Bernstein-von Mises), this pathology is ruled out by regularity conditions. The problem is that, in estimating parameters of structural equations, these regularity conditions often do not hold. We have given an example of such a case above. Thus, it is critical that investigators be thorough in establishing sufficient conditions for point identification when claiming that their method can consistently estimate causal effects or structural parameters.</p>
 <p>With latent confounder models, causal identification is possible precisely in the cases where the latent variables are themselves identified. This requires additional conditions on the structural model beyond conditional independence. For example, if there are proxies of the latent confounder available, <a href="https://arxiv.org/abs/1609.08816">Miao et al 2017</a> outlines conditions under which a well-defined inverse exists that maps the observed data distribution to a latent variable distribution. <a href="https://arxiv.org/abs/1705.08821">Louizos et al 2017</a> apply this using machine learning techniques to model the latent confounder as a function of the proxies.</p>
 </div>
