@@ -201,12 +201,13 @@ We cannot distinguish between the true value of the treatment effect vector $\be
 
 ## Simulation
 
+<div class=note>Code in this section is a little raw.</div>
+
 ### Constructing the Ignorance Region for $\beta$
 
 We demonstrate the above example in simulation. We set up the parameters here. We will show in this simulation that the same observed data distribution can be compatible with causal effects of highly variable magnitudes, and of opposite sign.
 
 ```{r}
-options(warn=3)
 # Start with 10 treatments
 m <- 10
 a_0 <- 2
