@@ -1,0 +1,367 @@
+---
+title: "(Non-)Identification in Latent Confounder Models"
+author: Alexander D'Amour
+date: 2018-05-18T21:13:14-05:00
+categories: ['Causal Inference']
+tags: ['Causal Inference', 'Identification']
+---
+
+
+
+<div id="goal" class="section level1">
+<h1>Goal</h1>
+<p>The goal of this notebook is to highlight a critical gap between predictive and causal inference. In particular, we consider the problem of <strong>identification</strong>, which is a central issue in causal inference that does not arise in predictive inference. The causal parameters in a problem are <strong>identified</strong> if the set of causal parameters that generate the observable data are unique.</p>
+<p>If the causal parameters are identified, then they can be estimated if the distribution of the observable data can be estimated. However, if the parameters are not identified, then <strong>even if the distribution of the observable data can be estimated perfectly, the causal parameters cannot be estimated consistently</strong>. Instead, even with infinite data, we can only obtain an <strong>ignorance region</strong> of parameter values to which the observed data give equal support. Less formally, even with infinite data, there will be many causal explanations of the observed data that cannot be distinguished on the basis of the data alone. Often these competing explanations will have different implications for downstream decisions.</p>
+<p>Identification is a <strong>property of the data-generating process</strong>, not a property of the estimation method. Thus, identification problems cannot be addressed by changing the estimation methodology. Resolving identification issues requires changing the data generating process (e.g., running an experiment), adopting assumptions about the data generating process that are untestable in the data alone (e.g., conditional independences between observable and unobservable quantities), or choosing different causal parameters to estimate. Alternatively, it is possible to proceed with <strong>set identified</strong> parameters, so long as the ignorance region does not contain causal parameter values that would change downstream decisions.</p>
+</div>
+<div id="latent-confounder-model-with-multiple-treatment-factors" class="section level1">
+<h1>Latent Confounder Model with Multiple Treatment Factors</h1>
+<p>Consider a problem where we want to assess the causal effect of <span class="math inline">\(m\)</span> “treatments” <span class="math inline">\(X = (X_1, \ldots, X_m)\)</span> (say, SNP’s) on a single outcome Y, but there is a latent confounder <span class="math inline">\(Z\)</span>. Assume that, conditional on <span class="math inline">\(Z\)</span>, each the treatments <span class="math inline">\(X\)</span> are mutually independent of each other. We will assume that <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span>, and <span class="math inline">\(Z\)</span> all have mean zero. This is the simplest possible structure for a latent confounding variable.</p>
+<p>Here, we show a counter-example to the claim that one can, in general, construct a consistent estimate of the structural equation of that generates <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span> in this setting. We consider an extremely simple setting, where all variables are linearly related, and all independent errors are Gaussian. Letting <span class="math inline">\(\epsilon_{w} \sim N(0, \sigma^2_w)\)</span> for each <span class="math inline">\(w \in \{X, Y, Z\}\)</span>, the structural equations for this setting are <span class="math display">\[
+\begin{align}
+Z &amp;:= \epsilon_Z\\
+X &amp;:= \alpha&#39; Z + \epsilon_X\\
+Y &amp;:= \beta&#39;X + \gamma Z + \epsilon_Y
+\end{align}
+\]</span> Here, <span class="math inline">\(\alpha, \beta\)</span> are <span class="math inline">\(m \times 1\)</span> column vectors, and <span class="math inline">\(\gamma\)</span> is a scalar; <span class="math inline">\(\epsilon_X\)</span> is a <span class="math inline">\(m \times 1\)</span> random column vector, and <span class="math inline">\(\epsilon_Y, \epsilon_Z\)</span> are random scalars.</p>
+<p>The covariance matrix can be written as <span class="math display">\[
+\Sigma_{XYZ} = \pmatrix{
+\Sigma_{ZZ} &amp;\Sigma_{ZX} &amp;\Sigma_{ZY}\\
+\Sigma_{XZ} &amp;\Sigma_{XX} &amp;\Sigma_{XY}\\
+\Sigma_{YZ} &amp;\Sigma_{YX} &amp;\Sigma_{YY}}
+\]</span> where <span class="math inline">\(\Sigma_{XX}\)</span> is <span class="math inline">\(m \times m\)</span>, <span class="math inline">\(\Sigma_{XY} = \Sigma{YX}&#39;\)</span> is <span class="math inline">\(m \times 1\)</span>, and <span class="math inline">\(\Sigma_YY\)</span> is <span class="math inline">\(1 \times 1\)</span>.</p>
+<p>The marginal covariance matrix of the observable variables <span class="math inline">\((X,Y)\)</span> is the bottom-right <span class="math inline">\(2 \times 2\)</span> sub-matrix of this matrix. Its entries are defined by: <span class="math display">\[
+\begin{align}
+\Sigma_{XX} &amp;= \alpha \alpha&#39;\sigma^2_Z + \operatorname{diag}(\sigma^2_X)\\
+\Sigma_{XY} &amp;= \Sigma_{XX}\beta + \gamma \sigma^2_Z \alpha\\
+\Sigma_{YY} &amp;= (\beta&#39;\alpha + \gamma)^2 \sigma^2_Z+ \beta&#39; \operatorname{diag}(\sigma^2_X)\beta + \sigma^2_Y
+\end{align}
+\]</span> In these equations, the quantity on the LHS is observable, while the structural parameters on the RHS are unobservable. The goal is to invert these equations and obtain unique values for the structural parameters.</p>
+<p>When <span class="math inline">\(m \geq 3\)</span>, the number of equations exceeds the number of unknonws, but there still exists a family of structural equations with parameters <span class="math display">\[(\alpha_1, \beta_1, \gamma_1, \sigma^2_{Z,1}, \sigma^2_{X,1}, \sigma^2_{Y,1})
+\neq (\alpha, \beta, \gamma, \sigma^2_Z, \sigma^2_X, \sigma^2_Y)\]</span> that induce the same observable covariance matrix. These parmeterizations cannot be distinguished by observed data. We will consider the observation-equivalent parameterizations where: <span class="math display">\[
+\gamma_1 := \gamma\\
+\sigma^2_{X,1} := \sigma^2_{X}
+\]</span></p>
+<p>The key to this argument is that the scale of <span class="math inline">\(Z\)</span> is not identified given <span class="math inline">\(X\)</span>, even when <span class="math inline">\(m \rightarrow \infty\)</span>. This is a well-known non-identification result in confirmatory factor analysis (e.g, Bollen 1989, Chapter 7). We can see this in our example because the expression for <span class="math inline">\(\Sigma_XX\)</span> does not change when <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\sigma^2_Z\)</span> are replaced with the structural parameters <span class="math inline">\(\alpha_1\)</span> and <span class="math inline">\(\sigma^2_{Z,1}\)</span>: <span class="math display">\[
+\begin{align}
+\alpha_1 &amp;:= c \cdot \alpha\\
+\sigma^2_{Z,1} &amp;:= \sigma^2_{Z} / c^2
+\end{align}
+\]</span></p>
+<p>Under this perturbation, we will find a set of parameter values <span class="math inline">\(\beta_1\)</span> that satisfy the <span class="math inline">\(\Sigma_{XY}\)</span> equation. We will write <span class="math inline">\(\beta_1 := \beta + \Delta_\beta\)</span></p>
+<p><span class="math display">\[
+\Sigma_{XX} \beta + \gamma \sigma^2_Z \alpha = \Sigma_{XX} \beta_1 + \gamma_1 \sigma^2_{Z,1}\alpha_1 \\
+\Rightarrow
+\Sigma_{XX} \beta + \gamma \sigma^2_Z \alpha = \Sigma_{XX} \beta_1 + \gamma \sigma^2_{Z}\alpha/c\\
+\Rightarrow
+\Delta_{\beta}(c) := \beta_1 - \beta = \Sigma_{XX}^{-1}\alpha \cdot \gamma\sigma^2_Z\left(1-\frac{1}{c}\right)
+\]</span> <span class="math inline">\(\beta\)</span> can be shifted in the direction of <span class="math inline">\(\Sigma_{XX}^{-1}\alpha\)</span>.</p>
+<p>Valid values of <span class="math inline">\(c\)</span> are constrained by the variance equation. In particular, we just require that <span class="math inline">\(\sigma^2_{Y,1}\)</span> be positive:</p>
+<p><span class="math display">\[
+\begin{equation}
+0 &lt; \sigma^2_{Y,1} = (\beta&#39;\alpha + \gamma)^2 \sigma^2_Z - (\beta_1&#39;\alpha_1 \cdot c+ \gamma_1)^2\sigma^2_Z / c
+ + \beta&#39; \operatorname{diag}(\sigma^2_X)\beta - \beta&#39;_1\operatorname{diag}(\sigma^2_X)\beta_1 + \sigma^2_Y
+ \end{equation}
+\]</span></p>
+To summarize, for any fixed vector of parameters <span class="math inline">\((\alpha, \beta, \gamma, \sigma^2_Z, \sigma^2_X, \sigma^2_Y)\)</span> and any valid scaling factor <span class="math inline">\(c\)</span>, there exists a vector of parameters that induces the same observeable data distribution.
+<span class="math display">\[\begin{align}
+\alpha_1 &amp;= c \cdot \alpha\\
+\beta_1 &amp;= \beta + \Sigma_{XX}^{-1}\alpha \cdot \gamma\sigma^2_Z\left(1-\frac{1}{c}\right)\\
+\gamma_1 &amp;= \gamma\\\\
+
+\sigma^2_{Z,1} &amp;= \sigma^2_Z / c^2\\
+\sigma^2_{X,1} &amp;= \sigma^2_X\\
+\sigma^2_{Y,1} &amp;= (\beta&#39;\alpha + \gamma)^2 \sigma^2_Z - (\beta_1&#39;\alpha_1 \cdot c+ \gamma_1)^2\sigma^2_Z / c
+ + \beta&#39; \operatorname{diag}(\sigma^2_X)\beta - \beta&#39;_1\operatorname{diag}(\sigma^2_X)\beta_1 + \sigma^2_Y
+ \end{align}\]</span>
+<p>We call the set of all such parameter vectors the <strong>ignorance region</strong> in the parameter space because there is no information in the observable data distribution to distinguish between the parameter vectors in this region. They are all equally plausible causal explanations of the observed data.</p>
+<div id="example-of-asymptotic-behavior" class="section level2">
+<h2>Example of Asymptotic Behavior</h2>
+<p>The ignorance region does not in general disappear in the large sample (large-<span class="math inline">\(n\)</span>) or large treatment number (large-<span class="math inline">\(m\)</span>) limits. To see this for the large-<span class="math inline">\(n\)</span> limit, note that we have constructed the ignorance region above from population quantities, not sample quantities, so the calculations in the previous section already take place in the infinite-data limit. For the large-<span class="math inline">\(m\)</span> limit, we construct a simple example here where the ignorance region maintains the same (multiplicative) size even as <span class="math inline">\(m\)</span> goes to infinity.</p>
+<p><span class="math inline">\(Y\)</span> here is a scalar outcome, the <span class="math inline">\(m\)</span>-vector <span class="math inline">\(X\)</span> is a set of treatments, and the latent variable <span class="math inline">\(Z\)</span> is some background characteristic that drives both treatments and outcomes. In many applications, we expect the limit where <span class="math inline">\(m \rightarrow \infty\)</span> to be representative of what might occur in a real data analysis problem. This motivates our asymptotic setup, where we consider a sequence of problems where the number of treatments analyzed in each problem is increasing in the sequence. Each problem has its own DGP, with some structural parameters indexed by <span class="math inline">\(m\)</span>: <span class="math inline">\((\alpha_m, \beta_m, \gamma, \sigma^2_Z, \sigma^2_{X,m}, \sigma^2_Y)\)</span>. We keep the scalar parameters not indexed by <span class="math inline">\(m\)</span> fixed.</p>
+<p>We will consider the marginal variance of each <span class="math inline">\(X\)</span> to be fixed, so for some fixed scalar <span class="math inline">\(s^2_0\)</span>, for each problem <span class="math inline">\(m\)</span>, <span class="math display">\[
+\sigma^2_{X,m} =\mathbb{1}_{m\times 1} s^2_0.
+\]</span></p>
+<p>Likewise, we expect the marginal variance of <span class="math inline">\(Y\)</span> to be relatively stable, no matter how mwny treatments we choose to analyze. Given our setup, this means that if the number of treatments is large, the effect of each individual treatment on average needs to become smaller as <span class="math inline">\(m\)</span> grows large, or else the variance of <span class="math inline">\(Y\)</span> would increase in <span class="math inline">\(m\)</span> (this is clear from the specification of <span class="math inline">\(\Sigma_{YY}\)</span>). To handle this, we fix some constant scalars <span class="math inline">\(a_0\)</span> and <span class="math inline">\(b_0\)</span> assume that, for problem <span class="math inline">\(m\)</span>, <span class="math display">\[
+\alpha_m = \mathbb{1}_{m\times 1} \cdot a_0 / \sqrt{m};\quad 
+\beta_m = \mathbb{1}_{m\times 1} \cdot b_0 / \sqrt{m}.
+\]</span></p>
+<p>Thus, as <span class="math inline">\(m \rightarrow \infty\)</span>, the norm of <span class="math inline">\(\alpha_m\)</span> and the inner product <span class="math inline">\(\alpha_m&#39; \beta_m\)</span>, which appear in the expression for the marginal variance of <span class="math inline">\(Y\)</span>, <span class="math inline">\(\Sigma_{YY}\)</span>, remain fixed.</p>
+<p><em>Note: This is not the only way to maintain stable variance in <span class="math inline">\(Y\)</span> as <span class="math inline">\(m\)</span> increases. In particular, one could specify the sequence of coefficience <span class="math inline">\(\alpha^{(k)}\)</span> for each subsequent treatment added to the analysis if one wanted to model the case where an investigator is sequentially adding SNP’s from the same underlying DGP. Our setup here is simpler.</em></p>
+<p>Under this setup, the interval of valid values for the latent scaling factor <span class="math inline">\(c\)</span> remains fixed for any value of <span class="math inline">\(m\)</span>, because this interval only depends on inner products and norms of <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> vectors. Thus, we can fix <span class="math inline">\(c\)</span> at some valid in this interval, and examine how the corresponding shift vector <span class="math inline">\(\Delta_{\beta, m}(c)\)</span> behaves as <span class="math inline">\(m\)</span> grows large. The components of the shift <span class="math inline">\(\Delta_{\beta, m}(c)\)</span> scale as <span class="math inline">\(m^{-1/2}\)</span>. <span class="math display">\[
+\begin{align}
+\Delta_{\beta,m}(c) &amp;= \Sigma_{XX}^{-1}\alpha_m \cdot \gamma\sigma^2_Z\left(1-\frac{1}{c}\right)\\
+    &amp;= m^{-1/2} \cdot\mathbb{1}_{m\times 1} \cdot a_0  \cdot \gamma \sigma^2_Z\left(1 - \frac{1}{c}\right)
+\end{align}
+\]</span> Recall that the true parameters <span class="math inline">\(\beta_m\)</span> also scale as <span class="math inline">\(m^{-1/2}\)</span>. In particular, the magnitude of the shift relative to the true parameters remains fixed in <span class="math inline">\(m\)</span>. <span class="math display">\[
+\frac{\Delta_{\beta, m}(c)}{\beta_m} = \mathbb{1}_{m\times 1} \cdot \frac{a_0}{b_0}  \cdot \gamma \sigma^2_Z\left(1 - \frac{1}{c}\right)
+\]</span></p>
+<p>Thus, even as <span class="math inline">\(m \rightarrow \infty\)</span>, there is no identification, even asymptotically. We cannot distinguish between the true value of the treatment effect vector <span class="math inline">\(\beta\)</span> from vectors in a fixed region surrounding the true <span class="math inline">\(\beta\)</span>.</p>
+</div>
+<div id="simulation" class="section level2">
+<h2>Simulation</h2>
+<div id="constructing-the-ignorance-region" class="section level3">
+<h3>Constructing the Ignorance Region</h3>
+<p>We demonstrate the above example in simulation. We set up the parameters here. We will show in this simulation that the same observed data distribution can be compatible with causal effects of highly variable magnitudes, and of opposite sign.</p>
+<pre class="r"><code>options(warn=3)
+# Start with 10 treatments
+m &lt;- 10
+a_0 &lt;- 2
+b_0 &lt;- 1
+s2X &lt;- 2
+# Scale coefficients so that the variance of Y stays fixed even as m grows.
+alpha &lt;- rep(a_0, m) / sqrt(m)
+beta &lt;- rep(b_0, m) / sqrt(m)
+gamma &lt;- 2
+
+sigma2_Z &lt;- 3
+sigma2_X &lt;- rep(s2X, m)
+sigma2_Y &lt;- 10
+
+# Number of samples to generate to show that the population calcs are right.
+N &lt;- 1e5</code></pre>
+<p>Some functions for generating data and summaries.</p>
+<pre class="r"><code># Function for generating data. Structural model.
+gendat2 &lt;- function(N, alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y){
+  m &lt;- length(alpha)
+  Z &lt;- rnorm(N, 0, sqrt(sigma2_Z))
+  Zvec &lt;- rep(Z, each=m)
+  X &lt;- matrix(rnorm(m * N, alpha*Zvec, sqrt(sigma2_X)), nr=m)
+  Y &lt;- colSums(as.vector(beta) * X) + gamma * Z + rnorm(N, 0, sqrt(sigma2_Y))
+  list(Z = Z, X = X, Y = Y)
+}
+
+# Function for generating covariance matrix from structural parameters
+make_covmat &lt;- function(alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y){
+  XX_theory &lt;- alpha %*% t(alpha) * sigma2_Z + diag(sigma2_X)
+  YY_theory &lt;- (t(beta) %*% alpha + gamma)^2 * sigma2_Z + t(beta) %*% diag(sigma2_X) %*% beta+ sigma2_Y
+  XY_theory &lt;- XX_theory %*% beta + sigma2_Z * gamma * alpha
+  Sigma_theory &lt;- rbind(cbind(XX_theory, XY_theory), c(as.vector(XY_theory), YY_theory))
+  Sigma_theory 
+}</code></pre>
+<p>Demonstrate data generation. Show that the empirical covariance in large samples matches the theoretical covariances from the structural model. We’ll only print the lower right corner, since that’s the interesting part.</p>
+<pre class="r"><code>mmdat &lt;- gendat2(N, alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y)
+
+{cat(&quot;Empirical Covariance:\n&quot;)
+print(cov(cbind(t(mmdat$X), mmdat$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
+<pre><code>## Empirical Covariance:
+##          [,1]     [,2]      [,3]
+## [1,] 3.187737 1.195874  8.228713
+## [2,] 1.195874 3.187367  8.194329
+## [3,] 8.228713 8.194329 60.141034</code></pre>
+<pre class="r"><code># Theoretical covariance matrix from structural model
+XX_theory &lt;- alpha %*% t(alpha) * sigma2_Z + diag(sigma2_X)
+XY_theory &lt;- XX_theory %*% beta + sigma2_Z * gamma * alpha
+YY_theory &lt;- (t(beta) %*% alpha + gamma)^2 * sigma2_Z + t(beta) %*% diag(sigma2_X) %*% beta+ sigma2_Y
+
+Sigma_theory &lt;- rbind(cbind(XX_theory, XY_theory), c(as.vector(XY_theory), YY_theory))
+{cat(&quot;Theoretical Covariance:\n&quot;)
+print(Sigma_theory[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
+<pre><code>## Theoretical Covariance:
+##          [,1]     [,2]      [,3]
+## [1,] 3.200000 1.200000  8.221922
+## [2,] 1.200000 3.200000  8.221922
+## [3,] 8.221922 8.221922 60.000000</code></pre>
+<p>Construct extreme versions of the shift. Find scaling factors <span class="math inline">\(c\)</span> that are at the endupoints of the valid interval. Here, it turns out that the upper endpoint of the interval is <span class="math inline">\(\infty\)</span>, so substitute in 1000.</p>
+<pre class="r"><code># HAAAAAAAAACK: Need to run in environment set up by previous block
+check_cc &lt;- function(cc, deets=FALSE){
+  # alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y, XX_theory, YY_theory inherited
+  # Construct parameters corresponding to scaling by cc
+  alpha1 &lt;- alpha * cc
+  gamma1 &lt;- gamma
+  beta1 &lt;- beta + sigma2_Z * gamma * (1 - 1 / cc) * solve(XX_theory) %*% alpha
+ 
+  sigma2_X1 &lt;- sigma2_X
+  sigma2_Z1 &lt;- sigma2_Z / cc^2
+  # Compute implied variance of Y residual. This must be positive for cc to be valid.
+  sigma2_Y1 &lt;- YY_theory - ((t(beta1) %*% alpha1 + gamma1)^2 * sigma2_Z1 +
+                              t(beta1) %*% diag(sigma2_X1) %*% beta1)
+  
+  if(deets){
+    return(list(cc=cc, beta1=beta1, sigma2_X1=sigma2_X1, sigma2_Z1=sigma2_Z1, sigma2_Y1=sigma2_Y1))
+  } else {
+    sigma2_Y1
+  }
+}
+
+## Find extreme values of `cc` that satisfy the positive variance condition.
+#hi &lt;- uniroot(check_cc, interval=c(1,100), tol=1e-18)$root
+lo &lt;- uniroot(check_cc, interval=c(0.01,1), tol=1e-18)$root
+
+# Grab parameters corresponding to these 
+hi_par &lt;- check_cc(1000, TRUE)
+lo_par &lt;- check_cc(lo, TRUE)
+
+# Check our work. Construct covariance matrices under the extreme shift.
+# Compare to original covariance matrix.
+Sigma_hi &lt;- make_covmat(alpha * hi_par$cc, hi_par$beta1, gamma, sigma2_Z / hi_par$cc^2,
+                        sigma2_X, hi_par$sigma2_Y1)
+{cat(&quot;Theoretical Covmat from High-End Shift:\n&quot;)
+print(Sigma_hi[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
+<pre><code>## Theoretical Covmat from High-End Shift:
+##          [,1]     [,2]      [,3]
+## [1,] 3.200000 1.200000  8.221922
+## [2,] 1.200000 3.200000  8.221922
+## [3,] 8.221922 8.221922 60.000000</code></pre>
+<pre class="r"><code># Double-check. Show that generated data has similar empirical covariance matrix.
+mmdat1 &lt;- gendat2(N, alpha * hi_par$cc, hi_par$beta1, gamma,
+                  sigma2_Z / hi_par$cc^2, sigma2_X, hi_par$sigma2_Y1)
+{cat(&quot;Empirical Covmat from High-End Shift:\n&quot;)
+print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
+<pre><code>## Empirical Covmat from High-End Shift:
+##          [,1]     [,2]      [,3]
+## [1,] 3.190868 1.193047  8.190219
+## [2,] 1.193047 3.193674  8.213398
+## [3,] 8.190219 8.213398 60.223879</code></pre>
+<pre class="r"><code># Do the same for the low-end of cc.
+Sigma_lo &lt;- make_covmat(alpha * lo_par$cc, lo_par$beta1, gamma, sigma2_Z / lo_par$cc^2,
+                        sigma2_X, lo_par$sigma2_Y1)
+{cat(&quot;Theoretical Covmat from Low-End Shift:\n&quot;)
+print(Sigma_lo[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
+<pre><code>## Theoretical Covmat from Low-End Shift:
+##          [,1]     [,2]      [,3]
+## [1,] 3.200000 1.200000  8.221922
+## [2,] 1.200000 3.200000  8.221922
+## [3,] 8.221922 8.221922 60.000000</code></pre>
+<pre class="r"><code>mmdat1 &lt;- gendat2(N, alpha * lo_par$cc, lo_par$beta1, gamma,
+                  sigma2_Z / lo_par$cc^2, sigma2_X, lo_par$sigma2_Y1)
+{cat(&quot;Empirical Covmat from Low-End Shift:\n&quot;)
+print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
+<pre><code>## Empirical Covmat from Low-End Shift:
+##          [,1]     [,2]      [,3]
+## [1,] 3.194977 1.184898  8.152380
+## [2,] 1.184898 3.198230  8.171263
+## [3,] 8.152380 8.171263 59.663078</code></pre>
+<p>Examine the extreme parameter estimates:</p>
+<pre class="r"><code>res &lt;- rbind(c(beta[1], hi_par$beta1[1], lo_par$beta1[1]),
+            c(1, hi_par$beta[1] / beta[1], lo_par$beta1[1] / beta[1]))
+rownames(res) &lt;- c(&quot;Beta Component Value&quot;, &quot;Percent of Truth&quot;)
+colnames(res) &lt;- c(&quot;True&quot;, &quot;High Shift&quot;, &quot;Low Shift&quot;)
+res</code></pre>
+<pre><code>##                           True High Shift  Low Shift
+## Beta Component Value 0.3162278  0.5870091 -0.1212682
+## Percent of Truth     1.0000000  1.8562857 -0.3834839</code></pre>
+<p>The ignorance region includes an over-estimate of the causal effect by <span class="math inline">\(1.8\times\)</span>, and estimates of the causal effect of opposite sign. Thus, <strong>even if we could characterize the observed data distribution exactly</strong> (including methods that construct a latent representation to explain the observed data), we would have almost no information about the causal process of interest.</p>
+<p>Below, we plot the ignorance region in terms of the effect multiplier, indexing the multiplier by the unidentified scaling factor <span class="math inline">\(c\)</span>. (Code is hidden, but included in the function in the next section.) <img src="/post/identification_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="ignorance-region-as-m-grows-large" class="section level3">
+<h3>Ignorance Region as <span class="math inline">\(m\)</span> Grows Large</h3>
+<p>Wrap up above calculations in a function.</p>
+<pre class="r"><code>compute_ignorance &lt;- function(m, a_0, b_0, gamma, sigma2_Z, s2X, sigma2_Y, plot=FALSE){
+  alpha &lt;- rep(a_0, m) / sqrt(m)
+  beta &lt;- rep(b_0, m) / sqrt(m)
+  sigma2_X &lt;- rep(s2X, m)
+  XX_theory &lt;- alpha %*% t(alpha) * sigma2_Z + diag(sigma2_X)
+  YY_theory &lt;- (t(beta) %*% alpha + gamma)^2 * sigma2_Z + t(beta) %*% diag(sigma2_X) %*% beta+ sigma2_Y
+  
+  check_cc &lt;- function(cc, deets=FALSE){
+    # alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y, XX_theory, YY_theory inherited
+    # Construct parameters corresponding to scaling by cc
+    alpha1 &lt;- alpha * cc
+    gamma1 &lt;- gamma
+    beta1 &lt;- beta + sigma2_Z * gamma * (1 - 1 / cc) * solve(XX_theory) %*% alpha
+   
+    sigma2_X1 &lt;- sigma2_X
+    sigma2_Z1 &lt;- sigma2_Z / cc^2
+    # Compute implied variance of Y residual. This must be positive for cc to be valid.
+    sigma2_Y1 &lt;- YY_theory - ((t(beta1) %*% alpha1 + gamma1)^2 * sigma2_Z1 +
+                                t(beta1) %*% diag(sigma2_X1) %*% beta1)
+    
+    if(deets){
+      return(list(cc=cc, beta1=beta1, sigma2_X1=sigma2_X1, sigma2_Z1=sigma2_Z1, sigma2_Y1=sigma2_Y1))
+    } else {
+      sigma2_Y1
+    }
+  }
+  
+  FIG_MAX &lt;- 10
+  TRUE_MAX &lt;- 10000
+  
+  hi &lt;- tryCatch(uniroot(check_cc, interval=c(1,TRUE_MAX), tol=1e-18)$root,
+                 error=function(e){ TRUE_MAX })
+  lo &lt;- uniroot(check_cc, interval=c(0.01,1), tol=1e-18)$root
+  
+  # Grab parameters corresponding to these 
+  hi_par &lt;- check_cc(hi, TRUE)
+  lo_par &lt;- check_cc(lo, TRUE)
+  
+  if(plot==TRUE){
+    curve(sapply(x, function(cc){ check_cc(cc, TRUE)$beta1[1] / (b_0 / sqrt(m))}),
+          from=lo_par$cc, to=min(hi_par$cc, 10), bty=&#39;n&#39;,
+          xlab=&quot;Unidentified Latent Scaling Factor c&quot;,
+          ylab=&quot;Effect Multiplier&quot;,
+          main=&quot;Ignorance Region as Effect Multiplier&quot;,
+          lwd=3)
+    abline(h=c(0,1), col=&#39;gray&#39;, lty=c(1,2))
+    abline(v=1, col=&#39;gray&#39;)
+    points(1, 1, col=&#39;red&#39;, cex=2, lwd=2)
+    
+    truth_arrow_start &lt;- c(1 + 1, 1 - 0.1)
+    truth_arrow_end &lt;- c(1 + 0.2, 1 - 0.01)
+    arrows(truth_arrow_start[1], truth_arrow_start[2],
+           truth_arrow_end[1], truth_arrow_end[2],
+           lwd=2, length=0.1, col=&#39;red&#39;)
+    text(truth_arrow_start[1], truth_arrow_start[2], pos=4,
+         label=&quot;Truth&quot;, col=&#39;red&#39;)
+    
+    lo_arrow_start &lt;- c(lo_par$cc + 1, lo_par$beta[1] / beta[1] + 0.1)
+    lo_arrow_end &lt;- c(lo_par$cc + 0.1, lo_par$beta[1] / beta[1] + 0.01)
+    arrows(lo_arrow_start[1], lo_arrow_start[2],
+           lo_arrow_end[1], lo_arrow_end[2],
+           lwd=2, length=0.1, col=&#39;blue&#39;)
+    text(lo_arrow_start[1], lo_arrow_start[2], pos=4,
+         sprintf(&quot;%sx&quot;, labels=round(lo_par$beta1[1] / beta[1], 2)), col=&#39;blue&#39;)
+    
+    hi_fig_par &lt;- check_cc(FIG_MAX, TRUE)
+    hi_arrow_start &lt;- c(hi_fig_par$cc - 1, hi_fig_par$beta[1] / beta[1] - 0.15)
+    hi_arrow_end &lt;- c(hi_fig_par$cc + 0.1, hi_fig_par$beta[1] / beta[1] - 0.15)
+    arrows(hi_arrow_start[1], hi_arrow_start[2],
+           hi_arrow_end[1], hi_arrow_end[2],
+           lwd=2, length=0.1, col=&#39;blue&#39;)
+    text(hi_arrow_start[1], hi_arrow_start[2], pos=2,
+         sprintf(&quot;%sx&quot;, labels=round(hi_par$beta1[1] / beta[1], 2)), col=&#39;blue&#39;)
+  }
+  
+  res &lt;- rbind(c(beta[1], hi_par$beta1[1], lo_par$beta1[1], lo_par$cc),
+              c(1, hi_par$beta[1] / beta[1], lo_par$beta1[1] / beta[1], hi_par$cc))
+  rownames(res) &lt;- c(&quot;Beta Component Value&quot;, &quot;Percent of Truth&quot;)
+  colnames(res) &lt;- c(&quot;True&quot;, &quot;High Shift&quot;, &quot;Low Shift&quot;, &quot;Scaling Factor&quot;)
+  res
+}</code></pre>
+<p>Demonstrate that ignorance region does not change on a percent basis, regardless of the value of <span class="math inline">\(m\)</span>.</p>
+<pre class="r"><code>trts &lt;- 10^c(1, 1.5, 2)
+ss_ignorance &lt;- lapply(trts,
+       function(m) compute_ignorance(m, a_0, b_0, gamma, sigma2_Z, s2X, sigma2_Y))
+names(ss_ignorance) &lt;- sprintf(&quot;Treatments: %s&quot;, as.character(round(trts)))
+print(lapply(ss_ignorance, function(x) round(x, 3)))</code></pre>
+<pre><code>## $`Treatments: 10`
+##                       True High Shift Low Shift Scaling Factor
+## Beta Component Value 0.316      0.587    -0.121       3.83e-01
+## Percent of Truth     1.000      1.857    -0.383       1.00e+04
+## 
+## $`Treatments: 32`
+##                       True High Shift Low Shift Scaling Factor
+## Beta Component Value 0.178      0.333    -0.069       3.85e-01
+## Percent of Truth     1.000      1.872    -0.391       1.00e+04
+## 
+## $`Treatments: 100`
+##                      True High Shift Low Shift Scaling Factor
+## Beta Component Value  0.1      0.186    -0.038       3.83e-01
+## Percent of Truth      1.0      1.857    -0.383       1.00e+04</code></pre>
+</div>
+</div>
+</div>
+<div id="takeaways" class="section level1">
+<h1>Takeaways</h1>
+<div id="latent-variable-identification-and-causal-identification" class="section level2">
+<h2>Latent Variable Identification and Causal Identification</h2>
+<p>We have shown in a very simple, concrete case that causal effects cannot be identified in general in the presence of a latent confounder, even if that confounder is shared by an infinite number of treatments. Here, we examined a simple DGP where the structural equations were all linear with Gaussian noise. In this case, there is no causal point identification because the latent factor model itself is not identified: there is a free scale latent parameter <span class="math inline">\(c\)</span>, and this scale parameter matters because it determines how much of the variation in the outcome results from the latent confounder versus from the observed treatments.</p>
+<p>In more general contexts, the ignorance region can have much more complex structure, as there are many more unobservable degrees of freedom that can combine to explain the same observable data distribution. Thus, making the model more general here is not a solution: in our analysis, we considered a well-specified model, and even in that small model class, we had noidentification.</p>
+<p>When there is a non-trivial ignorance region (also called “lack of point identification”), consistent estimation is not possible. In standard estimation theory for the MLE and Bayesian compuation (e.g., Bernstein-von Mises), this pathology is ruled out by regularity conditions. The problem is that, in estimating parameters of structural equations, these regularity conditions often do not hold. We have given an example of such a case above. Thus, it is critical that investigators be thorough in establishing sufficient conditions for point identification when claiming that their method can consistently estimate causal effects or structural parameters.</p>
+<p>With latent confounder models, causal identification is possible precisely in the cases where the latent variables are themselves identified. This requires additional conditions on the structural model beyond conditional independence. For example, if there are proxies of the latent confounder available, <a href="https://arxiv.org/abs/1609.08816">Miao et al 2017</a> outlines conditions under which a well-defined inverse exists that maps the observed data distribution to a latent variable distribution. <a href="https://arxiv.org/abs/1705.08821">Louizos et al 2017</a> apply this using machine learning techniques to model the latent confounder as a function of the proxies.</p>
+</div>
+<div id="alternative-sensitivity-analysis" class="section level2">
+<h2>Alternative: Sensitivity Analysis</h2>
+<p>Because causal effects are not identified in general in the presence of latent confounders, it is common to perform <strong>sensitivity analysis</strong> with latent variable models. In sensitivity analysis, one abandons the goal of obtaining a point estimate of the causal effect, and instead seeks to explore the range of causal conclusions that are compatible with the observed data. Latent variable models commonly used to do this exploration. In particular, one can posit the existence of a latent variable model, and then consider a range of models for the latent variable and mechanisms by which that latent variable could be related to the treatments and outcome. Latent variable sensitivity analysis dates at least as far back as <a href="https://www.jstor.org/stable/2345524">Rosenbaum and Rubin 1983</a>. Bayesian sensitivity analysis (<a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.2711">McCandless et al 2006</a>) follows a similar approach to recent machine learning approaches, and reports posterior uncertainty over the ignorance region, acknowledging that this uncertainty is driven almost purely by the prior distributions. I will be presenting a <a href="https://www.alexdamour.com/content/ACICExtrapolationPoster.pdf">poster at ACIC</a> (joint work with Alex Franks and Avi Feller) outlining a sensitivity analysis approach that explicitly demarcates the identified and unidentified portions of the structural model.</p>
+</div>
+</div>
