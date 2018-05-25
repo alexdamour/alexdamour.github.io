@@ -75,12 +75,12 @@
 <li>Wang and Blei, 2018. Blessings of Multiple Causes (<a href="https://arxiv.org/abs/1805.06826" class="uri">https://arxiv.org/abs/1805.06826</a>)</li>
 <li>Ragananth and Perotte, 2018. Multiple Causal Inference with Latent Confounding (<a href="https://arxiv.org/abs/1805.08273" class="uri">https://arxiv.org/abs/1805.08273</a>)</li>
 </ul>
-<p>These papers explore a setting that departs from the standard “single cause” setting that is widely studied in the causal inference literature, and therefore make a significant contribution. The problems that I highlight below aren’t fatal for the results in these papers, but they do imply that the results need stronger conditions than those presented in the initial drafts. I reached out to the paper’s authors and have had some great, collaborative discussions.</p>
+<p>These papers explore a setting that departs from the standard “single cause” setting that is widely studied in the causal inference literature, and therefore make a significant contribution. The problems that I highlight below aren’t fatal for the results in these papers, but they do imply that the results need stronger conditions than those presented in the initial drafts. I reached out to the papers’ authors and have had some great, collaborative discussions.</p>
 </div>
 <div id="goal-exploring-identification" class="section level1">
 <h1>Goal: Exploring Identification</h1>
 <p>The general goal of this technical note is to highlight an essential gap between predictive and causal inference. We consider the problem of <strong>identification</strong>, which is a central issue in causal inference that does not arise in predictive inference. The causal parameters in a problem are <strong>identified</strong> if the set of causal parameters that could generate the observable data are unique.</p>
-<p>If the causal parameters are identified, then they can be estimated if the distribution of the observable data can be estimated. However, if the parameters are not identified, then <strong>even if the distribution of the observable data can be estimated perfectly, the causal parameters cannot be estimated consistently</strong>. Instead, even with infinite data, we can only obtain an <strong>ignorance region</strong> of parameter values to which the observed data give equal support. Less formally, even with infinite data, there will be many causal explanations of the observed data that cannot be distinguished on the basis of the data alone. Often these competing explanations will have different implications for downstream decisions.</p>
+<p>If the causal parameters are identified, then they can be estimated if the distribution of the observable data can be estimated. However, if the parameters are not identified, then even if the distribution of the observable data can be estimated perfectly, the causal parameters cannot be estimated consistently. Instead, even with infinite data, we can only obtain an <strong>ignorance region</strong> of parameter values to which the observed data give equal support. Less formally, <strong>even with infinite data, there will be many causal explanations of the observed data that cannot be distinguished on the basis of the data alone</strong>. Often these competing explanations will have different implications for downstream decisions.</p>
 <p>Identification is a <strong>property of the data-generating process</strong>, not a property of the estimation method. Thus, identification problems cannot be addressed by changing the estimation methodology. Resolving identification issues requires changing the data generating process (e.g., running an experiment), adopting assumptions about the data generating process that are untestable in the data alone (e.g., conditional independences between observable and unobservable quantities), or choosing different causal parameters to estimate. Alternatively, it is possible to proceed with <strong>set identified</strong> parameters, so long as the ignorance region does not contain causal parameter values that would change downstream decisions.</p>
 </div>
 <div id="latent-confounder-model-with-multiple-treatment-factors" class="section level1">
@@ -227,9 +227,9 @@ make_covmat &lt;- function(alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y){
 print(cov(cbind(t(mmdat$X), mmdat$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covariance:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.186641 1.206052  8.176077
-## [2,] 1.206052 3.191465  8.209846
-## [3,] 8.176077 8.209846 59.921558</code></pre>
+## [1,] 3.215373 1.212631  8.320446
+## [2,] 1.212631 3.219369  8.309782
+## [3,] 8.320446 8.309782 60.379079</code></pre>
 <pre class="r"><code># Theoretical covariance matrix from structural model
 XX_theory &lt;- alpha %*% t(alpha) * sigma2_Z + diag(sigma2_X)
 XY_theory &lt;- XX_theory %*% beta + sigma2_Z * gamma * alpha
@@ -291,9 +291,9 @@ mmdat1 &lt;- gendat2(N, alpha * hi_par$cc, hi_par$beta1, gamma,
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from High-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.219761 1.205855  8.249643
-## [2,] 1.205855 3.191661  8.179753
-## [3,] 8.249643 8.179753 59.995057</code></pre>
+## [1,] 3.179254 1.196336  8.216099
+## [2,] 1.196336 3.199416  8.238635
+## [3,] 8.216099 8.238635 60.187514</code></pre>
 <pre class="r"><code># Do the same for the low-end of cc.
 Sigma_lo &lt;- make_covmat(alpha * lo_par$cc, lo_par$beta1, gamma, sigma2_Z / lo_par$cc^2,
                         sigma2_X, lo_par$sigma2_Y1)
@@ -310,9 +310,9 @@ print(Sigma_lo[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from Low-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.192187 1.199650  8.171929
-## [2,] 1.199650 3.199106  8.197566
-## [3,] 8.171929 8.197566 59.532176</code></pre>
+## [1,] 3.192389 1.197963  8.202513
+## [2,] 1.197963 3.200296  8.228339
+## [3,] 8.202513 8.228339 60.102956</code></pre>
 <p>Examine the extreme parameter estimates:</p>
 <pre class="r"><code>res &lt;- rbind(c(beta[1], hi_par$beta1[1], lo_par$beta1[1]),
             c(1, hi_par$beta[1] / beta[1], lo_par$beta1[1] / beta[1]))

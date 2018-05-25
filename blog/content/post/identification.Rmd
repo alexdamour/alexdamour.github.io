@@ -16,7 +16,7 @@ Note: This post was motivated by recent drafts of several papers about causal in
 
 These papers explore a setting that departs from the standard "single cause" setting that is widely studied in the causal inference literature, and therefore make a significant contribution.
 The problems that I highlight below aren't fatal for the results in these papers, but they do imply that the results need stronger conditions than those presented in the initial drafts.
-I reached out to the paper's authors and have had some great, collaborative discussions.
+I reached out to the papers' authors and have had some great, collaborative discussions.
 </div>
 
 
@@ -28,9 +28,9 @@ We consider the problem of **identification**, which is a central issue in causa
 The causal parameters in a problem are **identified** if the set of causal parameters that could generate the observable data are unique.
 
 If the causal parameters are identified, then they can be estimated if the distribution of the observable data can be estimated.
-However, if the parameters are not identified, then **even if the distribution of the observable data can be estimated perfectly, the causal parameters cannot be estimated consistently**.
+However, if the parameters are not identified, then even if the distribution of the observable data can be estimated perfectly, the causal parameters cannot be estimated consistently.
 Instead, even with infinite data, we can only obtain an **ignorance region** of parameter values to which the observed data give equal support.
-Less formally, even with infinite data, there will be many causal explanations of the observed data that cannot be distinguished on the basis of the data alone.
+Less formally, **even with infinite data, there will be many causal explanations of the observed data that cannot be distinguished on the basis of the data alone**.
 Often these competing explanations will have different implications for downstream decisions.
 
 Identification is a **property of the data-generating process**, not a property of the estimation method.
