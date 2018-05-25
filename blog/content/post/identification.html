@@ -3,27 +3,38 @@ title: "(Non-)Identification in Latent Confounder Models"
 author: Alexander D'Amour
 date: 2018-05-18T21:13:14-05:00
 categories: ['Causal Inference']
-tags: ['Causal Inference', 'Identification']
+tags: ['Causal Inference', 'Identification', 'Technical']
 ---
 
 
 
-<div id="goal" class="section level1">
-<h1>Goal</h1>
-<p>The goal of this notebook is to highlight a critical gap between predictive and causal inference. In particular, we consider the problem of <strong>identification</strong>, which is a central issue in causal inference that does not arise in predictive inference. The causal parameters in a problem are <strong>identified</strong> if the set of causal parameters that generate the observable data are unique.</p>
+<div class="note">
+<p>Note: This post was motivated by recent drafts of several papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding.</p>
+<ul>
+<li>Tran and Blei, 2017. Implicit Causal Models for Genome-wide Association Studies. (<a href="https://arxiv.org/abs/1710.10742" class="uri">https://arxiv.org/abs/1710.10742</a>)</li>
+<li>Wang and Blei, 2018. Blessings of Multiple Causes (<a href="https://arxiv.org/abs/1805.06826" class="uri">https://arxiv.org/abs/1805.06826</a>)</li>
+<li>Ragananth and Perotte, 2018. Multiple Causal Inference with Latent Confounding (<a href="https://arxiv.org/abs/1805.08273" class="uri">https://arxiv.org/abs/1805.08273</a>)</li>
+</ul>
+<p>These papers explore a setting that departs from the standard “single cause” setting that is widely studied in the causal inference literature, and therefore make a significant contribution. The problems that I highlight below aren’t fatal for the results in these papers, but they do imply that the results need stronger conditions than those presented in the initial drafts. I reached out to the paper’s authors and have had some great, collaborative discussions.</p>
+</div>
+<div id="goal-exploring-identification" class="section level1">
+<h1>Goal: Exploring Identification</h1>
+<p>The general goal of this technical note is to highlight an essential gap between predictive and causal inference. We consider the problem of <strong>identification</strong>, which is a central issue in causal inference that does not arise in predictive inference. The causal parameters in a problem are <strong>identified</strong> if the set of causal parameters that could generate the observable data are unique.</p>
 <p>If the causal parameters are identified, then they can be estimated if the distribution of the observable data can be estimated. However, if the parameters are not identified, then <strong>even if the distribution of the observable data can be estimated perfectly, the causal parameters cannot be estimated consistently</strong>. Instead, even with infinite data, we can only obtain an <strong>ignorance region</strong> of parameter values to which the observed data give equal support. Less formally, even with infinite data, there will be many causal explanations of the observed data that cannot be distinguished on the basis of the data alone. Often these competing explanations will have different implications for downstream decisions.</p>
 <p>Identification is a <strong>property of the data-generating process</strong>, not a property of the estimation method. Thus, identification problems cannot be addressed by changing the estimation methodology. Resolving identification issues requires changing the data generating process (e.g., running an experiment), adopting assumptions about the data generating process that are untestable in the data alone (e.g., conditional independences between observable and unobservable quantities), or choosing different causal parameters to estimate. Alternatively, it is possible to proceed with <strong>set identified</strong> parameters, so long as the ignorance region does not contain causal parameter values that would change downstream decisions.</p>
 </div>
 <div id="latent-confounder-model-with-multiple-treatment-factors" class="section level1">
 <h1>Latent Confounder Model with Multiple Treatment Factors</h1>
-<p>Consider a problem where we want to assess the causal effect of <span class="math inline">\(m\)</span> “treatments” <span class="math inline">\(X = (X_1, \ldots, X_m)\)</span> (say, SNP’s) on a single outcome Y, but there is a latent confounder <span class="math inline">\(Z\)</span>. Assume that, conditional on <span class="math inline">\(Z\)</span>, each the treatments <span class="math inline">\(X\)</span> are mutually independent of each other. We will assume that <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span>, and <span class="math inline">\(Z\)</span> all have mean zero. This is the simplest possible structure for a latent confounding variable.</p>
-<p>Here, we show a counter-example to the claim that one can, in general, construct a consistent estimate of the structural equation of that generates <span class="math inline">\(Y\)</span> given <span class="math inline">\(X\)</span> and <span class="math inline">\(Z\)</span> in this setting. We consider an extremely simple setting, where all variables are linearly related, and all independent errors are Gaussian. Letting <span class="math inline">\(\epsilon_{w} \sim N(0, \sigma^2_w)\)</span> for each <span class="math inline">\(w \in \{X, Y, Z\}\)</span>, the structural equations for this setting are <span class="math display">\[
+<div id="structural-model" class="section level2">
+<h2>Structural Model</h2>
+<p>Consider a problem where we want to assess the causal effect of <span class="math inline">\(m\)</span> “treatments” <span class="math inline">\(X = (X_1, \ldots, X_m)\)</span> (say, SNP’s) on a single outcome Y, but there is a latent confounder <span class="math inline">\(Z\)</span>. Assume that, conditional on <span class="math inline">\(Z\)</span>, each the treatments <span class="math inline">\(X\)</span> are mutually independent of each other. We will assume that <span class="math inline">\(X\)</span>, <span class="math inline">\(Y\)</span>, and <span class="math inline">\(Z\)</span> all have mean zero. Our general goal is to understand the mechanistic relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> (a notion that’s explained nicely in <a href="http://www.inference.vc/untitled/">this post</a> by Ferenc Huszár).</p>
+<p>Here, we consider a very simple model of latent confounding and provide a counter-example to the claim that one can, in general, construct a consistent estimate of the structural relationship between <span class="math inline">\(Y\)</span> and <span class="math inline">\(X\)</span> in this setting. We consider an extremely simple setting, where all variables are linearly related, and all independent errors are Gaussian. Letting <span class="math inline">\(\epsilon_{w} \sim N(0, \sigma^2_w)\)</span> for each <span class="math inline">\(w \in \{X, Y, Z\}\)</span>, the structural equations for this setting are <span class="math display">\[
 \begin{align}
 Z &amp;:= \epsilon_Z\\
 X &amp;:= \alpha&#39; Z + \epsilon_X\\
 Y &amp;:= \beta&#39;X + \gamma Z + \epsilon_Y
 \end{align}
-\]</span> Here, <span class="math inline">\(\alpha, \beta\)</span> are <span class="math inline">\(m \times 1\)</span> column vectors, and <span class="math inline">\(\gamma\)</span> is a scalar; <span class="math inline">\(\epsilon_X\)</span> is a <span class="math inline">\(m \times 1\)</span> random column vector, and <span class="math inline">\(\epsilon_Y, \epsilon_Z\)</span> are random scalars.</p>
+\]</span> Here, <span class="math inline">\(\alpha, \beta\)</span> are <span class="math inline">\(m \times 1\)</span> column vectors, and <span class="math inline">\(\gamma\)</span> is a scalar; <span class="math inline">\(\epsilon_X\)</span> is a <span class="math inline">\(m \times 1\)</span> random column vector, and <span class="math inline">\(\epsilon_Y, \epsilon_Z\)</span> are random scalars. <strong>Under this model, our goal is to estimate the parameter vector <span class="math inline">\(\beta\)</span></strong>.</p>
 <p>The covariance matrix can be written as <span class="math display">\[
 \Sigma_{XYZ} = \pmatrix{
 \Sigma_{ZZ} &amp;\Sigma_{ZX} &amp;\Sigma_{ZY}\\
@@ -38,7 +49,14 @@ Y &amp;:= \beta&#39;X + \gamma Z + \epsilon_Y
 \end{align}
 \]</span> In these equations, the quantity on the LHS is observable, while the structural parameters on the RHS are unobservable. The goal is to invert these equations and obtain unique values for the structural parameters.</p>
 <p>When <span class="math inline">\(m \geq 3\)</span>, the number of equations exceeds the number of unknonws, but there still exists a family of structural equations with parameters <span class="math display">\[(\alpha_1, \beta_1, \gamma_1, \sigma^2_{Z,1}, \sigma^2_{X,1}, \sigma^2_{Y,1})
-\neq (\alpha, \beta, \gamma, \sigma^2_Z, \sigma^2_X, \sigma^2_Y)\]</span> that induce the same observable covariance matrix. These parmeterizations cannot be distinguished by observed data. We will consider the observation-equivalent parameterizations where: <span class="math display">\[
+\neq (\alpha, \beta, \gamma, \sigma^2_Z, \sigma^2_X, \sigma^2_Y)\]</span> that induce the same observable covariance matrix. These parmeterizations cannot be distinguished by observed data. I’ll call these <strong>observation-equivalent</strong> parameterizations.</p>
+<p>In this problem, we really only care about <span class="math inline">\(\beta\)</span>, the vector of parameters that describes the functional relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. If all observation-equivalent parameterizations kept <span class="math inline">\(\beta\)</span> fixed, but differed in the other parameter values, we would say that <span class="math inline">\(\beta\)</span> is identified even though the full set of structural parameters is not. However, we will show below that there is a class of observation-equivalent parameterizations that allow <span class="math inline">\(\beta\)</span> to take different values while still perfectly explaining the observed data: <span class="math display">\[
+\beta_1 \neq \beta.
+\]</span></p>
+</div>
+<div id="observation-equivalent-construction" class="section level2">
+<h2>Observation-Equivalent Construction</h2>
+<p>We will consider the observation-equivalent parameterizations where: <span class="math display">\[
 \gamma_1 := \gamma\\
 \sigma^2_{X,1} := \sigma^2_{X}
 \]</span></p>
@@ -75,6 +93,7 @@ To summarize, for any fixed vector of parameters <span class="math inline">\((\a
  + \beta&#39; \operatorname{diag}(\sigma^2_X)\beta - \beta&#39;_1\operatorname{diag}(\sigma^2_X)\beta_1 + \sigma^2_Y
  \end{align}\]</span>
 <p>We call the set of all such parameter vectors the <strong>ignorance region</strong> in the parameter space because there is no information in the observable data distribution to distinguish between the parameter vectors in this region. They are all equally plausible causal explanations of the observed data.</p>
+</div>
 <div id="example-of-asymptotic-behavior" class="section level2">
 <h2>Example of Asymptotic Behavior</h2>
 <p>The ignorance region does not in general disappear in the large sample (large-<span class="math inline">\(n\)</span>) or large treatment number (large-<span class="math inline">\(m\)</span>) limits. To see this for the large-<span class="math inline">\(n\)</span> limit, note that we have constructed the ignorance region above from population quantities, not sample quantities, so the calculations in the previous section already take place in the infinite-data limit. For the large-<span class="math inline">\(m\)</span> limit, we construct a simple example here where the ignorance region maintains the same (multiplicative) size even as <span class="math inline">\(m\)</span> goes to infinity.</p>
@@ -100,8 +119,8 @@ To summarize, for any fixed vector of parameters <span class="math inline">\((\a
 </div>
 <div id="simulation" class="section level2">
 <h2>Simulation</h2>
-<div id="constructing-the-ignorance-region" class="section level3">
-<h3>Constructing the Ignorance Region</h3>
+<div id="constructing-the-ignorance-region-for-beta" class="section level3">
+<h3>Constructing the Ignorance Region for <span class="math inline">\(\beta\)</span></h3>
 <p>We demonstrate the above example in simulation. We set up the parameters here. We will show in this simulation that the same observed data distribution can be compatible with causal effects of highly variable magnitudes, and of opposite sign.</p>
 <pre class="r"><code>options(warn=3)
 # Start with 10 treatments
@@ -146,9 +165,9 @@ make_covmat &lt;- function(alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y){
 print(cov(cbind(t(mmdat$X), mmdat$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covariance:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.187737 1.195874  8.228713
-## [2,] 1.195874 3.187367  8.194329
-## [3,] 8.228713 8.194329 60.141034</code></pre>
+## [1,] 3.195765 1.191599  8.266347
+## [2,] 1.191599 3.186964  8.209707
+## [3,] 8.266347 8.209707 60.317132</code></pre>
 <pre class="r"><code># Theoretical covariance matrix from structural model
 XX_theory &lt;- alpha %*% t(alpha) * sigma2_Z + diag(sigma2_X)
 XY_theory &lt;- XX_theory %*% beta + sigma2_Z * gamma * alpha
@@ -210,9 +229,9 @@ mmdat1 &lt;- gendat2(N, alpha * hi_par$cc, hi_par$beta1, gamma,
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from High-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.190868 1.193047  8.190219
-## [2,] 1.193047 3.193674  8.213398
-## [3,] 8.190219 8.213398 60.223879</code></pre>
+## [1,] 3.203054 1.214041  8.218225
+## [2,] 1.214041 3.207131  8.260798
+## [3,] 8.218225 8.260798 59.784728</code></pre>
 <pre class="r"><code># Do the same for the low-end of cc.
 Sigma_lo &lt;- make_covmat(alpha * lo_par$cc, lo_par$beta1, gamma, sigma2_Z / lo_par$cc^2,
                         sigma2_X, lo_par$sigma2_Y1)
@@ -229,9 +248,9 @@ print(Sigma_lo[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from Low-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.194977 1.184898  8.152380
-## [2,] 1.184898 3.198230  8.171263
-## [3,] 8.152380 8.171263 59.663078</code></pre>
+## [1,] 3.176164 1.177730  8.153648
+## [2,] 1.177730 3.184423  8.158558
+## [3,] 8.153648 8.158558 59.738471</code></pre>
 <p>Examine the extreme parameter estimates:</p>
 <pre class="r"><code>res &lt;- rbind(c(beta[1], hi_par$beta1[1], lo_par$beta1[1]),
             c(1, hi_par$beta[1] / beta[1], lo_par$beta1[1] / beta[1]))
@@ -244,8 +263,8 @@ res</code></pre>
 <p>The ignorance region includes an over-estimate of the causal effect by <span class="math inline">\(1.8\times\)</span>, and estimates of the causal effect of opposite sign. Thus, <strong>even if we could characterize the observed data distribution exactly</strong> (including methods that construct a latent representation to explain the observed data), we would have almost no information about the causal process of interest.</p>
 <p>Below, we plot the ignorance region in terms of the effect multiplier, indexing the multiplier by the unidentified scaling factor <span class="math inline">\(c\)</span>. (Code is hidden, but included in the function in the next section.) <img src="/post/identification_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
-<div id="ignorance-region-as-m-grows-large" class="section level3">
-<h3>Ignorance Region as <span class="math inline">\(m\)</span> Grows Large</h3>
+<div id="ignorance-region-for-beta-as-m-grows-large" class="section level3">
+<h3>Ignorance Region for <span class="math inline">\(\beta\)</span> as <span class="math inline">\(m\)</span> Grows Large</h3>
 <p>Wrap up above calculations in a function.</p>
 <pre class="r"><code>compute_ignorance &lt;- function(m, a_0, b_0, gamma, sigma2_Z, s2X, sigma2_Y, plot=FALSE){
   alpha &lt;- rep(a_0, m) / sqrt(m)
@@ -362,6 +381,6 @@ print(lapply(ss_ignorance, function(x) round(x, 3)))</code></pre>
 </div>
 <div id="alternative-sensitivity-analysis" class="section level2">
 <h2>Alternative: Sensitivity Analysis</h2>
-<p>Because causal effects are not identified in general in the presence of latent confounders, it is common to perform <strong>sensitivity analysis</strong> with latent variable models. In sensitivity analysis, one abandons the goal of obtaining a point estimate of the causal effect, and instead seeks to explore the range of causal conclusions that are compatible with the observed data. Latent variable models commonly used to do this exploration. In particular, one can posit the existence of a latent variable model, and then consider a range of models for the latent variable and mechanisms by which that latent variable could be related to the treatments and outcome. Latent variable sensitivity analysis dates at least as far back as <a href="https://www.jstor.org/stable/2345524">Rosenbaum and Rubin 1983</a>. Bayesian sensitivity analysis (<a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.2711">McCandless et al 2006</a>) follows a similar approach to recent machine learning approaches, and reports posterior uncertainty over the ignorance region, acknowledging that this uncertainty is driven almost purely by the prior distributions. I will be presenting a <a href="https://www.alexdamour.com/content/ACICExtrapolationPoster.pdf">poster at ACIC</a> (joint work with Alex Franks and Avi Feller) outlining a sensitivity analysis approach that explicitly demarcates the identified and unidentified portions of the structural model.</p>
+<p>Because causal effects are not identified in general in the presence of latent confounders, it is common to perform <strong>sensitivity analysis</strong> with latent variable models. In sensitivity analysis, one abandons the goal of obtaining a point estimate of the causal effect, and instead seeks to explore the range of causal conclusions that are compatible with the observed data. Latent variable models are commonly used to do this exploration. In particular, one can posit the existence of a latent variable model, and then consider a range of models for the latent variable and mechanisms by which that latent variable could be related to the treatments and outcome. Latent variable sensitivity analysis dates at least as far back as <a href="https://www.jstor.org/stable/2345524">Rosenbaum and Rubin 1983</a>. Bayesian sensitivity analysis (<a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.2711">McCandless et al 2006</a>) follows a similar approach to recent machine learning approaches, and reports posterior uncertainty over the ignorance region, acknowledging that this uncertainty is driven almost purely by the prior distributions. I will be presenting a <a href="https://www.alexdamour.com/content/ACICExtrapolationPoster.pdf">poster at ACIC</a> (joint work with Alex Franks and Avi Feller) outlining a sensitivity analysis approach that explicitly demarcates the identified and unidentified portions of the structural model.</p>
 </div>
 </div>
