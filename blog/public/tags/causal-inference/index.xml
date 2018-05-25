@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Causal Inference on A Hugo website</title>
+    <link>/tags/causal-inference/</link>
+    <description>Recent content in Causal Inference on A Hugo website</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 18 May 2018 21:13:14 -0500</lastBuildDate>
+    
+	<atom:link href="/tags/causal-inference/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>(Non-)Identification in Latent Confounder Models</title>
+      <link>/2018/05/18/non-identification-in-latent-confounder-models/</link>
+      <pubDate>Fri, 18 May 2018 21:13:14 -0500</pubDate>
+      
+      <guid>/2018/05/18/non-identification-in-latent-confounder-models/</guid>
+      <description>Goal The goal of this notebook is to highlight a critical gap between predictive and causal inference. In particular, we consider the problem of identification, which is a central issue in causal inference that does not arise in predictive inference. The causal parameters in a problem are identified if the set of causal parameters that generate the observable data are unique.
+If the causal parameters are identified, then they can be estimated if the distribution of the observable data can be estimated.</description>
+    </item>
+    
+  </channel>
+</rss>
