@@ -17,8 +17,8 @@
       <pubDate>Fri, 18 May 2018 21:13:14 -0500</pubDate>
       
       <guid>/2018/05/18/non-identification-in-latent-confounder-models/</guid>
-      <description>Goal The goal of this notebook is to highlight a critical gap between predictive and causal inference. In particular, we consider the problem of identification, which is a central issue in causal inference that does not arise in predictive inference. The causal parameters in a problem are identified if the set of causal parameters that generate the observable data are unique.
-If the causal parameters are identified, then they can be estimated if the distribution of the observable data can be estimated.</description>
+      <description>Note: This post was motivated by recent drafts of several papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding.
+ Tran and Blei, 2017. Implicit Causal Models for Genome-wide Association Studies. (https://arxiv.org/abs/1710.10742) Wang and Blei, 2018. Blessings of Multiple Causes (https://arxiv.org/abs/1805.06826) Ragananth and Perotte, 2018. Multiple Causal Inference with Latent Confounding (https://arxiv.org/abs/1805.08273)  These papers explore a setting that departs from the standard “single cause” setting that is widely studied in the causal inference literature, and therefore make a significant contribution.</description>
     </item>
     
   </channel>
