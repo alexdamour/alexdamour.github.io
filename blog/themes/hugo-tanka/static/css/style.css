@@ -262,6 +262,11 @@ ul li:before {
   font-size: 30px;
 }
 
+#content a {
+  color: #3179B4;
+  font-weight: bold;
+}
+
 .highlight {
   margin: 10px 0;
 }
