@@ -29,6 +29,7 @@
 
   <link rel="stylesheet" href="../../../../css/fonts.css" />
   <link rel="stylesheet" href="../../../../css/style.css" />
+  <link rel="stylesheet" href="../../../../css/damour_style.css" />
 
   
   
@@ -64,7 +65,7 @@
   <h1> (Non-)Identification in Latent Confounder Models </h1>
 
   <div id=sub-header>
-    Alexander D&#39;Amour · 2018/05/18 · 18 minute read
+    Alexander D&#39;Amour · 2018/05/18 · 19 minute read
   </div>
 
   <div class="entry-content">
@@ -73,13 +74,13 @@
 <ul>
 <li>Tran and Blei, 2017. Implicit Causal Models for Genome-wide Association Studies. (<a href="https://arxiv.org/abs/1710.10742" class="uri">https://arxiv.org/abs/1710.10742</a>)</li>
 <li>Wang and Blei, 2018. Blessings of Multiple Causes (<a href="https://arxiv.org/abs/1805.06826" class="uri">https://arxiv.org/abs/1805.06826</a>)</li>
-<li>Ragananth and Perotte, 2018. Multiple Causal Inference with Latent Confounding (<a href="https://arxiv.org/abs/1805.08273" class="uri">https://arxiv.org/abs/1805.08273</a>)</li>
+<li>Ranganath and Perotte, 2018. Multiple Causal Inference with Latent Confounding (<a href="https://arxiv.org/abs/1805.08273" class="uri">https://arxiv.org/abs/1805.08273</a>)</li>
 </ul>
 <p>These papers explore a setting that departs from the standard “single cause” setting that is widely studied in the causal inference literature, and therefore make a significant contribution. The problems that I highlight below aren’t fatal for the results in these papers, but they do imply that the results need stronger conditions than those presented in the initial drafts. I reached out to the papers’ authors and have had some great, collaborative discussions.</p>
 </div>
 <div id="goal-exploring-identification" class="section level1">
 <h1>Goal: Exploring Identification</h1>
-<p>The general goal of this technical note is to highlight an essential gap between predictive and causal inference. We consider the problem of <strong>identification</strong>, which is a central issue in causal inference that does not arise in predictive inference. The causal parameters in a problem are <strong>identified</strong> if the set of causal parameters that could generate the observable data are unique.</p>
+<p>The general goal of this technical note is to highlight an essential gap between predictive and causal inference. We consider the problem of <strong>identification</strong>, which is a central issue in causal inference that does not arise in predictive inference. The causal parameters in a problem are <strong>identified</strong> if the causal parameters that could generate the observable data are unique.</p>
 <p>If the causal parameters are identified, then they can be estimated if the distribution of the observable data can be estimated. However, if the parameters are not identified, then even if the distribution of the observable data can be estimated perfectly, the causal parameters cannot be estimated consistently. Instead, even with infinite data, we can only obtain an <strong>ignorance region</strong> of parameter values to which the observed data give equal support. Less formally, <strong>even with infinite data, there will be many causal explanations of the observed data that cannot be distinguished on the basis of the data alone</strong>. Often these competing explanations will have different implications for downstream decisions.</p>
 <p>Identification is a <strong>property of the data-generating process</strong>, not a property of the estimation method. Thus, identification problems cannot be addressed by changing the estimation methodology. Resolving identification issues requires changing the data generating process (e.g., running an experiment), adopting assumptions about the data generating process that are untestable in the data alone (e.g., conditional independences between observable and unobservable quantities), or choosing different causal parameters to estimate. Alternatively, it is possible to proceed with <strong>set identified</strong> parameters, so long as the ignorance region does not contain causal parameter values that would change downstream decisions.</p>
 </div>
@@ -120,7 +121,7 @@ Y &amp;:= \beta&#39;X + \gamma Z + \epsilon_Y
 \gamma_1 := \gamma\\
 \sigma^2_{X,1} := \sigma^2_{X}
 \]</span></p>
-<p>The key to this argument is that the scale of <span class="math inline">\(Z\)</span> is not identified given <span class="math inline">\(X\)</span>, even when <span class="math inline">\(m \rightarrow \infty\)</span>. This is a well-known non-identification result in confirmatory factor analysis (e.g, Bollen 1989, Chapter 7). We can see this in our example because the expression for <span class="math inline">\(\Sigma_XX\)</span> does not change when <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\sigma^2_Z\)</span> are replaced with the structural parameters <span class="math inline">\(\alpha_1\)</span> and <span class="math inline">\(\sigma^2_{Z,1}\)</span>: <span class="math display">\[
+<p>The key to this argument is that the scale of <span class="math inline">\(Z\)</span> is not identified given <span class="math inline">\(X\)</span>, even when <span class="math inline">\(m \rightarrow \infty\)</span>. This is a well-known non-identification result in confirmatory factor analysis (e.g, Bollen 1989, Chapter 7). We can see this in our example because the expression for <span class="math inline">\(\Sigma_{XX}\)</span> does not change when <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\sigma^2_Z\)</span> are replaced with the structural parameters <span class="math inline">\(\alpha_1\)</span> and <span class="math inline">\(\sigma^2_{Z,1}\)</span>: <span class="math display">\[
 \begin{align}
 \alpha_1 &amp;:= c \cdot \alpha\\
 \sigma^2_{Z,1} &amp;:= \sigma^2_{Z} / c^2
@@ -166,7 +167,7 @@ To summarize, for any fixed vector of parameters <span class="math inline">\((\a
 \beta_m = \mathbb{1}_{m\times 1} \cdot b_0 / \sqrt{m}.
 \]</span></p>
 <p>Thus, as <span class="math inline">\(m \rightarrow \infty\)</span>, the norm of <span class="math inline">\(\alpha_m\)</span> and the inner product <span class="math inline">\(\alpha_m&#39; \beta_m\)</span>, which appear in the expression for the marginal variance of <span class="math inline">\(Y\)</span>, <span class="math inline">\(\Sigma_{YY}\)</span>, remain fixed.</p>
-<p><em>Note: This is not the only way to maintain stable variance in <span class="math inline">\(Y\)</span> as <span class="math inline">\(m\)</span> increases. In particular, one could specify the sequence of coefficience <span class="math inline">\(\alpha^{(k)}\)</span> for each subsequent treatment added to the analysis if one wanted to model the case where an investigator is sequentially adding SNP’s from the same underlying DGP. Our setup here is simpler.</em></p>
+<p><em>Note: This is not the only way to maintain stable variance in <span class="math inline">\(Y\)</span> as <span class="math inline">\(m\)</span> increases. In particular, one could specify the sequence of coefficients <span class="math inline">\(\alpha^{(k)}\)</span> for each subsequent treatment added to the analysis if one wanted to model the case where an investigator is sequentially adding SNP’s from the same underlying DGP. Our setup here is simpler.</em></p>
 <p>Under this setup, the interval of valid values for the latent scaling factor <span class="math inline">\(c\)</span> remains fixed for any value of <span class="math inline">\(m\)</span>, because this interval only depends on inner products and norms of <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> vectors. Thus, we can fix <span class="math inline">\(c\)</span> at some valid in this interval, and examine how the corresponding shift vector <span class="math inline">\(\Delta_{\beta, m}(c)\)</span> behaves as <span class="math inline">\(m\)</span> grows large. The components of the shift <span class="math inline">\(\Delta_{\beta, m}(c)\)</span> scale as <span class="math inline">\(m^{-1/2}\)</span>. <span class="math display">\[
 \begin{align}
 \Delta_{\beta,m}(c) &amp;= \Sigma_{XX}^{-1}\alpha_m \cdot \gamma\sigma^2_Z\left(1-\frac{1}{c}\right)\\
@@ -179,9 +180,7 @@ To summarize, for any fixed vector of parameters <span class="math inline">\((\a
 </div>
 <div id="simulation" class="section level2">
 <h2>Simulation</h2>
-<div class="note">
-Code in this section is a little raw.
-</div>
+<p>The code in this section is a little raw. If you’d like the punch line to the simulation, you can scroll down to the figure at the end of the section.</p>
 <div id="constructing-the-ignorance-region-for-beta" class="section level3">
 <h3>Constructing the Ignorance Region for <span class="math inline">\(\beta\)</span></h3>
 <p>We demonstrate the above example in simulation. We set up the parameters here. We will show in this simulation that the same observed data distribution can be compatible with causal effects of highly variable magnitudes, and of opposite sign.</p>
@@ -227,9 +226,9 @@ make_covmat &lt;- function(alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y){
 print(cov(cbind(t(mmdat$X), mmdat$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covariance:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.215373 1.212631  8.320446
-## [2,] 1.212631 3.219369  8.309782
-## [3,] 8.320446 8.309782 60.379079</code></pre>
+## [1,] 3.199585 1.203601  8.218615
+## [2,] 1.203601 3.200678  8.223799
+## [3,] 8.218615 8.223799 59.791361</code></pre>
 <pre class="r"><code># Theoretical covariance matrix from structural model
 XX_theory &lt;- alpha %*% t(alpha) * sigma2_Z + diag(sigma2_X)
 XY_theory &lt;- XX_theory %*% beta + sigma2_Z * gamma * alpha
@@ -243,7 +242,7 @@ print(Sigma_theory[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 ## [1,] 3.200000 1.200000  8.221922
 ## [2,] 1.200000 3.200000  8.221922
 ## [3,] 8.221922 8.221922 60.000000</code></pre>
-<p>Construct extreme versions of the shift. Find scaling factors <span class="math inline">\(c\)</span> that are at the endupoints of the valid interval. Here, it turns out that the upper endpoint of the interval is <span class="math inline">\(\infty\)</span>, so substitute in 1000.</p>
+<p>Construct extreme versions of the shift. Find scaling factors <span class="math inline">\(c\)</span> that are at the endpoints of the valid interval. Here, it turns out that the upper endpoint of the interval is <span class="math inline">\(\infty\)</span>, so substitute in 1000.</p>
 <pre class="r"><code># HAAAAAAAAACK: Need to run in environment set up by previous block
 check_cc &lt;- function(cc, deets=FALSE){
   # alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y, XX_theory, YY_theory inherited
@@ -291,9 +290,9 @@ mmdat1 &lt;- gendat2(N, alpha * hi_par$cc, hi_par$beta1, gamma,
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from High-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.179254 1.196336  8.216099
-## [2,] 1.196336 3.199416  8.238635
-## [3,] 8.216099 8.238635 60.187514</code></pre>
+## [1,] 3.193662 1.199942  8.235501
+## [2,] 1.199942 3.198340  8.204234
+## [3,] 8.235501 8.204234 60.024079</code></pre>
 <pre class="r"><code># Do the same for the low-end of cc.
 Sigma_lo &lt;- make_covmat(alpha * lo_par$cc, lo_par$beta1, gamma, sigma2_Z / lo_par$cc^2,
                         sigma2_X, lo_par$sigma2_Y1)
@@ -310,9 +309,9 @@ print(Sigma_lo[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from Low-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.192389 1.197963  8.202513
-## [2,] 1.197963 3.200296  8.228339
-## [3,] 8.202513 8.228339 60.102956</code></pre>
+## [1,] 3.189405 1.201943  8.241931
+## [2,] 1.201943 3.193253  8.253575
+## [3,] 8.241931 8.253575 60.538510</code></pre>
 <p>Examine the extreme parameter estimates:</p>
 <pre class="r"><code>res &lt;- rbind(c(beta[1], hi_par$beta1[1], lo_par$beta1[1]),
             c(1, hi_par$beta[1] / beta[1], lo_par$beta1[1] / beta[1]))
@@ -443,7 +442,10 @@ print(lapply(ss_ignorance, function(x) round(x, 3)))</code></pre>
 </div>
 <div id="alternative-sensitivity-analysis" class="section level2">
 <h2>Alternative: Sensitivity Analysis</h2>
-<p>Because causal effects are not identified in general in the presence of latent confounders, it is common to perform <strong>sensitivity analysis</strong> with latent variable models. In sensitivity analysis, one abandons the goal of obtaining a point estimate of the causal effect, and instead seeks to explore the range of causal conclusions that are compatible with the observed data. Latent variable models are commonly used to do this exploration. In particular, one can posit the existence of a latent variable model, and then consider a range of models for the latent variable and mechanisms by which that latent variable could be related to the treatments and outcome. Latent variable sensitivity analysis dates at least as far back as <a href="https://www.jstor.org/stable/2345524">Rosenbaum and Rubin 1983</a>. Bayesian sensitivity analysis (<a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.2711">McCandless et al 2006</a>) follows a similar approach to recent machine learning approaches, and reports posterior uncertainty over the ignorance region, acknowledging that this uncertainty is driven almost purely by the prior distributions. I will be presenting a <a href="https://www.alexdamour.com/content/ACICExtrapolationPoster.pdf">poster at ACIC</a> (joint work with Alex Franks and Avi Feller) outlining a sensitivity analysis approach that explicitly demarcates the identified and unidentified portions of the structural model.</p>
+<p>Because causal effects are not identified in general in the presence of latent confounders, it is common to perform <strong>sensitivity analysis</strong> with latent variable models. In sensitivity analysis, one abandons the goal of obtaining a point estimate of the causal effect, and instead seeks to explore the range of causal conclusions that are compatible with the observed data. Latent variable models are commonly used to do this exploration. In particular, one can posit the existence of a latent variable model, and then consider a range of models for the latent variable and mechanisms by which that latent variable could be related to the treatments and outcome. Latent variable sensitivity analysis dates at least as far back as <a href="https://www.jstor.org/stable/2345524">Rosenbaum and Rubin 1983</a>. Bayesian sensitivity analysis (<a href="https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.2711">McCandless et al 2006</a>) follows a similar approach to recent machine learning approaches, and reports posterior uncertainty over the ignorance region, acknowledging that this uncertainty is driven almost purely by the prior distributions. I will be presenting a <a href="https://www.alexdamour.com/content/ACICExtrapolationPoster.pdf">poster at ACIC</a> (joint work with <a href="http://afranks.com/">Alex Franks</a> and <a href="https://gsppi.berkeley.edu/avi-feller/">Avi Feller</a>) outlining a sensitivity analysis approach that explicitly demarcates the identified and unidentified portions of the structural model.</p>
+<div class="note">
+<p>Thanks to <a href="http://andymiller.github.io/">Andy Miller</a> for his feedback on this post, and for pointing me to papers where this non-identification is an issue. Thanks for <a href="http://www.stat.columbia.edu/~yixinwang/">Yixin Wang</a> and <a href="http://dustintran.com/">Dustin Tran</a> for pleasant, candid, and productive discussions about their work.</p>
+</div>
 </div>
 </div>
 
@@ -451,6 +453,8 @@ print(lapply(ss_ignorance, function(x) round(x, 3)))</code></pre>
 
   <div id=links>
     
+    
+      <a class="basic-alignment left" href="../../../../2018/05/26/what-s-different-about-causal-inference/">What’s different about causal inference? &raquo;</a>
     
   </div>
 </section>
