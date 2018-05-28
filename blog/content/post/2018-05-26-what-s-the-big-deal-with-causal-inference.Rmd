@@ -1,0 +1,117 @@
+---
+title: What’s different about causal inference?
+author: Alexander D'Amour
+date: '2018-05-26'
+slug: what-s-different-about-causal-inference
+categories:
+  - Causal Inference
+tags:
+  - Causal Inference
+  - Identification
+---
+
+<div class=note>
+This post reprises some content from talks that I gave this past academic year.
+</div>
+
+Causal inference is getting wider attention these days, especially after some incendiary remarks by Judea Pearl referring to the deep learning revolution in Maching Learning as ["just curve fitting"](https://www.quantamagazine.org/to-build-truly-intelligent-machines-teach-them-cause-and-effect-20180515/).
+In repsonse, Ferenc Huszár wrote an [excellent blog post](http://www.inference.vc/untitled/) explaining some of the concepts and formalism between causal inference using a more constructive tone.
+Here, I'd like to offer some of my own thoughts about the core ideas that distinguish causal inference from "vanilla" machine learning, trying to keep the formalism to a minimum.
+I'd like to give readers a sense of the logical operations that are involved in doing causal inference, and use this to motivate the ideas that causal formalism (e.g., causal graphs, counterfactual notation) is designed to represent.
+
+## Causal Inference as Two-Stage Process
+
+Causal inference is fundamentally a two-stage process.
+I think of these two stages as **modeling observed data** and **reverse-engineering**.
+The first stage is the same problem that we try to solve in "vanilla" machine learning or statistical estimation: we try to model the distribution of the observed data as well as we can.
+This is the stage that Pearl refers to as "just curve fitting".
+At this stage, all we care about is being able to predict observed data well.
+
+The second stage is trickier: we try to map summaries of the observed population to causal mechanisms that generated the data.
+This is an inverse problem, and is generally ill-posed; there are usually many mechansims that could induce the same distribution of observed data.
+To tackle this reverse-engineering problem, we need to make additional assumptions (beyond what we need to model the observed data) about how the observed data distribution is related to causal mechanisms.
+In causal jargon, we call this second stage **"identification"**.
+
+Here's an analogy I like for identification.
+For most of my life, Antoine de Saint-Exupéry's [*The Little Prince*](https://en.wikipedia.org/wiki/The_Little_Prince) has been one of my favorite books.
+In the opening of the book, the narrator tells a story from his childhood, when he was reading about boa constrictors swallowing animals whole.
+He creates his own drawing of a boa that has swallowed an elephant.
+He shows the drawing to the "grown-ups" and asks them if it scares them.
+They ask him why they should be scared of a hat.
+
+
+![Snake or hat?](/img/hat_cropped.jpg)
+<div class=caption>
+**Fig 1:** First attempt at drawing a snake eating an elephant.
+</div>
+
+In response, the narrator creates a second drawing that shows a cross-section of the snake with the elephant inside, and asks the grown-ups again whether they are scared.
+They tell him to go play outside.
+!["Grown-ups" require the second drawing to understand the artist's intent.](/img/boa_cropped.jpg)
+<div class=caption>
+**Fig 2:** Grown-ups require the second drawing to understand the artist's intent.
+</div>
+
+In this analogy, "the elephant inside the snake" (Fig 2) is the causal mechanism that we'd like to characterize, and the original "hat" drawing (Fig 1) is the observed data distribution.
+When we do causal inference in practice, we don't get to see Fig 1 directly.
+We start with a noisy version.
+
+![Noisy version of the drawing](/img/hat_samp.jpg)
+<div class=caption>
+**Fig 3:** Noisy version of the drawing.
+</div>
+
+From this noisy image, we reconstruct the original "hat" drawing (observed data modeling), then attempt to back out the mechanisms that gave rise to the hat (reverse-engineering).
+The logical flow of causal inference looks like Fig 4.
+
+![Schematic showing two-stage structure of causal inference](/img/two-stage-causal.png)
+<div class=caption>
+**Fig 4:** Schematic showing the two-stage structure of causal inference.
+</div>
+
+The key point here is that from the observed data (Fig 3), the best we can do by data analysis is to recover the "hat" drawing (Fig 1).
+The rest of the process involves reasoning about how the "hat" drawing is related to the "elephant in snake" drawing.
+Sticking with the analogy, without identification, the "hat" drawing is inherently ambiguous, and provides equivalent support to a range of different causal interpretations.
+
+![Equivalent causal interpretations of the "hat" drawing (Fig 1).](/img/no-identification.png)
+<div class=caption>
+**Fig 5**: Equivalent causal interpretations of the "hat" drawing (Fig 1).<br/>
+Credit for middle image: [Vera Bucsu](https://www.boredpanda.com/the-ultimate-ziggy-stardust-the-little-prince-mash-up/).
+</div>
+
+Antoine de Saint-Exupéry uses this story as a parable demonstrating one of the central themes of *The Little Prince*:
+
+ > The essential things in life are seen not with the eyes, but with the heart.
+
+Stretching the analogy, I like to say that **identification is the heart of causal inference**.
+At the very least, it's a distinct logical operation that separates causal inference tasks from more standard predictive tasks.
+
+## Causal Formalism
+
+Causal inference is often associated with exotic notation and diagrams.
+This notation is designed to represent the causal mechanisms of interest ("the elephant in the snake") and to specify conditions for identification.
+There is some disagreement about what th e
+
+Importantly, identifying assumptions are often unverifiable *unless we control the data-generating process*.
+This is why experimentation holds such an esteemed place in causal inference.
+
+
+
+
+## To Be Incorporated
+
+
+
+
+There are three technical ideas I want to get across about the nature of causal inference:
+
+ - The difference between **causal effects** and **association**.
+ - That causal inference requires **transfer learning** (a.k.a., domain adaptation).
+ - That causal formalism is a way to articulate **assumptions** that justify interpreting (i.e., transferring) observed associations as causal effects.
+
+
+causal inference depends much more on **data collection/generation** than it does on **data analysis**.
+The assumptions that one makes in causal inference are usually not related to, say, model capacity, but are instead direct assumptions about the data generating process itself.
+Often the causal relationship we want to study **cannot be characterized by the data we have collected**, so that even if you could model the observed data with zero bias and zero variance, you could not justify coming to a single causal conclusion.
+If we want to be certain that we can recover the desired causal relationships, we need to control the data-generating process.
+This is why experimentation holds such an esteemed place in causal inference.

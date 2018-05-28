@@ -12,7 +12,7 @@ Note: This post was motivated by recent drafts of several papers about causal in
 
  * Tran and Blei, 2017. Implicit Causal Models for Genome-wide Association Studies. (https://arxiv.org/abs/1710.10742)
  * Wang and Blei, 2018. Blessings of Multiple Causes (https://arxiv.org/abs/1805.06826)
- * Ragananth and Perotte, 2018. Multiple Causal Inference with Latent Confounding (https://arxiv.org/abs/1805.08273)
+ * Ranganath and Perotte, 2018. Multiple Causal Inference with Latent Confounding (https://arxiv.org/abs/1805.08273)
 
 These papers explore a setting that departs from the standard "single cause" setting that is widely studied in the causal inference literature, and therefore make a significant contribution.
 The problems that I highlight below aren't fatal for the results in these papers, but they do imply that the results need stronger conditions than those presented in the initial drafts.
@@ -25,7 +25,7 @@ I reached out to the papers' authors and have had some great, collaborative disc
 
 The general goal of this technical note is to highlight an essential gap between predictive and causal inference.
 We consider the problem of **identification**, which is a central issue in causal inference that does not arise in predictive inference.
-The causal parameters in a problem are **identified** if the set of causal parameters that could generate the observable data are unique.
+The causal parameters in a problem are **identified** if the causal parameters that could generate the observable data are unique.
 
 If the causal parameters are identified, then they can be estimated if the distribution of the observable data can be estimated.
 However, if the parameters are not identified, then even if the distribution of the observable data can be estimated perfectly, the causal parameters cannot be estimated consistently.
@@ -107,7 +107,7 @@ $$
 
 The key to this argument is that the scale of $Z$ is not identified given $X$, even when $m \rightarrow \infty$.
 This is a well-known non-identification result in confirmatory factor analysis (e.g, Bollen 1989, Chapter 7).
-We can see this in our example because the expression for $\Sigma_XX$ does not change when $\alpha$ and $\sigma^2_Z$ are replaced with the structural parameters $\alpha_1$ and $\sigma^2_{Z,1}$:
+We can see this in our example because the expression for $\Sigma_{XX}$ does not change when $\alpha$ and $\sigma^2_Z$ are replaced with the structural parameters $\alpha_1$ and $\sigma^2_{Z,1}$:
 $$
 \begin{align}
 \alpha_1 &:= c \cdot \alpha\\
@@ -179,7 +179,7 @@ $$
 
 Thus, as $m \rightarrow \infty$, the norm of $\alpha_m$ and the inner product $\alpha_m' \beta_m$, which appear in the expression for the marginal variance of $Y$, $\Sigma_{YY}$, remain fixed.
 
-*Note: This is not the only way to maintain stable variance in $Y$ as $m$ increases. In particular, one could specify the sequence of coefficience $\alpha^{(k)}$ for each subsequent treatment added to the analysis if one wanted to model the case where an investigator is sequentially adding SNP's from the same underlying DGP. Our setup here is simpler.*
+*Note: This is not the only way to maintain stable variance in $Y$ as $m$ increases. In particular, one could specify the sequence of coefficients $\alpha^{(k)}$ for each subsequent treatment added to the analysis if one wanted to model the case where an investigator is sequentially adding SNP's from the same underlying DGP. Our setup here is simpler.*
 
 Under this setup, the interval of valid values for the latent scaling factor $c$ remains fixed for any value of $m$, because this interval only depends on inner products and norms of $\alpha$ and $\beta$ vectors.
 Thus, we can fix $c$ at some valid in this interval, and examine how the corresponding shift vector $\Delta_{\beta, m}(c)$ behaves as $m$ grows large.
@@ -201,7 +201,8 @@ We cannot distinguish between the true value of the treatment effect vector $\be
 
 ## Simulation
 
-<div class=note>Code in this section is a little raw.</div>
+The code in this section is a little raw.
+If you'd like the punch line to the simulation, you can scroll down to the figure at the end of the section.
 
 ### Constructing the Ignorance Region for $\beta$
 
@@ -266,7 +267,7 @@ Sigma_theory <- rbind(cbind(XX_theory, XY_theory), c(as.vector(XY_theory), YY_th
 print(Sigma_theory[(m-1):(m+1), (m-1):(m+1)])}
 ```
 
-Construct extreme versions of the shift. Find scaling factors $c$ that are at the endupoints of the valid interval. Here, it turns out that the upper endpoint of the interval is $\infty$, so substitute in 1000. 
+Construct extreme versions of the shift. Find scaling factors $c$ that are at the endpoints of the valid interval. Here, it turns out that the upper endpoint of the interval is $\infty$, so substitute in 1000. 
 ```{r}
 # HAAAAAAAAACK: Need to run in environment set up by previous block
 check_cc <- function(cc, deets=FALSE){
@@ -498,4 +499,7 @@ Latent variable models are commonly used to do this exploration.
 In particular, one can posit the existence of a latent variable model, and then consider a range of models for the latent variable and mechanisms by which that latent variable could be related to the treatments and outcome.
 Latent variable sensitivity analysis dates at least as far back as [Rosenbaum and Rubin 1983](https://www.jstor.org/stable/2345524).
 Bayesian sensitivity analysis ([McCandless et al 2006](https://onlinelibrary.wiley.com/doi/abs/10.1002/sim.2711)) follows a similar approach to recent machine learning approaches, and reports posterior uncertainty over the ignorance region, acknowledging that this uncertainty is driven almost purely by the prior distributions.
-I will be presenting a [poster at ACIC](https://www.alexdamour.com/content/ACICExtrapolationPoster.pdf) (joint work with Alex Franks and Avi Feller) outlining a sensitivity analysis approach that explicitly demarcates the identified and unidentified portions of the structural model.
+I will be presenting a [poster at ACIC](https://www.alexdamour.com/content/ACICExtrapolationPoster.pdf) (joint work with [Alex Franks](http://afranks.com/) and [Avi Feller](https://gsppi.berkeley.edu/avi-feller/)) outlining a sensitivity analysis approach that explicitly demarcates the identified and unidentified portions of the structural model.
+
+<div class=note>Thanks to [Andy Miller](http://andymiller.github.io/) for his feedback on this post, and for pointing me to papers where this non-identification is an issue. Thanks for [Yixin Wang](http://www.stat.columbia.edu/~yixinwang/) and [Dustin Tran](http://dustintran.com/) for pleasant, candid, and productive discussions about their work.
+</div>
