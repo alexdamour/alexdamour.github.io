@@ -1,0 +1,95 @@
+---
+title: What’s different about causal inference?
+author: Alexander D'Amour
+date: '2018-05-26'
+slug: what-s-different-about-causal-inference
+categories:
+  - Causal Inference
+tags:
+  - Causal Inference
+  - Identification
+---
+
+
+
+<div class="note">
+<p>This post reprises some content from talks that I gave this past academic year.</p>
+</div>
+<p>Causal inference is getting wider attention these days, especially after some incendiary remarks by Judea Pearl referring to the deep learning revolution in Maching Learning as <a href="https://www.quantamagazine.org/to-build-truly-intelligent-machines-teach-them-cause-and-effect-20180515/">“just curve fitting”</a>. In repsonse, Ferenc Huszár wrote an <a href="http://www.inference.vc/untitled/">excellent blog post</a> explaining some of the concepts and formalism between causal inference using a more constructive tone. Here, I’d like to offer some of my own thoughts about the core ideas that distinguish causal inference from “vanilla” machine learning, trying to keep the formalism to a minimum. <!--I'd like to give readers a sense of the logical operations that are involved in doing causal inference, and use this to motivate the ideas that causal formalism (e.g., causal graphs, counterfactual notation) is designed to represent.--></p>
+<div id="causal-goals" class="section level2">
+<h2>Causal Goals</h2>
+<p>A central goal in causal inference is to predict what will happen if we <strong>intervene</strong> in the world rather than observe it passively. For example, for a given “treatment” <span class="math inline">\(T\)</span>, and an outcome <span class="math inline">\(Y\)</span>, we would like to know how intervening and setting the value of <span class="math inline">\(T\)</span> will change the distribution of <span class="math inline">\(Y\)</span>. This does not need to be complicated. We could simply intervene and set <span class="math inline">\(T\)</span> to various values and see what happens to <span class="math inline">\(Y\)</span>. This is what we do when we run experiments.</p>
+<p>However, in many cases, direct intervention is expensive, unethical, or inconvenient, and so we may instead attempt to learn about the <strong>interventional</strong> relationship between <span class="math inline">\(T\)</span> and <span class="math inline">\(Y\)</span> from non-interventional, or <strong>observational</strong>, data. In these cases, we need to <strong>transfer</strong> conclusions from observational data to make predictions about data generated under intervention.</p>
+<p>This transfer is not always easy. Consider a silly example that a friend recently suggested to me. A traveler reads that when an attacker bombs an airplane, there is rarely more than one bomb on board. Thus, to reduce the chances of being blown up, the traveler intervenes and brings their own bomb onto a flight, thinking that it will lower the probability of another bomb being on board. The problem here is that the traveler wrongly assumed that the relationship between the variables “somebody has a bomb on board” and “number of bombs on board” would be the same in the observational and interventional distributions. In this case, the transfer fails.</p>
+<p>There are many systems of causal formalism, but they were all developed to describe this transfer from observational to interventional distributions. Usually, the interventional distribution is hypothetical, e.g., “the distribution of pain scores we were observe if we forced the whole population to take asprin.” The causal formalism tells us which pieces of the observed data distribution we can use to reconstruct this interventional distribution. More importantly, the causal formalism tells us what <strong>unverifiable assumptions</strong> we need to make for this reconstruction to be feasible at all.</p>
+</div>
+<div id="causal-inference-as-two-stage-process" class="section level2">
+<h2>Causal Inference as Two-Stage Process</h2>
+<p>Causal inference is fundamentally a two-stage process. I think of these two stages as <strong>modeling observed data</strong> and <strong>reverse-engineering</strong>. The first stage is the same problem that we try to solve in “standard” machine learning or statistical estimation: we try to model the distribution of the observed data as well as we can. This is the stage that Pearl refers to as “just curve fitting”. At this stage, all we care about is being able to predict observed data well.</p>
+<p>The second stage is trickier: we try to map summaries of the observed population to causal mechanisms that generated the data. This is an inverse problem, and is generally ill-posed; there are usually many mechansims that could induce the same distribution of observed data. To tackle this reverse-engineering problem, we need to make additional assumptions about how the observed data distribution is related to causal mechanisms. In causal jargon, we call this second stage <strong>“identification”</strong>. Identification is what sets causal inference apart from standard predictive inference; one could model the observed data perfectly well without making identifying assumptions.</p>
+<p>Here’s an analogy I like for identification. For most of my life, Antoine de Saint-Exupéry’s <a href="https://en.wikipedia.org/wiki/The_Little_Prince"><em>The Little Prince</em></a> has been one of my favorite books. In the opening of the book, the narrator tells a story from his childhood, when he was reading about boa constrictors swallowing animals whole. He creates his own drawing of a boa that has swallowed an elephant. He shows the drawing to the “grown-ups” and asks them if it scares them. They ask him why they should be scared of a hat.</p>
+<img src="/img/hat_cropped.jpg" alt="Snake or hat?" />
+<div class="caption">
+<p><strong>Fig 1:</strong> First attempt at drawing a snake eating an elephant.</p>
+</div>
+In response, the narrator creates a second drawing that shows a cross-section of the snake with the elephant inside, and asks the grown-ups again whether they are scared. They tell him to go play outside. <img src="/img/boa_cropped.jpg" alt="Grown-ups require the second drawing to understand the artist’s intent." />
+<div class="caption">
+<p><strong>Fig 2:</strong> Grown-ups require the second drawing to understand the artist’s intent.</p>
+</div>
+<p>In this analogy, “the elephant inside the snake” (Fig 2) is the causal mechanism that we’d like to characterize, and the original “hat” drawing (Fig 1) is the observed data distribution. When we do causal inference in practice, we don’t get to see Fig 1 directly. We start with a noisy version.</p>
+<img src="/img/hat_samp.jpg" alt="Noisy version of the drawing" />
+<div class="caption">
+<p><strong>Fig 3:</strong> Noisy version of the drawing.</p>
+</div>
+<p>From this noisy image, we reconstruct the original “hat” drawing (observed data modeling), then attempt to back out the mechanisms that gave rise to the hat (reverse-engineering). The logical flow of causal inference looks like Fig 4.</p>
+<img src="/img/two-stage-causal.png" alt="Schematic showing two-stage structure of causal inference" />
+<div class="caption">
+<p><strong>Fig 4:</strong> Schematic showing the two-stage structure of causal inference.</p>
+</div>
+<p>The key point here is that from the observed data (Fig 3), the best we can do by data analysis is to recover the “hat” drawing (Fig 1). The rest of the process involves reasoning about how the “hat” drawing is related to the “elephant in snake” drawing. Sticking with the analogy, without identification, the “hat” drawing is inherently ambiguous, and provides equivalent support to a range of different causal interpretations.</p>
+<img src="/img/no-identification.png" alt="Equivalent causal interpretations of the hat drawing (Fig 1)." />
+<div class="caption">
+<p><strong>Fig 5</strong>: Equivalent causal interpretations of the “hat” drawing (Fig 1).<br/> Credit for middle image: <a href="https://www.boredpanda.com/the-ultimate-ziggy-stardust-the-little-prince-mash-up/">Vera Bucsu</a>.</p>
+</div>
+<p>Antoine de Saint-Exupéry uses this story as a parable demonstrating one of the central themes of <em>The Little Prince</em>:</p>
+<blockquote>
+<p>The essential things in life are seen not with the eyes, but with the heart.</p>
+</blockquote>
+<p>Stretching the analogy, I like to say that <strong>identification is the heart of causal inference</strong>. At the very least, it’s a distinct logical operation that separates causal inference tasks from more standard predictive tasks.</p>
+<p>Pearl’s point about “curve fitting” is that the vast majority of machine learning and statistical research focuses on the first stage of reconstructing the “hat” drawing, and has little to say about the second stage of identifying causal mechanisms. The counterpoint is that the “curve fitting” step is the only step that actually deals with data; the identification step is purely theoretical, and requires making assertions that are, by definition, unverifiable in the current iteration of the data. In general, the only way to assure that ones identifying assumptions hold is to <strong>control the data-generating process oneself</strong>.</p>
+<p>I’ve just argued that understanding causal mechanisms requires an additional identification step. Why do we need to learn about causal mechanisms if we can model the observed data well?</p>
+</div>
+<div id="causal-goals-1" class="section level2">
+<h2>Causal Goals</h2>
+<p>There are several systems of formalism associated with causal inference, and each system is good for highlighting different aspects of the problem. <a href="http://www.inference.vc/untitled/">In his post</a>, Ferenc gives a good introduction to the graphical formalism favored by the Pearl school. Here, I’ll discuss some formalism from the <a href="https://www.cambridge.org/core/books/causal-inference-for-statistics-social-and-biomedical-sciences/71126BE90C58F1A431FE9B2DD07938AB">Neyman-Rubin school</a>, which has been my “native” causal language.</p>
+<p>In general, the <strong>causal effect</strong> of <span class="math inline">\(T\)</span> on <span class="math inline">\(Y\)</span> is different from the <strong>observed association</strong> between <span class="math inline">\(T\)</span> and <span class="math inline">\(Y\)</span>, as I’ll demonstrate in a simple example.</p>
+<p>Suppose we want to measure the causal effect of aspin on headache pain. To represent this formally, we might consider collecting data from a set of people who had headaches and had the option to take asprin at the onset of the headache. We’ll index these people with the subscript <span class="math inline">\(i\)</span>. For each person, we observe whether or not they took asprin, and record this in a variable <span class="math inline">\(T_i\)</span>, which is set to 1 if the took asprin and 0 otherwise. We’ll also record a pain score, <span class="math inline">\(Y_i\)</span>, indicating their level of discomfort at a fixed time interval after the onset of the headache (and their opportunity to take asprin). To keep things as familiar as possible, let’s assume that these pairs <span class="math inline">\((Y_i, T_i)\)</span> are independent, identical samples from an infinite population.</p>
+<img src="/img/T-and-Y.png" alt="Treatment and outcome definitions for asprin example." />
+<div class="caption">
+Treatment and outcome definitions for asprin example.
+</div>
+<p>The causal effect of <span class="math inline">\(T\)</span> on <span class="math inline">\(Y\)</span> answers the question: if we <strong>set</strong> <span class="math inline">\(T=1\)</span>, how would the outcomes <span class="math inline">\(Y\)</span> differ from if we <strong>set</strong> <span class="math inline">\(T=0\)</span>? In the case of our example, we might ask, “On average, how much less pain would patients experience if they were made to take asprin, versus if they were not allowed to take asprin.” To answer this questions like this in full generality, we need to have a sense of how each person <span class="math inline">\(i\)</span> would respond under both settings of the treatemnt. For person <span class="math inline">\(i\)</span>, let <span class="math inline">\(Y_i(0)\)</span> represent the hypothetical outcome for person <span class="math inline">\(i\)</span> <em>if they were not allowed to take asprin</em> and let <span class="math inline">\(Y_i(1)\)</span> represent the hypothetical outcome for person <span class="math inline">\(i\)</span> <em>if they were made to take asprin</em>. We call these hypothetical outcomes <strong>potential outcomes</strong>, and can represent them in a table like the one on the left hand side of Fig 2.</p>
+<img src="/img/PO.png" alt="Potential outcomes table and observed data table." />
+<div class="caption">
+<strong>Fig 2</strong>: Potential outcomes table and observed data table.
+</div>
+<p>If we could observe each unit’s pair of potential outcomes (both <span class="math inline">\(Y(0)\)</span> and <span class="math inline">\(Y(1)\)</span>), we could know immediately what the effect of the intervention is for each individual. For example, in the first row of the potential outcomes table, the unit’s pain score under the “no asprin” condition is 6 but drops to 3 under the take asprin condition, so we know that this person was helped. We could also estimate the average effect of asprin across the whole population (<span class="math inline">\(\tau\)</span>, below) or across subgroups of the population sharing certain features <span class="math inline">\(X\)</span> (<span class="math inline">\(\tau(X)\)</span> below). <span class="math display">\[
+\begin{align*}
+\tau &amp;:= E[Y(1)] - E[Y(0)]\\
+\tau(X) &amp;:= E[Y(1) \mid X] - E[Y(0) \mid X].
+\end{align*}
+\]</span></p>
+<p>Unfortunately, we can only observe one of the two outcomes for each unit, so we can only work with the mangled table on the right of Fig 2. This is often called the <strong>fundamental problem of causal inference</strong> (<a href="https://www.jstor.org/stable/2289064">Holland 1986</a>). The outcome that we are able to observe for each person, which we might write as <span class="math inline">\(Y_i^{obs}\)</span>, is a selection from this potential outcomes table, determined by the treatment assignment <span class="math inline">\(T_i\)</span>: <span class="math display">\[
+Y_i^{obs} = (1-T_i) Y(0) + T_i Y(1).
+\]</span></p>
+</div>
+<div id="to-be-incorporated" class="section level2">
+<h2>To Be Incorporated</h2>
+<p>There are three technical ideas I want to get across about the nature of causal inference:</p>
+<ul>
+<li>The difference between <strong>causal effects</strong> and <strong>association</strong>.</li>
+<li>That causal inference requires <strong>transfer learning</strong> (a.k.a., domain adaptation).</li>
+<li>That causal formalism is a way to articulate <strong>assumptions</strong> that justify interpreting (i.e., transferring) observed associations as causal effects.</li>
+</ul>
+<p>causal inference depends much more on <strong>data collection/generation</strong> than it does on <strong>data analysis</strong>. The assumptions that one makes in causal inference are usually not related to, say, model capacity, but are instead direct assumptions about the data generating process itself. Often the causal relationship we want to study <strong>cannot be characterized by the data we have collected</strong>, so that even if you could model the observed data with zero bias and zero variance, you could not justify coming to a single causal conclusion. If we want to be certain that we can recover the desired causal relationships, we need to control the data-generating process. This is why experimentation holds such an esteemed place in causal inference.</p>
+</div>

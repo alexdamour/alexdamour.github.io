@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Statistics, Machine Learning, Causal Inference, Other">
+
+  <link rel="icon" type="image/png" href="../../../../favicon-96x96-trans.png">
+
+  
+
+  
+  <title>
+    
+    
+     What’s the big deal with causal inference? 
+    
+  </title>
+  <link rel="canonical" href="../../../../2018/05/26/what-s-the-big-deal-with-causal-inference/">
+
+  <link rel="stylesheet" href="../../../../css/fonts.css" />
+  <link rel="stylesheet" href="../../../../css/style.css" />
+
+  
+  
+  
+      
+      <script async src="https://www.googletagmanager.com/gtag/js?id=UA-106900339-1"></script>
+      <script>
+  window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments)};
+  gtag('js', new Date());
+
+    gtag('config', 'UA-106900339-1');
+      </script>
+</head>
+
+<body>
+<section id=nav>
+  <h1><a href="../../../../">Alex D&#39;Amour&#39;s Blog</a></h1>
+  Statistics, Machine Learning, Causal Inference, Other
+  <ul>
+    
+    <li><a href="https://www.alexdamour.com">About Me</a></li>
+    
+    <li><a href="https://github.com/alexdamour">GitHub</a></li>
+    
+    <li><a href="https://twitter.com/alexdamour">Twitter</a></li>
+    
+  </ul>
+</section>
+
+
+<section id=content>
+  <h1> What’s the big deal with causal inference? </h1>
+
+  <div id=sub-header>
+    Alexander D&#39;Amour · 2018/05/26 · 3 minute read
+  </div>
+
+  <div class="entry-content">
+    <div class="note">
+<p>This post summarizes several talks about causal inference that I gave this academic year.</p>
+</div>
+<p>Causal inference is getting wider attention these days, especially after some incendiary remarks by Judea Pearl referring to the deep learning revolution in Maching Learning as <a href="https://www.quantamagazine.org/to-build-truly-intelligent-machines-teach-them-cause-and-effect-20180515/">“just curve fitting”</a>. In repsonse, Ferenc Huszár wrote an <a href="http://www.inference.vc/untitled/">excellent blog post</a> explaining some of the concepts and formalism between causal inference using a more constructive tone. Here, I’d like to offer some of my own thoughts about the core ideas that distinguish causal inference from “vanilla” machine learning, trying to keep the formalism to a minimum. I’d like to give readers a sense of the logical operations that are involved in doing causal inference, and use this to motivate the ideas that causal formalism (e.g., causal graphs, counterfactual notation) is designed to represent.</p>
+<div id="two-stages-of-causal-inference" class="section level2">
+<h2>Two Stages of Causal Inference</h2>
+<p>Causal inference is fundamentally a two-stage process. I think of these two stages as <strong>modeling observed data</strong> and <strong>reverse-engineering</strong>. The first stage is the same problem that we try to solve in “vanilla” machine learning or statistical estimation: we try to model the distribution of the observed data as well as we can. This is the stage that Pearl refers to as “just curve fitting”. At this stage, all we care about is being able to predict observed data well.</p>
+<p>The second stage is trickier: we try to map summaries of the observed population to causal mechanisms that generated the data. This is an inverse problem, and is generally ill-posed; there are usually many mechansims that could induce the same distribution of observed data. To tackle this reverse-engineering problem, we need to make additional assumptions (beyond what we need to model the observed data) about how the observed data distribution is related to causal mechanisms. In casual jargon, we call this second stage <strong>“identification”</strong>.</p>
+<p>Here’s an analogy I like for identification. For most of my life, <a href="https://en.wikipedia.org/wiki/The_Little_Prince"><em>The Little Prince</em></a> has been one of my favorite books. In the opening of the book, the narrator describes reading about boa constrictors swallowing animals whole, and makes his own drawing of a boa that has swallowed an elephant.</p>
+<p>!(Snake or hat?)[static/img/snake_hat.png]</p>
+<p>Importantly, identifying assumptions are often unverifiable <em>unless we control the data-generating process</em>. This is why experimentation holds such an esteemed place in causal inference.</p>
+</div>
+<div id="to-be-incorporated" class="section level2">
+<h2>To Be Incorporated</h2>
+<p>There are three technical ideas I want to get across about the nature of causal inference:</p>
+<ul>
+<li>The difference between <strong>causal effects</strong> and <strong>association</strong>.</li>
+<li>That causal inference requires <strong>transfer learning</strong> (a.k.a., domain adaptation).</li>
+<li>That causal formalism is a way to articulate <strong>assumptions</strong> that justify interpreting (i.e., transferring) observed associations as causal effects.</li>
+</ul>
+<p>causal inference depends much more on <strong>data collection/generation</strong> than it does on <strong>data analysis</strong>. The assumptions that one makes in casual inference are usually not related to, say, model capacity, but are instead direct assumptions about the data generating process itself. Often the causal relationship we want to study <strong>cannot be characterized by the data we have collected</strong>, so that even if you could model the observed data with zero bias and zero variance, you could not justify coming to a single causal conclusion. If we want to be certain that we can recover the desired causal relationships, we need to control the data-generating process. This is why experimentation holds such an esteemed place in causal inference.</p>
+</div>
+
+  </div>
+
+  <div id=links>
+    
+      <a class="basic-alignment left" href="../../../../2018/05/18/non-identification-in-latent-confounder-models/">&laquo; (Non-)Identification in Latent Confounder Models</a>
+    
+    
+  </div>
+</section>
+
+<section id="comments">
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+
+(function() {
+      
+      
+      if (window.location.hostname == "localhost")
+                return;
+
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      var disqus_shortname = 'alexdamour-disqus-com';
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+  
+  
+
+  
+
+
+</body>
+</html>
+
