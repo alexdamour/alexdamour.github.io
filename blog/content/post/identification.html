@@ -165,9 +165,9 @@ make_covmat &lt;- function(alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y){
 print(cov(cbind(t(mmdat$X), mmdat$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covariance:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.199585 1.203601  8.218615
-## [2,] 1.203601 3.200678  8.223799
-## [3,] 8.218615 8.223799 59.791361</code></pre>
+## [1,] 3.205920 1.201324  8.248747
+## [2,] 1.201324 3.173216  8.174760
+## [3,] 8.248747 8.174760 59.954826</code></pre>
 <pre class="r"><code># Theoretical covariance matrix from structural model
 XX_theory &lt;- alpha %*% t(alpha) * sigma2_Z + diag(sigma2_X)
 XY_theory &lt;- XX_theory %*% beta + sigma2_Z * gamma * alpha
@@ -229,9 +229,9 @@ mmdat1 &lt;- gendat2(N, alpha * hi_par$cc, hi_par$beta1, gamma,
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from High-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.193662 1.199942  8.235501
-## [2,] 1.199942 3.198340  8.204234
-## [3,] 8.235501 8.204234 60.024079</code></pre>
+## [1,] 3.199207 1.184795  8.188923
+## [2,] 1.184795 3.180369  8.165848
+## [3,] 8.188923 8.165848 59.804863</code></pre>
 <pre class="r"><code># Do the same for the low-end of cc.
 Sigma_lo &lt;- make_covmat(alpha * lo_par$cc, lo_par$beta1, gamma, sigma2_Z / lo_par$cc^2,
                         sigma2_X, lo_par$sigma2_Y1)
@@ -248,9 +248,9 @@ print(Sigma_lo[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from Low-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.189405 1.201943  8.241931
-## [2,] 1.201943 3.193253  8.253575
-## [3,] 8.241931 8.253575 60.538510</code></pre>
+## [1,] 3.213538 1.206771  8.250364
+## [2,] 1.206771 3.219649  8.199920
+## [3,] 8.250364 8.199920 59.905846</code></pre>
 <p>Examine the extreme parameter estimates:</p>
 <pre class="r"><code>res &lt;- rbind(c(beta[1], hi_par$beta1[1], lo_par$beta1[1]),
             c(1, hi_par$beta[1] / beta[1], lo_par$beta1[1] / beta[1]))
