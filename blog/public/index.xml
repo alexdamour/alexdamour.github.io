@@ -17,7 +17,8 @@
       <pubDate>Fri, 18 May 2018 21:13:14 -0500</pubDate>
       
       <guid>/2018/05/18/non-identification-in-latent-confounder-models/</guid>
-      <description>Note: This post was motivated by recent drafts of several papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding.
+      <description>Updated 2018/06/09.
+ Note: This post was motivated by recent drafts of several papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding.
  Tran and Blei, 2017. Implicit Causal Models for Genome-wide Association Studies. (https://arxiv.org/abs/1710.10742) Wang and Blei, 2018. Blessings of Multiple Causes (https://arxiv.org/abs/1805.06826) Ranganath and Perotte, 2018. Multiple Causal Inference with Latent Confounding (https://arxiv.org/abs/1805.08273)  These papers explore a setting that departs from the standard “single cause” setting that is widely studied in the causal inference literature, and therefore make a significant contribution.</description>
     </item>
     

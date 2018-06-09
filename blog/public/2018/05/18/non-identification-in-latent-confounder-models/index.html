@@ -70,6 +70,9 @@
 
   <div class="entry-content">
     <div class="note">
+<p>Updated 2018/06/09.</p>
+</div>
+<div class="note">
 <p>Note: This post was motivated by recent drafts of several papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding.</p>
 <ul>
 <li>Tran and Blei, 2017. Implicit Causal Models for Genome-wide Association Studies. (<a href="https://arxiv.org/abs/1710.10742" class="uri">https://arxiv.org/abs/1710.10742</a>)</li>
@@ -226,9 +229,9 @@ make_covmat &lt;- function(alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y){
 print(cov(cbind(t(mmdat$X), mmdat$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covariance:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.205920 1.201324  8.248747
-## [2,] 1.201324 3.173216  8.174760
-## [3,] 8.248747 8.174760 59.954826</code></pre>
+## [1,] 3.193723 1.196257  8.177068
+## [2,] 1.196257 3.202419  8.188408
+## [3,] 8.177068 8.188408 59.895030</code></pre>
 <pre class="r"><code># Theoretical covariance matrix from structural model
 XX_theory &lt;- alpha %*% t(alpha) * sigma2_Z + diag(sigma2_X)
 XY_theory &lt;- XX_theory %*% beta + sigma2_Z * gamma * alpha
@@ -290,9 +293,9 @@ mmdat1 &lt;- gendat2(N, alpha * hi_par$cc, hi_par$beta1, gamma,
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from High-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.199207 1.184795  8.188923
-## [2,] 1.184795 3.180369  8.165848
-## [3,] 8.188923 8.165848 59.804863</code></pre>
+## [1,] 3.179161 1.178028  8.141408
+## [2,] 1.178028 3.200236  8.238052
+## [3,] 8.141408 8.238052 60.075446</code></pre>
 <pre class="r"><code># Do the same for the low-end of cc.
 Sigma_lo &lt;- make_covmat(alpha * lo_par$cc, lo_par$beta1, gamma, sigma2_Z / lo_par$cc^2,
                         sigma2_X, lo_par$sigma2_Y1)
@@ -309,9 +312,9 @@ print(Sigma_lo[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from Low-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.213538 1.206771  8.250364
-## [2,] 1.206771 3.219649  8.199920
-## [3,] 8.250364 8.199920 59.905846</code></pre>
+## [1,] 3.196036 1.207820  8.265574
+## [2,] 1.207820 3.208988  8.271221
+## [3,] 8.265574 8.271221 60.575463</code></pre>
 <p>Examine the extreme parameter estimates:</p>
 <pre class="r"><code>res &lt;- rbind(c(beta[1], hi_par$beta1[1], lo_par$beta1[1]),
             c(1, hi_par$beta[1] / beta[1], lo_par$beta1[1] / beta[1]))
@@ -438,7 +441,7 @@ print(lapply(ss_ignorance, function(x) round(x, 3)))</code></pre>
 <p>We have shown in a very simple, concrete case that causal effects cannot be identified in general in the presence of a latent confounder, even if that confounder is shared by an infinite number of treatments. Here, we examined a simple DGP where the structural equations were all linear with Gaussian noise. In this case, there is no causal point identification because the latent factor model itself is not identified: there is a free scale latent parameter <span class="math inline">\(c\)</span>, and this scale parameter matters because it determines how much of the variation in the outcome results from the latent confounder versus from the observed treatments.</p>
 <p>In more general contexts, the ignorance region can have much more complex structure, as there are many more unobservable degrees of freedom that can combine to explain the same observable data distribution. Thus, making the model more general here is not a solution: in our analysis, we considered a well-specified model, and even in that small model class, we had noidentification.</p>
 <p>When there is a non-trivial ignorance region (also called “lack of point identification”), consistent estimation is not possible. In standard estimation theory for the MLE and Bayesian compuation (e.g., Bernstein-von Mises), this pathology is ruled out by regularity conditions. The problem is that, in estimating parameters of structural equations, these regularity conditions often do not hold. We have given an example of such a case above. Thus, it is critical that investigators be thorough in establishing sufficient conditions for point identification when claiming that their method can consistently estimate causal effects or structural parameters.</p>
-<p>With latent confounder models, causal identification is possible precisely in the cases where the latent variables are themselves identified. This requires additional conditions on the structural model beyond conditional independence. For example, if there are proxies of the latent confounder available, <a href="https://arxiv.org/abs/1609.08816">Miao et al 2017</a> outlines conditions under which a well-defined inverse exists that maps the observed data distribution to a latent variable distribution. <a href="https://arxiv.org/abs/1705.08821">Louizos et al 2017</a> apply this using machine learning techniques to model the latent confounder as a function of the proxies.</p>
+<p>With latent confounder models, causal identification is possible when the latent variables and their relationship to the outcome are themselves identified. This requires additional conditions on the structural model beyond conditional independence. For example, if there are proxies of the latent confounder available, <a href="https://arxiv.org/abs/1609.08816">Miao et al 2017</a> outlines conditions under which a well-defined inverse exists that maps the observed data distribution to a latent variable distribution. <a href="https://arxiv.org/abs/1705.08821">Louizos et al 2017</a> apply this using machine learning techniques to model the latent confounder as a function of the proxies.</p>
 </div>
 <div id="alternative-sensitivity-analysis" class="section level2">
 <h2>Alternative: Sensitivity Analysis</h2>
