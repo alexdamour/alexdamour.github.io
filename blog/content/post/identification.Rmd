@@ -6,6 +6,9 @@ categories: ['Causal Inference']
 tags: ['Causal Inference', 'Identification', 'Technical']
 ---
 
+<div class=note>
+Updated 2018/06/09.
+</div>
 
 <div class=note>
 Note: This post was motivated by recent drafts of several papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding.
@@ -485,7 +488,7 @@ The problem is that, in estimating parameters of structural equations, these reg
 We have given an example of such a case above.
 Thus, it is critical that investigators be thorough in establishing sufficient conditions for point identification when claiming that their method can consistently estimate causal effects or structural parameters.
 
-With latent confounder models, causal identification is possible precisely in the cases where the latent variables are themselves identified.
+With latent confounder models, causal identification is possible when the latent variables  and their relationship to the outcome are themselves identified.
 This requires additional conditions on the structural model beyond conditional independence.
 For example, if there are proxies of the latent confounder available,
 [Miao et al 2017](https://arxiv.org/abs/1609.08816) outlines conditions under which a well-defined inverse exists that maps the observed data distribution to a latent variable distribution.
