@@ -1,4 +1,4 @@
-baseurl = "https://alexdamour.com/blog"
+baseurl = "https://alexdamour.com/blog/public"
 relativeURLs = true
 enableEmoji = true
 languageCode = "en-us"
