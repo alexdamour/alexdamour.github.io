@@ -6,10 +6,20 @@
     <description>Recent content in Causal Inference on Alex D&#39;Amour&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 18 May 2018 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Tue, 10 Jul 2018 21:13:14 -0500</lastBuildDate>
     
 	<atom:link href="/tags/causal-inference/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Positivity and Latent Confounder Reconstruction are Mutually Exclusive</title>
+      <link>/2018/07/10/positivity-and-latent-confounder-reconstruction-are-mutually-exclusive/</link>
+      <pubDate>Tue, 10 Jul 2018 21:13:14 -0500</pubDate>
+      
+      <guid>/2018/07/10/positivity-and-latent-confounder-reconstruction-are-mutually-exclusive/</guid>
+      <description>Note: This post is the second in a series motivated by several recent papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding. See the first post here.
+ Goal In observational causal inference, unobserved confounding is a constant threat to drawing valid causal inferences. If there are unobserved variables that affect both treatment assignment and outcomes, then one cannot, in general, precisely quantify causal relationships from observational data, even as the sample size goes to infinity.</description>
+    </item>
     
     <item>
       <title>(Non-)Identification in Latent Confounder Models</title>

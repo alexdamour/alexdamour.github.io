@@ -1,0 +1,167 @@
+---
+title: "Positivity and Latent Confounder Reconstruction are Mutually Exclusive"
+author: "Alexander D'Amour"
+date: 2018-07-10T21:13:14-05:00
+categories: ['Causal Inference']
+tags: ['Causal Inference', 'Identification', 'Technical']
+---
+
+
+
+<div class="note">
+<p>Note: This post is the second in a series motivated by several recent papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding. See the first post <a href="/2018/05/18/non-identification-in-latent-confounder-models/">here</a>.</p>
+</div>
+<div id="goal" class="section level2">
+<h2>Goal</h2>
+<p>In observational causal inference, unobserved confounding is a constant threat to drawing valid causal inferences. If there are unobserved variables that affect both treatment assignment and outcomes, then one cannot, in general, precisely quantify causal relationships from observational data, even as the sample size goes to infinity.</p>
+<p>Several recent papers have examined a special case of the unobserved confounding problem where it has been suggested that this identification problem might be solved. Specifically, they propose that if there are a <strong>large number of treatment factors</strong>, such that we can analyze the problem in the frame where the number of treatments goes to infinity, then the unobserved confounder may be consistently estimable from the data, and thus adjusted for like an observed confounder. I will call this strategy <strong>latent confounder reconstruction</strong>.</p>
+<p>The purpose of this technical post is to highlight a central weakness of this strategy. In particular, if the latent variable is not degenerate and can be estimated consistently (in many cases <a href="/2018/05/18/non-identification-in-latent-confounder-models/">it cannot</a>), then the <strong>positivity assumption</strong> will be violated with respect to that latent variable. The positivity assumption, also known as overlap or common support, is a necessary condition for doing causal inference without strong modeling assumptions.</p>
+<p>I’ll write this post in Pearl’s notation, using the do operator, but the translation to potential outcomes is straightforward.</p>
+</div>
+<div id="latent-confounder-reconstruction" class="section level2">
+<h2>Latent Confounder Reconstruction</h2>
+<div id="notation-and-observed-confounders" class="section level3">
+<h3>Notation and Observed Confounders</h3>
+<p>We consider <span class="math inline">\(m\)</span>-dimensional treatments <span class="math inline">\(X\)</span>, <span class="math inline">\(d\)</span>-dimensional confounder <span class="math inline">\(Z\)</span>, and <span class="math inline">\(1\)</span>-dimensional outcome <span class="math inline">\(Y\)</span>. The causal query of interest is the family of intervention distributions <span class="math display">\[
+P(Y \mid do(X)),
+\]</span> or the family of distributions of the outcome <span class="math inline">\(Y\)</span> when the treatments <span class="math inline">\(X\)</span> are set to arbitrary values.</p>
+<p><strong>If <span class="math inline">\(Z\)</span> were observed</strong>, the following assumptions are sufficient to answer the causal query nonparametrically:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Unconfoundedness:</strong> <span class="math inline">\(Z\)</span> blocks all backdoor paths between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, and</li>
+<li><strong>Positivity:</strong> <span class="math inline">\(P(X \in A \mid Z) &gt; 0 \quad \text{for each } P(A) &gt; 0\)</span>, where <span class="math inline">\(A\)</span> is any set in the sample space of <span class="math inline">\(X\)</span>.</li>
+</ol>
+<p>By the unconfoundedness asumption, the following relations hold: <span class="math display">\[
+P(Y \mid do(X)) = E_{P(Z)}[P(Y \mid X, Z)] = \sum_{Z \in \{0,1\}}P(Z) P(Y \mid X, Z).
+\]</span> Under the postivity assumption, all terms of the rightmost expression have observable implications, and are therefore estimable. Without the positivity assumption, the relations are still valid, but one needs to impose some parametric structure on <span class="math inline">\(P(Y \mid X, Z)\)</span> for combinations of <span class="math inline">\((X, Z)\)</span> that are not observable.</p>
+</div>
+<div id="reconstructing-the-latent-z" class="section level3">
+<h3>“Reconstructing” the Latent <span class="math inline">\(Z\)</span></h3>
+<p>In actuality, the confounder <span class="math inline">\(Z\)</span> is not observed. Latent confounder reconstruction adds one additional assumption.</p>
+<ol start="3">
+<li>
+<strong>Consistency</strong>: There exists some estimator <span class="math inline">\(\hat Z(X)\)</span> such that, as <span class="math inline">\(m\)</span> grows large <span class="math display">\[\hat Z(X) \stackrel{P}{\longrightarrow} Z.\]</span>
+</li>
+</ol>
+<p>The general idea is that if <span class="math inline">\(Z\)</span> can be “reconstructed”&quot; using a large number of observed treatments, then we should be able to adjust for the reconstructed <span class="math inline">\(Z\)</span> in the same way we would have adjusted for <span class="math inline">\(Z\)</span> if it were observed.</p>
+</div>
+<div id="incompatibility-with-positivity" class="section level3">
+<h3>Incompatibility with Positivity</h3>
+<p>Unfortunately, the very fact that the latent variable <span class="math inline">\(Z\)</span> can be estimated consistently implies that the positivity assumption is violated as <span class="math inline">\(m \rightarrow \infty\)</span>. We show this in the following proposition.</p>
+
+<div class="proposition">
+<span id="prp:unnamed-chunk-1" class="proposition"><strong>Proposition 1  (Mutual Exclusivity)  </strong></span>Suppose there exists a consistent esitmator <span class="math inline">\(\hat Z(X)\)</span> of <span class="math inline">\(Z\)</span> as <span class="math inline">\(m\)</span> grows large, and that <span class="math inline">\(Z\)</span> is not degenerate. Then the positivity assumption is violated as <span class="math inline">\(m\)</span> grows large.
+</div>
+
+
+<div class="proof">
+ <span class="proof"><em>Proof. </em></span> Define the set <span class="math inline">\(A(Z) = \{x : \hat Z(x) \neq Z\}\)</span>. Because <span class="math inline">\(\hat Z(X)\)</span> is consistent, <span class="math inline">\(P(X \in A(Z) \mid Z) \rightarrow 0\)</span> as <span class="math inline">\(m\)</span> grows large. Because <span class="math inline">\(Z\)</span> is not degenerate, <span class="math inline">\(A(Z)\)</span> has non-zero probability for all values in the support of <span class="math inline">\(Z\)</span>. Thus, <span class="math inline">\(P(X \in A(Z)) &gt; 0\)</span>, and the positivity assumption is violated in the limit.
+</div>
+
+<p>When positivity is violated, we require strong modeling assumptions to fill in conditional distributions <span class="math inline">\(P(Y \mid X, Z)\)</span> for pairs <span class="math inline">\((X, Z)\)</span> that are unobservable. This is particularly difficult in the case of unobserved confounding because we are extrapolating a conditional distribution where one of the conditioning arguments is itself unobserved.</p>
+</div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<div id="model" class="section level3">
+<h3>Model</h3>
+<p>Consider the following example, with one-dimensional, binary latent variable <span class="math inline">\(Z\)</span>, and continuous treatments <span class="math inline">\(X\)</span>. In the structural model, we assume that the treatments are mutually independent of each other when <span class="math inline">\(Z\)</span> is known, but that the variance of these treatments is four times as large when the latent variable <span class="math inline">\(Z = 1\)</span> versus when <span class="math inline">\(Z = 0\)</span>. Further, we assume that the expectation of the outcome <span class="math inline">\(Y\)</span> depends on the value of <span class="math inline">\(Z\)</span> and whether the norm of the treatments <span class="math inline">\(\|X\|\)</span> exceeds a particular threshold. <span class="math display">\[
+\begin{align}
+Z &amp;\sim \text{Bern}(0.5)\\\\
+X &amp;\sim N_m(0, \sigma^2(Z) I_{m \times m})\\
+\sigma(Z) &amp;:= \left\{
+\begin{array}{rl}
+\sigma &amp;\text{if } Z = 0\\
+2\sigma &amp;\text{if } Z = 1
+\end{array}
+\right.\\\\
+Y &amp;\sim N(\mu(Z, X), 1)\\
+\mu(Z,X) &amp;:= \left\{
+\begin{array}{rl}
+\alpha_{00} &amp;\text{if } Z = 0 \text{ and }\|X\|/\sqrt{m} &lt; 1.5\sigma\\
+\alpha_{01} &amp;\text{if } Z = 0 \text{ and } \|X\|/\sqrt{m} \geq 1.5\sigma\\
+\alpha_{10} &amp;\text{if } Z = 1 \text{ and }\|X\|/\sqrt{m} &lt; 1.5\sigma\\
+\alpha_{11} &amp;\text{if } Z = 1 \text{ and }\|X\|/\sqrt{m} \geq 1.5\sigma
+\end{array}
+\right.
+\end{align}
+\]</span></p>
+<p>We will analyze this example as the number of treatmnet <span class="math inline">\(m\)</span> goes to infinity.</p>
+</div>
+<div id="consistent-estimation-of-z" class="section level3">
+<h3>Consistent Estimation of <span class="math inline">\(Z\)</span></h3>
+<p>First, note that as the number of treatments <span class="math inline">\(m\)</span> grows large, the latent variable <span class="math inline">\(Z\)</span> can be estimated perfectly for any unit. Writing <span class="math inline">\(X = (X^{(1)}, \cdots, X^{(m)})\)</span>, by the law of large numbers <span class="math display">\[
+\sqrt{\frac{\sum_{j = 1}^m {X^{(j)}}^2}{m}} = \|X\|/\sqrt{m} \stackrel{P}{\longrightarrow} \sigma(Z_i),
+\]</span> where <span class="math inline">\(\stackrel{P}{\longrightarrow}\)</span> indicates convergence in probability. From this fact, we con construct consistent esitmators <span class="math inline">\(\hat Z(X)\)</span> for <span class="math inline">\(Z\)</span>. For example, letting <span class="math inline">\(I\{\cdot\}\)</span> be an indicator function, <span class="math display">\[\hat Z(X) := I\{\|X\|/\sqrt{m} &gt; 1.5\sigma\}\]</span> is consistent as <span class="math inline">\(m\)</span> grows large.</p>
+<p>We can visualize this example with a <strong>polar projection</strong> of the random vector <span class="math inline">\(X\)</span> at various values of <span class="math inline">\(m\)</span>. This is one of my favorite visualizations, inspired by Figure 3.6 in Roman Vershynin’s <em>High Dimensional Probability</em> (<a href="http://www-personal.umich.edu/~romanv/papers/HDP-book/HDP-book.pdf">pdf</a>). We represent a vector of treatments <span class="math inline">\(X\)</span> using polar coordinates, where the radius is given by <span class="math inline">\(\|X\|/\sqrt{m}\)</span> and the angle is given by the angle that <span class="math inline">\(X\)</span> makes with an arbitrary 2-dimensional plane (because the distribution of <span class="math inline">\(X\)</span> is spherically symmetric the choice of the plane does not matter). This repressentation highlights a well-known concentration of measure phenomenon, where high-dimensional Gaussian vectors concentrate on a shell around the mean of the distribution.</p>
+<p>In the figure, I’m plotting 1000 draws of the treatment vector <span class="math inline">\(X\)</span> under each of the latent states <span class="math inline">\(Z = 0\)</span> and <span class="math inline">\(Z = 1\)</span> when <span class="math inline">\(m\)</span> takes the values <span class="math inline">\(\{2, 20, 200\}\)</span>. We also plot the boundary where <span class="math inline">\(\hat Z(X)\)</span> changes value from 0 to 1 (that is, where <span class="math inline">\(\|X\|/\sqrt{m}\)</span> crosses <span class="math inline">\(1.5\sigma\)</span>). It is evident that as <span class="math inline">\(m\)</span> grows large, the cases where <span class="math inline">\(Z=0\)</span> and <span class="math inline">\(Z=1\)</span> are clearly separated by this boundary, and thus, <span class="math inline">\(\hat Z(X)\)</span> is consistent as <span class="math inline">\(m\)</span> grows large.</p>
+<pre class="r"><code>require(mvtnorm)</code></pre>
+<pre><code>## Loading required package: mvtnorm</code></pre>
+<pre class="r"><code># 2-D polar coordinates to cartesion coordinates  
+polar2cartesian &lt;- function(r, ang){
+  cbind(r*cos(ang), r*sin(ang))
+}
+
+# Plot 2-D polar projection of high-dimensional spherical Gaussians from model
+# with decision boundary for Zhat
+plot_polar_proj &lt;- function(sig, m=100, n=1e3, decision=1.5, ...){
+  x0 &lt;- rmvnorm(n, rep(0,m), diag(sig^2, m))
+  x1 &lt;- rmvnorm(n, rep(0,m), diag((2*sig)^2, m))
+  
+  # Polar projection of high-dimensional vector.
+  proj_coords &lt;- function(x1){
+    d1 &lt;- c(1, rep(0, m-1))
+    d2 &lt;- c(0, 1, rep(0, m-2))
+    proj &lt;- cbind(d1, d2)
+    x1p &lt;- x1 %*% proj
+  
+    norm1 &lt;- sqrt(rowSums(x1^2)/m)
+    raw_dir &lt;- acos(x1p[,1]/sqrt(x1p[,1]^2+x1p[,2]^2))
+    dir1 &lt;- ifelse(x1p[,2] &gt; 0, raw_dir, 2*pi-raw_dir)
+    cbind(norm1*cos(dir1), norm1*sin(dir1))
+  }
+
+  p0 &lt;- proj_coords(x0)
+  #p0_normed &lt;- t(apply(p0, 1, function(r){ r / sqrt(sum(r^2)) * 1.5 * sig}))
+  p1 &lt;- proj_coords(x1)
+  boundary &lt;- polar2cartesian(1.5*sig, seq(0, 2*pi, length.out=50))
+  
+  ps &lt;- rbind(p0, p1)#,
+              #p0_normed)
+  col0 &lt;- &#39;red&#39;
+  col1 &lt;- &#39;blue&#39;
+  #col_normed &lt;- &#39;black&#39;
+  plot(ps[,1], ps[,2], col=c(rep(col0, n), rep(col1,n)), pch=46, cex=2,
+       xlab=NA, ylab=NA, main=sprintf(&quot;m = %d&quot;, m), ...)
+  lines(boundary[,1], boundary[,2])
+  #return(list(x0=x0, x1=x1))
+}
+par(mfrow=c(1, 3), mar=c(2,2,2,2), bty=&#39;n&#39;)
+lims &lt;- c(-3, 3)
+plot_polar_proj(1, m=2, ylim=lims, xlim=lims)
+plot_polar_proj(1, m=20, ylim=lims, xlim=lims)
+plot_polar_proj(1, m=200, ylim=lims, xlim=lims)
+legend(&#39;bottomright&#39;, c(&quot;Z = 0&quot;, &quot;Z = 1&quot;, expression(hat(Z)~boundary)), col=c(&quot;red&quot;, &quot;blue&quot;, &quot;black&quot;), pch=c(46, 46, NA), lty=c(NA, NA, 1), bty=&#39;o&#39;, box.col=&#39;white&#39;, bg=&quot;#00000011&quot;, pt.cex=8)</code></pre>
+<p><img src="/post/reconstruction-positivity_files/figure-html/unnamed-chunk-3-1.png" width="90%" style="display: block; margin: auto;" /></p>
+<div class="note">
+<p>To view a larger version of this image, try right-clicking and opening the image in a new tab.</p>
+</div>
+</div>
+<div id="unobservable-expectations" class="section level3">
+<h3>Unobservable Expectations</h3>
+<p>Because <span class="math inline">\(\hat Z(X)\)</span> is a conssitent esitmator, certain conditional probability distributions <span class="math inline">\(P(Y \mid X, Z)\)</span> cannot be estimated from the data. In particular, as <span class="math inline">\(m\)</span> grows large, the probability of observing the following two cases converges to zero: <span class="math display">\[
+Z = 0 \text{ and } \hat Z(X) = 1\\
+Z = 1 \text{ and } \hat Z(X) = 0.
+\]</span> This implies that the mean of <span class="math inline">\(Y\)</span> in the structural model, <span class="math inline">\(\mu(X, Z)\)</span>, cannot be estimated from the data in these two cases. In particular, in the limit, <strong>the parameters <span class="math inline">\(\alpha_{01}\)</span> and <span class="math inline">\(\alpha_{10}\)</span> are completely uninformed by the data.</strong></p>
+<p>To see this from the figure above, note that the expected outcome <span class="math inline">\(\mu(X, Z)\)</span> for each unit in the figure is a function of the point’s color and whether it lies on the inside or outside of the black circle. As <span class="math inline">\(m\)</span> grows large, we only observe red points inside the circle and blue points outside; the probability of observing an outcome corresponding to, say, a red point outside of the circle, falls to zero.</p>
+<p>In this case, any query <span class="math inline">\(P(Y \mid do(X))\)</span> cannot be completed, unless one makes additional modeling assumptions about how these parameters are related to the identified parameters <span class="math inline">\(\alpha_{00}\)</span> and <span class="math inline">\(\alpha_{11}\)</span>.</p>
+</div>
+</div>
+<div id="takeaways" class="section level2">
+<h2>Takeaways</h2>
+<p>Given that there is a fundamental incompatibility between positivity and reconstructing latent confounders, what can be done? We either need to live without the positivity assumption, or change the way we attempt to identify causal effects when latent confounding is present.</p>
+<p>The only way to proceed without positivity is to make parametric modeling assumptions about the structural model for <span class="math inline">\(Y\)</span>. We might assume, for example, that <span class="math display">\[
+\mu(X, Z) = \alpha X + \beta Z
+\]</span> for coefficient vectors <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span>. This linear, separable specification allows one to extrapolate <span class="math inline">\(\mu(X, Z)\)</span> to combinations of <span class="math inline">\((X, Z)\)</span> that are unobservable. Less restrictively, we might assume that <span class="math inline">\(Y\)</span> only depends on statistics of <span class="math inline">\(X\)</span> that are ancillary to <span class="math inline">\(Z\)</span>; if this is the case, then there would be perfect overlap in the functions of <span class="math inline">\(X\)</span> that actually determine <span class="math inline">\(Y\)</span>. In the example above, the direction of <span class="math inline">\(X\)</span> is independent of <span class="math inline">\(Z\)</span>, so if <span class="math inline">\(\mu(X, Z)\)</span> only depended on the direction of <span class="math inline">\(X\)</span> and not its magnitude, then the structural model for <span class="math inline">\(Y\)</span> could still be estimated.</p>
+<p>One can also consider cases where <span class="math inline">\(Z\)</span> <em>cannot</em> be reconstructed with full precision. Given the identification relation from the intro section, to calculate <span class="math inline">\(P(Y \mid do(X))\)</span>, it is sufficient to recover the distributions <span class="math inline">\(P(Z)\)</span> and <span class="math inline">\(P(Y \mid X, Z)\)</span>. We can do this without reconstructing <span class="math inline">\(Z\)</span>, although we require additional information to do so. This additional information can come in the form of proxies (e.g., in <a href="https://arxiv.org/abs/1609.08816">Miao et al 2017</a>), or in the form of parametric assumptions about the distributions <span class="math inline">\(P(Z)\)</span> and <span class="math inline">\(P(Y \mid X, Z)\)</span>. In the latter case, there is a rich literature on identification in mixture models (<a href="https://link.springer.com/article/10.1007%2Fs003570000022?LI=true">Hennig 2002</a> contains a short review).</p>
+<p>In either case, identification of causal effects when unobserved confounding is present is incredibly hard. It is perhaps the central problem in all of observational causal inference. Sensitivity analysis my be a more fruitful approach if one suspects that this is a problem in a particular study. I discuss sensitivity analysis in slightly more detail in my <a href="/2018/05/18/non-identification-in-latent-confounder-models/">last post</a> on the multiple causal inference problem.</p>
+</div>
