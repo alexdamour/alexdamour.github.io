@@ -76,10 +76,11 @@ Then the positivity assumption is violated as $m$ grows large.
 ```
 
 ```{proof}
-Define the set $A(Z) = \{x : \hat Z(x) \neq Z\}$.
-Because $\hat Z(X)$ is consistent, $P(X \in A(Z) \mid Z) \rightarrow 0$ as $m$ grows large.
-Because $Z$ is not degenerate, $A(Z)$ has non-zero probability for all values in the support of $Z$.
-Thus, $P(X \in A(Z)) > 0$, and the positivity assumption is violated in the limit.
+For each, $m$, fine the set $A_m(z) = \{x : \hat Z(x) \neq z\}$.
+Because $\hat Z(X)$ is consistent, $P(X \in A(z) \mid Z=z) \rightarrow 0$ as $m$ grows large for each $z$ in the support of $Z$.
+Because $Z$ is not degenerate, $P(Z = z) > 0$ for more than one value $z$.
+Thus, as $m$ grows large and $\hat Z \rightarrow Z$, $P(X \in A_m(z)) \rightarrow P(Z \neq z) > 0$ for all $z$ in the support of $Z$.
+Thus, positivity is violated.
 ```
 
 When positivity is violated, we require strong modeling assumptions to fill in conditional distributions $P(Y \mid X, Z)$ for pairs $(X, Z)$ that are unobservable.
