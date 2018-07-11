@@ -26,6 +26,7 @@ I will call this strategy **latent confounder reconstruction**.
 The purpose of this technical post is to highlight a central weakness of this strategy.
 In particular, if the latent variable is not degenerate and can be estimated consistently (in many cases [it cannot](/2018/05/18/non-identification-in-latent-confounder-models/)), then the **positivity assumption** will be violated with respect to that latent variable.
 The positivity assumption, also known as overlap or common support, is a necessary condition for doing causal inference without strong modeling assumptions.
+Thus, the result in this post implies that **latent confounder reconstruction can only be used with strong parametric assumptions** about the relationship between treatment, confounder, and outcome.
 
 I'll write this post in Pearl's notation, using the do operator, but the translation to potential outcomes is straightforward.
  
@@ -43,13 +44,13 @@ or the family of distributions of the outcome $Y$ when the treatments $X$ are se
 **If $Z$ were observed**, the following assumptions are sufficient to answer the causal query nonparametrically:
 
   1. **Unconfoundedness:** $Z$ blocks all backdoor paths between $X$ and $Y$, and
-  1. **Positivity:** $P(X \in A \mid Z) > 0 \quad \text{for each } P(A) > 0$, where $A$ is any set in the sample space of $X$.
+  1. **Positivity:** $P(X \in A \mid Z) > 0, for each set $A$ in the sample space of $X$ for which $P(X \in A) > 0$.
 
 By the unconfoundedness asumption, the following relations hold:
 $$
 P(Y \mid do(X)) = E_{P(Z)}[P(Y \mid X, Z)] = \sum_{Z \in \{0,1\}}P(Z) P(Y \mid X, Z).
 $$
-Under the postivity assumption, all terms of the rightmost expression have observable implications, and are therefore estimable.
+Under the postivity assumption, all pairs of $(X, Z)$ are observable, so all terms of the rightmost expression can be estimated without parametric assumptions.
 Without the positivity assumption, the relations are still valid, but one needs to impose some parametric structure on $P(Y \mid X, Z)$ for combinations of $(X, Z)$ that are not observable.
 
 ### "Reconstructing" the Latent $Z$
@@ -76,10 +77,15 @@ Then the positivity assumption is violated as $m$ grows large.
 ```
 
 ```{proof}
-For each, $m$, fine the set $A_m(z) = \{x : \hat Z(x) \neq z\}$.
-Because $\hat Z(X)$ is consistent, $P(X \in A(z) \mid Z=z) \rightarrow 0$ as $m$ grows large for each $z$ in the support of $Z$.
+For each $m$ and each latent variable value $z$, define the set
+$$A_m(z) = \{x : \hat Z(x) \neq z\}.$$
+Because $\hat Z(X)$ is consistent, for each $z$ in the support of $Z$,
+$$P(\hat Z(X) \neq z \mid Z = z) = P(X \in A_m(z) \mid Z=z) \rightarrow 0$$
+as $m$ grows large.
 Because $Z$ is not degenerate, $P(Z = z) > 0$ for more than one value $z$.
-Thus, as $m$ grows large and $\hat Z \rightarrow Z$, $P(X \in A_m(z)) \rightarrow P(Z \neq z) > 0$ for all $z$ in the support of $Z$.
+Thus, as $m$ grows large and$\hat Z \rightarrow Z$,
+$$P(X \in A_m(z)) \rightarrow P(Z \neq z) > 0$$
+for all $z$ in the support of $Z$.
 Thus, positivity is violated.
 ```
 
@@ -233,10 +239,11 @@ In the latter case, there is a rich literature on identification in mixture mode
 
 In either case, identification of causal effects when unobserved confounding is present is incredibly hard.
 It is perhaps the central problem in all of observational causal inference.
-Sensitivity analysis my be a more fruitful approach if one suspects that this is a problem in a particular study.
+Sensitivity analysis may be a more fruitful approach if one suspects that this is a problem in a particular study.
 I discuss sensitivity analysis in slightly more detail in my [last post](/2018/05/18/non-identification-in-latent-confounder-models/) on the multiple causal inference problem.
 
-
+<div class=note>Thanks to [Alex Franks](http://afranks.com/) for his feedback on this post. Thanks to [Rajesh Rangananth](https://cims.nyu.edu/~rajeshr/) for thoughtful comments on the [first post](/2018/05/18/non-identification-in-latent-confounder-models/) on latent confounders; these comments inspired this post.
+</div>
 
 
 
