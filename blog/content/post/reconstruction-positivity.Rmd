@@ -80,7 +80,7 @@ Then the positivity assumption is violated as $m$ grows large.
 For each $m$ and each latent variable value $z$, define the set
 $$A_m(z) = \{x : \hat Z(x) \neq z\}.$$
 Because $\hat Z(X)$ is consistent, for each $z$ in the support of $Z$,
-$$P(\hat Z(X) \neq z \mid Z = z) = P(X \in A_m(z) \mid Z=z) \rightarrow 0$$
+$$ P(X \in A_m(z) \mid Z=z) = P(\hat Z(X) \neq z \mid Z = z) \rightarrow 0$$
 as $m$ grows large.
 Because $Z$ is not degenerate, $P(Z = z) > 0$ for more than one value $z$.
 Thus, as $m$ grows large and$\hat Z \rightarrow Z$,
