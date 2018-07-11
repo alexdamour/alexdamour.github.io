@@ -48,7 +48,7 @@ or the family of distributions of the outcome $Y$ when the treatments $X$ are se
 
 By the unconfoundedness asumption, the following relations hold:
 $$
-P(Y \mid do(X)) = E_{P(Z)}[P(Y \mid X, Z)] = \sum_{Z \in \{0,1\}}P(Z) P(Y \mid X, Z).
+P(Y \mid do(X)) = E_{P(Z)}[P(Y \mid X, Z)] = \int_{z \in \mathcal{Z}} P(Y \mid X, z) dP(z).
 $$
 Under the postivity assumption, all pairs of $(X, Z)$ are observable, so all terms of the rightmost expression can be estimated without parametric assumptions.
 Without the positivity assumption, the relations are still valid, but one needs to impose some parametric structure on $P(Y \mid X, Z)$ so that this conditional distribution can be estimated for combinations of $(X, Z)$ that are not observable.

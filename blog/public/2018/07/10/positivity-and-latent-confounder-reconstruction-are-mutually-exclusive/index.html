@@ -92,7 +92,7 @@ P(Y \mid do(X)),
 <li><strong>Positivity:</strong> <span class="math inline">\(P(X \in A \mid Z) &gt; 0\)</span>, for each set <span class="math inline">\(A\)</span> in the sample space of <span class="math inline">\(X\)</span> for which <span class="math inline">\(P(X \in A) &gt; 0\)</span>.</li>
 </ol>
 <p>By the unconfoundedness asumption, the following relations hold: <span class="math display">\[
-P(Y \mid do(X)) = E_{P(Z)}[P(Y \mid X, Z)] = \sum_{Z \in \{0,1\}}P(Z) P(Y \mid X, Z).
+P(Y \mid do(X)) = E_{P(Z)}[P(Y \mid X, Z)] = \int_{z \in \mathcal{Z}} P(Y \mid X, z) dP(z).
 \]</span> Under the postivity assumption, all pairs of <span class="math inline">\((X, Z)\)</span> are observable, so all terms of the rightmost expression can be estimated without parametric assumptions. Without the positivity assumption, the relations are still valid, but one needs to impose some parametric structure on <span class="math inline">\(P(Y \mid X, Z)\)</span> so that this conditional distribution can be estimated for combinations of <span class="math inline">\((X, Z)\)</span> that are not observable.</p>
 </div>
 <div id="reconstructing-the-latent-z" class="section level3">
