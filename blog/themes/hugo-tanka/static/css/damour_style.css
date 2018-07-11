@@ -19,7 +19,7 @@
     font-style: italic;
 }
 
-.proof {
+div.proof {
   padding: 0.5em;
   background-color: #eee;
 }
