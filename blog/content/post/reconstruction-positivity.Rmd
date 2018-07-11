@@ -133,9 +133,8 @@ We will analyze this example as the number of treatmnet $m$ goes to infinity.
 First, note that as the number of treatments $m$ grows large, the latent variable $Z$ can be estimated perfectly for any unit.
 Writing $X = (X^{(1)}, \cdots, X^{(m)})$, by the strong law of large numbers
 $$
-\sqrt{\frac{\sum_{j = 1}^m {X^{(j)}}^2}{m}} = \|X\|/\sqrt{m} \stackrel{a.s.}{\longrightarrow} \sigma(Z_i),
+\sqrt{\frac{\sum_{j = 1}^m {X^{(j)}}^2}{m}} = \|X\|/\sqrt{m} \stackrel{a.s.}{\longrightarrow} \sigma(Z_i).
 $$
-where $\stackrel{P}{\longrightarrow}$ indicates convergence in probability.
 From this fact, we con construct consistent esitmators $\hat Z(X)$ for $Z$. For example, letting $I\{\cdot\}$ be an indicator function,
 $$\hat Z(X) := I\{\|X\|/\sqrt{m} > 1.5\sigma\}$$
 is consistent as $m$ grows large.
@@ -235,7 +234,7 @@ We might assume, for example, that
 $$
 \mu(X, Z) = \alpha X + \beta Z
 $$
-for coefficient vectors $\alpha$ and $\beta$.
+for some coefficient vectors $\alpha$ and $\beta$.
 This linear, separable specification allows one to extrapolate $\mu(X, Z)$ to combinations of $(X, Z)$ that are unobservable.
 Less restrictively, we might assume that $Y$ only depends on statistics of $X$ that are ancillary to $Z$; if this is the case, then there would be perfect overlap in the functions of $X$ that actually determine $Y$.
 In the example above, the direction of $X$ is independent of $Z$, so if $\mu(X, Z)$ only depended on the direction of $X$ and not its magnitude, then the structural model for $Y$ could still be estimated.
