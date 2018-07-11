@@ -195,20 +195,24 @@ plot_polar_proj(1, m=200, ylim=lims, xlim=lims)
 legend('bottomright', c("Z = 0", "Z = 1", expression(hat(Z)~boundary)), col=c("red", "blue", "black"), pch=c(46, 46, NA), lty=c(NA, NA, 1), bty='o', box.col='white', bg="#00000011", pt.cex=8)
 ```
 
-<div class="note">
+<div class="caption">
+Plot of polar projection of treatments $X$, colored by the value of the latent confounder $Z$.
+As $m$, the dimension of $X$, increases, the treatment vectors $X$ generated under each value of $Z$ become more distinct.
+We take advantage of this distinctness to estimate $Z$ consistently; as $m$ grows large, the black boundary encodes an estimator $\hat Z(X)$ that calls $Z=0$ if a point lands inside the circle, and $Z=1$ if it lands outside.
+However, this separation between red and blue points also indicates a positivity violation.
 To view a larger version of this image, try right-clicking and opening the image in a new tab.
 </div>
 
 ### Unobservable Expectations
 
 Because $\hat Z(X)$ is a conssitent esitmator, certain conditional probability distributions $P(Y \mid X, Z)$ cannot be estimated from the data.
-In particular, as $m$ grows large, the probability of observing the following two cases converges to zero:
+In particular, as $m$ grows large, the probability of observing outcomes informing the following two parameters falls to zero:
 $$
-Z = 0 \text{ and } \hat Z(X) = 1\\
-Z = 1 \text{ and } \hat Z(X) = 0.
+\alpha_{01} = E[Y \mid Z = 0, \hat Z(X) = 1]\\
+\alpha_{10} = E[Y \mid Z = 1, \hat Z(X) = 0],
 $$
-This implies that the mean of $Y$ in the structural model, $\mu(X, Z)$, cannot be estimated from the data in these two cases.
-In particular, in the limit, **the parameters $\alpha_{01}$ and $\alpha_{10}$ are completely uninformed by the data.**
+because the probability of observing pairings $(X, Z)$ such that $\hat Z(X) \neq Z$ falls to zero.
+Thus, **the mean of $Y$ in the structural model, $\mu(X, Z)$, cannot be estimated from the data in these two cases.**
 
 To see this from the figure above, note that the expected outcome $\mu(X, Z)$ for each unit in the figure is a function of the point's color and whether it lies on the inside or outside of the black circle.
 As $m$ grows large, we only observe red points inside the circle and blue points outside;

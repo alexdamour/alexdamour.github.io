@@ -203,16 +203,16 @@ plot_polar_proj(1, m=20, ylim=lims, xlim=lims)
 plot_polar_proj(1, m=200, ylim=lims, xlim=lims)
 legend(&#39;bottomright&#39;, c(&quot;Z = 0&quot;, &quot;Z = 1&quot;, expression(hat(Z)~boundary)), col=c(&quot;red&quot;, &quot;blue&quot;, &quot;black&quot;), pch=c(46, 46, NA), lty=c(NA, NA, 1), bty=&#39;o&#39;, box.col=&#39;white&#39;, bg=&quot;#00000011&quot;, pt.cex=8)</code></pre>
 <p><img src="../../../../post/reconstruction-positivity_files/figure-html/unnamed-chunk-3-1.png" width="90%" style="display: block; margin: auto;" /></p>
-<div class="note">
-<p>To view a larger version of this image, try right-clicking and opening the image in a new tab.</p>
+<div class="caption">
+<p>Plot of polar projection of treatments <span class="math inline">\(X\)</span>, colored by the value of the latent confounder <span class="math inline">\(Z\)</span>. As <span class="math inline">\(m\)</span>, the dimension of <span class="math inline">\(X\)</span>, increases, the treatment vectors <span class="math inline">\(X\)</span> generated under each value of <span class="math inline">\(Z\)</span> become more distinct. We take advantage of this distinctness to estimate <span class="math inline">\(Z\)</span> consistently; as <span class="math inline">\(m\)</span> grows large, the black boundary encodes an estimator <span class="math inline">\(\hat Z(X)\)</span> that calls <span class="math inline">\(Z=0\)</span> if a point lands inside the circle, and <span class="math inline">\(Z=1\)</span> if it lands outside. However, this separation between red and blue points also indicates a positivity violation. To view a larger version of this image, try right-clicking and opening the image in a new tab.</p>
 </div>
 </div>
 <div id="unobservable-expectations" class="section level3">
 <h3>Unobservable Expectations</h3>
-<p>Because <span class="math inline">\(\hat Z(X)\)</span> is a conssitent esitmator, certain conditional probability distributions <span class="math inline">\(P(Y \mid X, Z)\)</span> cannot be estimated from the data. In particular, as <span class="math inline">\(m\)</span> grows large, the probability of observing the following two cases converges to zero: <span class="math display">\[
-Z = 0 \text{ and } \hat Z(X) = 1\\
-Z = 1 \text{ and } \hat Z(X) = 0.
-\]</span> This implies that the mean of <span class="math inline">\(Y\)</span> in the structural model, <span class="math inline">\(\mu(X, Z)\)</span>, cannot be estimated from the data in these two cases. In particular, in the limit, <strong>the parameters <span class="math inline">\(\alpha_{01}\)</span> and <span class="math inline">\(\alpha_{10}\)</span> are completely uninformed by the data.</strong></p>
+<p>Because <span class="math inline">\(\hat Z(X)\)</span> is a conssitent esitmator, certain conditional probability distributions <span class="math inline">\(P(Y \mid X, Z)\)</span> cannot be estimated from the data. In particular, as <span class="math inline">\(m\)</span> grows large, the probability of observing outcomes informing the following two parameters falls to zero: <span class="math display">\[
+\alpha_{01} = E[Y \mid Z = 0, \hat Z(X) = 1]\\
+\alpha_{10} = E[Y \mid Z = 1, \hat Z(X) = 0],
+\]</span> because the probability of observing pairings <span class="math inline">\((X, Z)\)</span> such that <span class="math inline">\(\hat Z(X) \neq Z\)</span> falls to zero. Thus, <strong>the mean of <span class="math inline">\(Y\)</span> in the structural model, <span class="math inline">\(\mu(X, Z)\)</span>, cannot be estimated from the data in these two cases.</strong></p>
 <p>To see this from the figure above, note that the expected outcome <span class="math inline">\(\mu(X, Z)\)</span> for each unit in the figure is a function of the point’s color and whether it lies on the inside or outside of the black circle. As <span class="math inline">\(m\)</span> grows large, we only observe red points inside the circle and blue points outside; the probability of observing an outcome corresponding to, say, a red point outside of the circle, falls to zero.</p>
 <p>In this case, any query <span class="math inline">\(P(Y \mid do(X))\)</span> cannot be completed, unless one makes additional modeling assumptions about how these parameters are related to the identified parameters <span class="math inline">\(\alpha_{00}\)</span> and <span class="math inline">\(\alpha_{11}\)</span>.</p>
 </div>
