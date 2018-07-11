@@ -41,17 +41,17 @@ P(Y \mid do(X)),
 $$
 or the family of distributions of the outcome $Y$ when the treatments $X$ are set to arbitrary values.
 
-**If $Z$ were observed**, the following assumptions are sufficient to answer the causal query nonparametrically:
+**If $Z$ were observed**, the following assumptions would be sufficient to answer the causal query nonparametrically:
 
   1. **Unconfoundedness:** $Z$ blocks all backdoor paths between $X$ and $Y$, and
-  1. **Positivity:** $P(X \in A \mid Z) > 0, for each set $A$ in the sample space of $X$ for which $P(X \in A) > 0$.
+  1. **Positivity:** $P(X \in A \mid Z) > 0$, for each set $A$ in the sample space of $X$ for which $P(X \in A) > 0$.
 
 By the unconfoundedness asumption, the following relations hold:
 $$
 P(Y \mid do(X)) = E_{P(Z)}[P(Y \mid X, Z)] = \sum_{Z \in \{0,1\}}P(Z) P(Y \mid X, Z).
 $$
 Under the postivity assumption, all pairs of $(X, Z)$ are observable, so all terms of the rightmost expression can be estimated without parametric assumptions.
-Without the positivity assumption, the relations are still valid, but one needs to impose some parametric structure on $P(Y \mid X, Z)$ for combinations of $(X, Z)$ that are not observable.
+Without the positivity assumption, the relations are still valid, but one needs to impose some parametric structure on $P(Y \mid X, Z)$ so that this conditional distribution can be estimated for combinations of $(X, Z)$ that are not observable.
 
 ### "Reconstructing" the Latent $Z$
 
@@ -60,11 +60,16 @@ Latent confounder reconstruction adds one additional assumption.
 
 <ol start="3">
  <li> **Consistency**: There exists some estimator $\hat Z(X)$ such that, as $m$ grows large
-   $$\hat Z(X) \stackrel{P}{\longrightarrow} Z.$$
+   $$\hat Z(X) \stackrel{a.s.}{\longrightarrow} Z.$$
 </li>
 </ol>
    
 The general idea is that if $Z$ can be "reconstructed"" using a large number of observed treatments, then we should be able to adjust for the reconstructed $Z$ in the same way we would have adjusted for $Z$ if it were observed.
+
+<div class="note">
+Here, I'm using strong consistency (almost-sure convergence) because the notation's a bit more intuitive.
+This could be replaced with convergence in probability with a few more $\epsilon$'s.
+</div>
 
 ### Incompatibility with Positivity
 
@@ -83,7 +88,7 @@ Because $\hat Z(X)$ is consistent, for each $z$ in the support of $Z$,
 $$ P(X \in A_m(z) \mid Z=z) = P(\hat Z(X) \neq z \mid Z = z) \rightarrow 0$$
 as $m$ grows large.
 Because $Z$ is not degenerate, $P(Z = z) > 0$ for more than one value $z$.
-Thus, as $m$ grows large and$\hat Z \rightarrow Z$,
+Thus, as $m$ grows large and $\hat Z \rightarrow Z$,
 $$P(X \in A_m(z)) \rightarrow P(Z \neq z) > 0$$
 for all $z$ in the support of $Z$.
 Thus, positivity is violated.
@@ -126,9 +131,9 @@ We will analyze this example as the number of treatmnet $m$ goes to infinity.
 
 ### Consistent Estimation of $Z$
 First, note that as the number of treatments $m$ grows large, the latent variable $Z$ can be estimated perfectly for any unit.
-Writing $X = (X^{(1)}, \cdots, X^{(m)})$, by the law of large numbers
+Writing $X = (X^{(1)}, \cdots, X^{(m)})$, by the strong law of large numbers
 $$
-\sqrt{\frac{\sum_{j = 1}^m {X^{(j)}}^2}{m}} = \|X\|/\sqrt{m} \stackrel{P}{\longrightarrow} \sigma(Z_i),
+\sqrt{\frac{\sum_{j = 1}^m {X^{(j)}}^2}{m}} = \|X\|/\sqrt{m} \stackrel{a.s.}{\longrightarrow} \sigma(Z_i),
 $$
 where $\stackrel{P}{\longrightarrow}$ indicates convergence in probability.
 From this fact, we con construct consistent esitmators $\hat Z(X)$ for $Z$. For example, letting $I\{\cdot\}$ be an indicator function,
