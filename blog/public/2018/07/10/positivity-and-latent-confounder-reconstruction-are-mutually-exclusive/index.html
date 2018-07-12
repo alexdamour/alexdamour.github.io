@@ -70,6 +70,9 @@
 
   <div class="entry-content">
     <div class="note">
+<p>Last updated 2018-07-11.</p>
+</div>
+<div class="note">
 <p>Note: This post is the second in a series motivated by several recent papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding. See the first post <a href="../../../../2018/05/18/non-identification-in-latent-confounder-models/">here</a>.</p>
 </div>
 <div id="goal" class="section level2">
@@ -110,7 +113,9 @@ P(Y \mid do(X)) = E_{P(Z)}[P(Y \mid X, Z)] = \int_{z \in \mathcal{Z}} P(Y \mid X
 </div>
 <div id="incompatibility-with-positivity" class="section level3">
 <h3>Incompatibility with Positivity</h3>
-<p>Unfortunately, the very fact that the latent variable <span class="math inline">\(Z\)</span> can be estimated consistently implies that the positivity assumption is violated as <span class="math inline">\(m \rightarrow \infty\)</span>. We show this in the following proposition.</p>
+<p>Unfortunately, the very fact that the latent variable <span class="math inline">\(Z\)</span> can be estimated consistently implies that the positivity assumption is violated as <span class="math inline">\(m \rightarrow \infty\)</span>.</p>
+<p>The central idea is as follows: when <span class="math inline">\(\hat Z(X)\)</span> is consistent, in the large <span class="math inline">\(m\)</span> limit, the event <span class="math inline">\(Z=z\)</span> implies that <span class="math inline">\(X\)</span> must take a value <span class="math inline">\(x\)</span> such that <span class="math inline">\(\hat Z(x) = z\)</span>. Thus, for distinct values of <span class="math inline">\(Z\)</span>, <span class="math inline">\(X\)</span> must lie in distinct regions of the treatment space, violating positivity.</p>
+<p>We show this formally in the following proposition.</p>
 
 <div class="proposition">
 <span id="prp:unnamed-chunk-1" class="proposition"><strong>Proposition 1  (Mutual Exclusivity)  </strong></span>Suppose there exists a consistent esitmator <span class="math inline">\(\hat Z(X)\)</span> of <span class="math inline">\(Z\)</span> as <span class="math inline">\(m\)</span> grows large, and that <span class="math inline">\(Z\)</span> is not degenerate. Then the positivity assumption is violated as <span class="math inline">\(m\)</span> grows large.
@@ -118,7 +123,7 @@ P(Y \mid do(X)) = E_{P(Z)}[P(Y \mid X, Z)] = \int_{z \in \mathcal{Z}} P(Y \mid X
 
 
 <div class="proof">
- <span class="proof"><em>Proof. </em></span> For each <span class="math inline">\(m\)</span> and each latent variable value <span class="math inline">\(z\)</span>, define the set <span class="math display">\[A_m(z) = \{x : \hat Z(x) \neq z\}.\]</span> Because <span class="math inline">\(\hat Z(X)\)</span> is consistent, for each <span class="math inline">\(z\)</span> in the support of <span class="math inline">\(Z\)</span>, <span class="math display">\[ P(X \in A_m(z) \mid Z=z) = P(\hat Z(X) \neq z \mid Z = z) \rightarrow 0\]</span> as <span class="math inline">\(m\)</span> grows large. Because <span class="math inline">\(Z\)</span> is not degenerate, <span class="math inline">\(P(Z = z) &gt; 0\)</span> for more than one value <span class="math inline">\(z\)</span>. Thus, as <span class="math inline">\(m\)</span> grows large and <span class="math inline">\(\hat Z \rightarrow Z\)</span>, <span class="math display">\[P(X \in A_m(z)) \rightarrow P(Z \neq z) &gt; 0\]</span> for all <span class="math inline">\(z\)</span> in the support of <span class="math inline">\(Z\)</span>. Thus, positivity is violated.
+ <span class="proof"><em>Proof. </em></span> For each <span class="math inline">\(m\)</span> and each latent variable value <span class="math inline">\(z\)</span>, define the set <span class="math display">\[A_m(z) = \{x : \hat Z(x) \neq z\}.\]</span> <span class="math inline">\(A_m(z)\)</span> is the complement of <span class="math inline">\(\hat Z^{-1}(z)\)</span>, the pre-image of <span class="math inline">\(z\)</span> from the map <span class="math inline">\(\hat Z(X)\)</span>. Because <span class="math inline">\(\hat Z(X)\)</span> is consistent, for each <span class="math inline">\(z\)</span> in the support of <span class="math inline">\(Z\)</span>, <span class="math display">\[ P(X \in A_m(z) \mid Z=z) = P(\hat Z(X) \neq z \mid Z = z) \rightarrow 0\]</span> as <span class="math inline">\(m\)</span> grows large. Because <span class="math inline">\(Z\)</span> is not degenerate, <span class="math inline">\(P(Z = z) &gt; 0\)</span> for more than one value <span class="math inline">\(z\)</span>. Thus, as <span class="math inline">\(m\)</span> grows large and <span class="math inline">\(\hat Z \rightarrow Z\)</span>, <span class="math display">\[P(X \in A_m(z)) \rightarrow P(Z \neq z) &gt; 0\]</span> for all <span class="math inline">\(z\)</span> in the support of <span class="math inline">\(Z\)</span>. Thus, positivity is violated.
 </div>
 
 <p>When positivity is violated, we require strong modeling assumptions to fill in conditional distributions <span class="math inline">\(P(Y \mid X, Z)\)</span> for pairs <span class="math inline">\((X, Z)\)</span> that are unobservable. This is particularly difficult in the case of unobserved confounding because we are extrapolating a conditional distribution where one of the conditioning arguments is itself unobserved.</p>

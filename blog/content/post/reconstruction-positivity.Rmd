@@ -9,6 +9,9 @@ tags: ['Causal Inference', 'Identification', 'Technical']
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+<div class=note>
+Last updated 2018-07-11.
+</div>
 
 <div class=note>
 Note: This post is the second in a series motivated by several recent papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding. See the first post [here](/2018/05/18/non-identification-in-latent-confounder-models/).
@@ -74,7 +77,11 @@ This could be replaced with convergence in probability with a few more $\epsilon
 ### Incompatibility with Positivity
 
 Unfortunately, the very fact that the latent variable $Z$ can be estimated consistently implies that the positivity assumption is violated as $m \rightarrow \infty$.
-We show this in the following proposition.
+
+The central idea is as follows: when $\hat Z(X)$ is consistent, in the large $m$ limit, the event $Z=z$ implies that $X$ must take a value $x$ such that $\hat Z(x) = z$.
+Thus, for distinct values of $Z$, $X$ must lie in distinct regions of the treatment space, violating positivity.
+
+We show this formally in the following proposition.
 
 ```{proposition, name="Mutual Exclusivity"}
 Suppose there exists a consistent esitmator $\hat Z(X)$ of $Z$ as $m$ grows large, and that $Z$ is not degenerate.
@@ -84,6 +91,7 @@ Then the positivity assumption is violated as $m$ grows large.
 ```{proof}
 For each $m$ and each latent variable value $z$, define the set
 $$A_m(z) = \{x : \hat Z(x) \neq z\}.$$
+$A_m(z)$ is the complement of $\hat Z^{-1}(z)$, the pre-image of $z$ from the map $\hat Z(X)$.
 Because $\hat Z(X)$ is consistent, for each $z$ in the support of $Z$,
 $$ P(X \in A_m(z) \mid Z=z) = P(\hat Z(X) \neq z \mid Z = z) \rightarrow 0$$
 as $m$ grows large.
