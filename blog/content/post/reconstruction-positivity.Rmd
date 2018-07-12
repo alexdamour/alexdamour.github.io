@@ -217,7 +217,7 @@ To view a larger version of this image, try right-clicking and opening the image
 
 ### Unobservable Expectations
 
-Because $\hat Z(X)$ is a conssitent esitmator, certain conditional probability distributions $P(Y \mid X, Z)$ cannot be estimated from the data.
+Because $\hat Z(X)$ is a consitent esitmator, certain conditional probability distributions $P(Y \mid X, Z)$ cannot be estimated from the data.
 In particular, as $m$ grows large, the probability of observing outcomes informing the following two parameters falls to zero:
 $$
 \alpha_{01} = E[Y \mid Z = 0, \hat Z(X) = 1]\\
