@@ -9,7 +9,7 @@ tags: ['Causal Inference', 'Identification', 'Technical']
 
 
 <div class="note">
-<p>Last updated 2018-07-11.</p>
+<p>Last updated 2018-07-13.</p>
 </div>
 <div class="note">
 <p>Note: This post is the second in a series motivated by several recent papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding. See the first post <a href="/2018/05/18/non-identification-in-latent-confounder-models/">here</a>.</p>
@@ -18,7 +18,8 @@ tags: ['Causal Inference', 'Identification', 'Technical']
 <h2>Goal</h2>
 <p>In observational causal inference, unobserved confounding is a constant threat to drawing valid causal inferences. If there are unobserved variables that affect both treatment assignment and outcomes, then one cannot, in general, precisely quantify causal relationships from observational data, even as the sample size goes to infinity.</p>
 <p>Several recent papers have examined a special case of the unobserved confounding problem where it has been suggested that this identification problem might be solved. Specifically, they propose that if there are a <strong>large number of treatment factors</strong>, such that we can analyze the problem in the frame where the number of treatments goes to infinity, then the unobserved confounder may be consistently estimable from the data, and thus adjusted for like an observed confounder. I will call this strategy <strong>latent confounder reconstruction</strong>.</p>
-<p>The purpose of this technical post is to highlight a central weakness of this strategy. In particular, if the latent variable is not degenerate and can be estimated consistently (in many cases <a href="/2018/05/18/non-identification-in-latent-confounder-models/">it cannot</a>), then the <strong>positivity assumption</strong> will be violated with respect to that latent variable. The positivity assumption, also known as overlap or common support, is a necessary condition for doing causal inference without strong modeling assumptions. Thus, the result in this post implies that <strong>latent confounder reconstruction can only be used with strong parametric assumptions</strong> about the relationship between treatment, confounder, and outcome.</p>
+<p>The purpose of this technical post is to highlight a central weakness of this strategy. In particular, if the latent variable is not degenerate and can be estimated consistently (in many cases <a href="/2018/05/18/non-identification-in-latent-confounder-models/">it cannot</a>), then the <strong>positivity assumption</strong> (defined below) will be violated with respect to that latent variable. Equivalently, if the positivity assumption holds with respect to the latent variable, then the latent variable cannot be estimated consistently.</p>
+<p>The positivity assumption, also known as overlap or common support, is a necessary condition for doing causal inference without strong modeling assumptions. Thus, the result in this post implies that <strong>latent confounder reconstruction can only be used with strong parametric assumptions</strong> about the relationship between treatment, confounder, and outcome.</p>
 <p>I’ll write this post in Pearl’s notation, using the do operator, but the translation to potential outcomes is straightforward.</p>
 </div>
 <div id="latent-confounder-reconstruction" class="section level2">
@@ -63,6 +64,11 @@ P(Y \mid do(X)) = E_{P(Z)}[P(Y \mid X, Z)] = \int_{z \in \mathcal{Z}} P(Y \mid X
 
 <div class="proof">
  <span class="proof"><em>Proof. </em></span> For each <span class="math inline">\(m\)</span> and each latent variable value <span class="math inline">\(z\)</span>, define the set <span class="math display">\[A_m(z) = \{x : \hat Z(x) \neq z\}.\]</span> <span class="math inline">\(A_m(z)\)</span> is the complement of <span class="math inline">\(\hat Z^{-1}(z)\)</span>, the pre-image of <span class="math inline">\(z\)</span> from the map <span class="math inline">\(\hat Z(X)\)</span>. Because <span class="math inline">\(\hat Z(X)\)</span> is consistent, for each <span class="math inline">\(z\)</span> in the support of <span class="math inline">\(Z\)</span>, <span class="math display">\[ P(X \in A_m(z) \mid Z=z) = P(\hat Z(X) \neq z \mid Z = z) \rightarrow 0\]</span> as <span class="math inline">\(m\)</span> grows large. Because <span class="math inline">\(Z\)</span> is not degenerate, <span class="math inline">\(P(Z = z) &gt; 0\)</span> for more than one value <span class="math inline">\(z\)</span>. Thus, as <span class="math inline">\(m\)</span> grows large and <span class="math inline">\(\hat Z \rightarrow Z\)</span>, <span class="math display">\[P(X \in A_m(z)) \rightarrow P(Z \neq z) &gt; 0\]</span> for all <span class="math inline">\(z\)</span> in the support of <span class="math inline">\(Z\)</span>. Thus, positivity is violated.
+</div>
+
+
+<div class="proposition">
+<span id="prp:unnamed-chunk-3" class="proposition"><strong>Proposition 2  (Contrapositive)  </strong></span>If the positivity assumption holds as <span class="math inline">\(m\)</span> grows large, and the latent variable <span class="math inline">\(Z\)</span> is not degenerate, then there exists no consistent estimator <span class="math inline">\(\hat Z(X)\)</span> of <span class="math inline">\(Z\)</span>.
 </div>
 
 <p>When positivity is violated, we require strong modeling assumptions to fill in conditional distributions <span class="math inline">\(P(Y \mid X, Z)\)</span> for pairs <span class="math inline">\((X, Z)\)</span> that are unobservable. This is particularly difficult in the case of unobserved confounding because we are extrapolating a conditional distribution where one of the conditioning arguments is itself unobserved.</p>
@@ -149,7 +155,7 @@ plot_polar_proj(1, m=2, ylim=lims, xlim=lims)
 plot_polar_proj(1, m=20, ylim=lims, xlim=lims)
 plot_polar_proj(1, m=200, ylim=lims, xlim=lims)
 legend(&#39;bottomright&#39;, c(&quot;Z = 0&quot;, &quot;Z = 1&quot;, expression(hat(Z)~boundary)), col=c(&quot;red&quot;, &quot;blue&quot;, &quot;black&quot;), pch=c(46, 46, NA), lty=c(NA, NA, 1), bty=&#39;o&#39;, box.col=&#39;white&#39;, bg=&quot;#00000011&quot;, pt.cex=8)</code></pre>
-<p><img src="/post/reconstruction-positivity_files/figure-html/unnamed-chunk-3-1.png" width="90%" style="display: block; margin: auto;" /></p>
+<p><img src="/post/reconstruction-positivity_files/figure-html/unnamed-chunk-4-1.png" width="90%" style="display: block; margin: auto;" /></p>
 <div class="caption">
 <p>Plot of polar projection of treatments <span class="math inline">\(X\)</span>, colored by the value of the latent confounder <span class="math inline">\(Z\)</span>. As <span class="math inline">\(m\)</span>, the dimension of <span class="math inline">\(X\)</span>, increases, the treatment vectors <span class="math inline">\(X\)</span> generated under each value of <span class="math inline">\(Z\)</span> become more distinct. We take advantage of this distinctness to estimate <span class="math inline">\(Z\)</span> consistently; as <span class="math inline">\(m\)</span> grows large, the black boundary encodes an estimator <span class="math inline">\(\hat Z(X)\)</span> that calls <span class="math inline">\(Z=0\)</span> if a point lands inside the circle, and <span class="math inline">\(Z=1\)</span> if it lands outside. However, this separation between red and blue points also indicates a positivity violation. To view a larger version of this image, try right-clicking and opening the image in a new tab.</p>
 </div>

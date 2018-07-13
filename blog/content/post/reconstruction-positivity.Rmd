@@ -10,7 +10,7 @@ tags: ['Causal Inference', 'Identification', 'Technical']
 knitr::opts_chunk$set(echo = TRUE)
 ```
 <div class=note>
-Last updated 2018-07-11.
+Last updated 2018-07-13.
 </div>
 
 <div class=note>
@@ -27,7 +27,9 @@ Specifically, they propose that if there are a **large number of treatment facto
 I will call this strategy **latent confounder reconstruction**.
 
 The purpose of this technical post is to highlight a central weakness of this strategy.
-In particular, if the latent variable is not degenerate and can be estimated consistently (in many cases [it cannot](/2018/05/18/non-identification-in-latent-confounder-models/)), then the **positivity assumption** will be violated with respect to that latent variable.
+In particular, if the latent variable is not degenerate and can be estimated consistently (in many cases [it cannot](/2018/05/18/non-identification-in-latent-confounder-models/)), then the **positivity assumption** (defined below) will be violated with respect to that latent variable.
+Equivalently, if the positivity assumption holds with respect to the latent variable, then the latent variable cannot be estimated consistently.
+
 The positivity assumption, also known as overlap or common support, is a necessary condition for doing causal inference without strong modeling assumptions.
 Thus, the result in this post implies that **latent confounder reconstruction can only be used with strong parametric assumptions** about the relationship between treatment, confounder, and outcome.
 
@@ -100,6 +102,10 @@ Thus, as $m$ grows large and $\hat Z \rightarrow Z$,
 $$P(X \in A_m(z)) \rightarrow P(Z \neq z) > 0$$
 for all $z$ in the support of $Z$.
 Thus, positivity is violated.
+```
+
+```{proposition, name="Contrapositive"}
+If the positivity assumption holds as $m$ grows large, and the latent variable $Z$ is not degenerate, then there exists no consistent estimator $\hat Z(X)$ of $Z$.
 ```
 
 When positivity is violated, we require strong modeling assumptions to fill in conditional distributions $P(Y \mid X, Z)$ for pairs $(X, Z)$ that are unobservable.
