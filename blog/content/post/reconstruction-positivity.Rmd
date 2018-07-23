@@ -10,7 +10,7 @@ tags: ['Causal Inference', 'Identification', 'Technical']
 knitr::opts_chunk$set(echo = TRUE)
 ```
 <div class=note>
-Last updated 2018-07-13.
+Last updated 2018-07-23.
 </div>
 
 <div class=note>
@@ -199,11 +199,9 @@ plot_polar_proj <- function(sig, m=100, n=1e3, decision=1.5, ...){
               #p0_normed)
   col0 <- 'red'
   col1 <- 'blue'
-  #col_normed <- 'black'
   plot(ps[,1], ps[,2], col=c(rep(col0, n), rep(col1,n)), pch=46, cex=2,
        xlab=NA, ylab=NA, main=sprintf("m = %d", m), ...)
   lines(boundary[,1], boundary[,2])
-  #return(list(x0=x0, x1=x1))
 }
 par(mfrow=c(1, 3), mar=c(2,2,2,2), bty='n')
 lims <- c(-3, 3)
@@ -251,20 +249,23 @@ $$
 for some coefficient vectors $\alpha$ and $\beta$.
 This linear, separable specification allows one to extrapolate $\mu(X, Z)$ to combinations of $(X, Z)$ that are unobservable.
 Less restrictively, we might assume that $Y$ only depends on statistics of $X$ that are ancillary to $Z$; if this is the case, then there would be perfect overlap in the functions of $X$ that actually determine $Y$.
-In the example above, the direction of $X$ is independent of $Z$, so if $\mu(X, Z)$ only depended on the direction of $X$ and not its magnitude, then the structural model for $Y$ could still be estimated.
+In the example above, the direction of $X$ is independent of $Z$, so if $\mu(X, Z)$ only depended on the direction of $X$ and not its magnitude, then the structural model for $Y$ could still be estimated. [^1]
+
+[^1]: This ancillarity assumption is equivalent to assuming that $\hat Z(X)$ is a proxy (variable that is causally downstream of $Z$ but conditionally independent of $Y$), so this approach would be similar to the proxy identification strategy discussed in the next paragraph.
 
 One can also consider cases where $Z$ *cannot* be reconstructed with full precision.
 Given the identification relation from the intro section, to calculate $P(Y \mid do(X))$, it is sufficient to recover the distributions $P(Z)$ and $P(Y \mid X, Z)$.
 We can do this without reconstructing $Z$, although we require additional information to do so.
 This additional information can come in the form of proxies (e.g., in [Miao et al 2017](https://arxiv.org/abs/1609.08816)), or in the form of parametric assumptions about the distributions $P(Z)$ and $P(Y \mid X, Z)$.
-In the latter case, there is a rich literature on identification in mixture models ([Hennig 2002](https://link.springer.com/article/10.1007%2Fs003570000022?LI=true) contains a short review).
+In the latter case, there is a rich literature on identification in mixture models ([Hennig 2002](https://link.springer.com/article/10.1007%2Fs003570000022?LI=true) contains a short review). 
 
 In either case, identification of causal effects when unobserved confounding is present is incredibly hard.
 It is perhaps the central problem in all of observational causal inference.
 Sensitivity analysis may be a more fruitful approach if one suspects that this is a problem in a particular study.
 I discuss sensitivity analysis in slightly more detail in my [last post](/2018/05/18/non-identification-in-latent-confounder-models/) on the multiple causal inference problem.
 
-<div class=note>Thanks to [Alex Franks](http://afranks.com/) for his feedback on this post. Thanks to [Rajesh Rangananth](https://cims.nyu.edu/~rajeshr/) for thoughtful comments on the [first post](/2018/05/18/non-identification-in-latent-confounder-models/) on latent confounders; these comments inspired this post.
+
+<div class=note>Thanks to [Alex Franks](http://afranks.com/) and [Uri Shalit](https://cs.nyu.edu/~shalit/) for their feedback on this post. Thanks to [Rajesh Rangananth](https://cims.nyu.edu/~rajeshr/) for thoughtful comments on the [first post](/2018/05/18/non-identification-in-latent-confounder-models/) on latent confounders; these comments inspired this post.
 </div>
 
 
