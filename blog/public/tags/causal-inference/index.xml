@@ -17,7 +17,7 @@
       <pubDate>Tue, 10 Jul 2018 21:13:14 -0500</pubDate>
       
       <guid>/2018/07/10/positivity-and-latent-confounder-reconstruction-are-mutually-exclusive/</guid>
-      <description>Last updated 2018-07-13.
+      <description>Last updated 2018-07-23.
  Note: This post is the second in a series motivated by several recent papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding. See the first post here.
  Goal In observational causal inference, unobserved confounding is a constant threat to drawing valid causal inferences. If there are unobserved variables that affect both treatment assignment and outcomes, then one cannot, in general, precisely quantify causal relationships from observational data, even as the sample size goes to infinity.</description>
     </item>
