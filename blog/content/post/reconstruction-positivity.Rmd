@@ -10,7 +10,7 @@ tags: ['Causal Inference', 'Identification', 'Technical']
 knitr::opts_chunk$set(echo = TRUE)
 ```
 <div class=note>
-Last updated 2018-07-23.
+Last updated 2018-07-24.
 </div>
 
 <div class=note>
@@ -31,7 +31,7 @@ In particular, if the latent variable is not degenerate and can be estimated con
 Equivalently, if the positivity assumption holds with respect to the latent variable, then the latent variable cannot be estimated consistently.
 
 The positivity assumption, also known as overlap or common support, is a necessary condition for doing causal inference without strong modeling assumptions.
-Thus, the result in this post implies that **latent confounder reconstruction can only be used with strong parametric assumptions** about the relationship between treatment, confounder, and outcome.
+Thus, the result in this post implies that **latent confounder reconstruction can only be used to estimate causal effects under strong parametric assumptions** about the relationship between treatment, confounder, and outcome.
 
 I'll write this post in Pearl's notation, using the do operator, but the translation to potential outcomes is straightforward.
  

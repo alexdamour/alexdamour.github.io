@@ -9,7 +9,7 @@ tags: ['Causal Inference', 'Identification', 'Technical']
 
 
 <div class="note">
-<p>Last updated 2018-07-23.</p>
+<p>Last updated 2018-07-24.</p>
 </div>
 <div class="note">
 <p>Note: This post is the second in a series motivated by several recent papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding. See the first post <a href="/2018/05/18/non-identification-in-latent-confounder-models/">here</a>.</p>
@@ -19,7 +19,7 @@ tags: ['Causal Inference', 'Identification', 'Technical']
 <p>In observational causal inference, unobserved confounding is a constant threat to drawing valid causal inferences. If there are unobserved variables that affect both treatment assignment and outcomes, then one cannot, in general, precisely quantify causal relationships from observational data, even as the sample size goes to infinity.</p>
 <p>Several recent papers have examined a special case of the unobserved confounding problem where it has been suggested that this identification problem might be solved. Specifically, they propose that if there are a <strong>large number of treatment factors</strong>, such that we can analyze the problem in the frame where the number of treatments goes to infinity, then the unobserved confounder may be consistently estimable from the data, and thus adjusted for like an observed confounder. I will call this strategy <strong>latent confounder reconstruction</strong>.</p>
 <p>The purpose of this technical post is to highlight a central weakness of this strategy. In particular, if the latent variable is not degenerate and can be estimated consistently (in many cases <a href="/2018/05/18/non-identification-in-latent-confounder-models/">it cannot</a>), then the <strong>positivity assumption</strong> (defined below) will be violated with respect to that latent variable. Equivalently, if the positivity assumption holds with respect to the latent variable, then the latent variable cannot be estimated consistently.</p>
-<p>The positivity assumption, also known as overlap or common support, is a necessary condition for doing causal inference without strong modeling assumptions. Thus, the result in this post implies that <strong>latent confounder reconstruction can only be used with strong parametric assumptions</strong> about the relationship between treatment, confounder, and outcome.</p>
+<p>The positivity assumption, also known as overlap or common support, is a necessary condition for doing causal inference without strong modeling assumptions. Thus, the result in this post implies that <strong>latent confounder reconstruction can only be used to estimate causal effects under strong parametric assumptions</strong> about the relationship between treatment, confounder, and outcome.</p>
 <p>I’ll write this post in Pearl’s notation, using the do operator, but the translation to potential outcomes is straightforward.</p>
 </div>
 <div id="latent-confounder-reconstruction" class="section level2">
