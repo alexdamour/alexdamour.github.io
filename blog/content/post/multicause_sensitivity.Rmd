@@ -1,0 +1,274 @@
+---
+title: "Sensitivity Analysis for Multi-Cause Causal Inference"
+output:
+  html_notebook:
+    code_folding : hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 6, echo=TRUE, include=TRUE, collapse=TRUE)
+```
+
+## Setting
+
+This technical note returns to the multi-cause factor model setting.
+This setting concerns problems where there is some multivariate set of causes $A = (A^{(1)}, \ldots, A^{(m)})$ (in standard statistical terminology, treatments), and a univariate outcome $Y$.
+In this setting, we assume the distributon of $A$ can be factorized by $U$
+$$
+P(A) = \int_{\mathcal U} \left[\prod_k P(A^{(k)} \mid U=u)\right] P(U=u) du.
+$$
+and that $U$ blocks all backdoor paths between $A$ and $Y$.
+
+This note challenges that claim that, when $m \geq 3$, causal effects of $A$ on $Y$ can be identified from data by the following identity:
+$$
+P(Y \mid do(A=a)) = \int_{\mathcal U}P(Y \mid A=a, U=u) P(U=u) du.
+$$
+
+## Impossibility
+
+**(Rough) Theorem Statement**
+
+Suppose that we are in the standard multi-cause setting. 
+Suppose also that $P(U, A)$ is identifiable from $P(A)$ alone (for example, by conditions discussed in [Allman et al](https://projecteuclid.org/euclid.aos/1250515381)).
+Thus, $P(U)$ is known, as is $P(A \mid U)$.
+
+Under these conditions, for each $a$ such that $P(Y \mid do(A = a)) \neq P(Y \mid A=a)$, identification fails in one of two ways:
+
+ 1. $P(U \mid A = a)$ is not degenerate, in which case $P(U, Y \mid A = a)$ is not identified because the copula $c(U, Y \mid A=a)$ cannot be identified (only the margins $P(Y \mid A=a)$ and $P(U \mid A=a)$ are identifiable).
+ 1.  $P(U \mid A = a)$ is degenerate, meaning that $U$ can be deterministically reconstructed as a function of $a$ (for example, in the asymptotic regime where $m$ grows large). in this case, $P(Y, U \mid A=a)$ can't be identified because positivity is violated. This is dealt with in the [second blog post](http://www.alexdamour.com/blog/public/2018/07/10/positivity-and-latent-confounder-reconstruction-are-mutually-exclusive/).
+
+
+Although this is a negative result for factor models--based approaches to causal identification, it opens the door for sensitivity analysis, which has the potential (though not a guarantee) to yield nontrivial results.
+
+Proof:
+
+We make the following sequence of arguments.
+
+ 1. The copula $c(U, Y \mid A)$ is not identified.
+ 1. Thus, for any P(A, Y), the hypothesis that the copula is the independence copula, $c(U, Y \mid A) = 1$ almost everywhere, is compatible with the observed data.
+ 1. The independence copula hypothesis implies that $P(Y \mid do(A = a)) = P(Y \mid A = a)$, so this hypothesis is compatible with the observed data. Call this the "unconfounded" hypothesis.
+ 1. If the $P(Y \mid do(A = a)) = P(Y \mid A = a)$ hypothesis is not true, then there are multiple causal hypothesis compatible with the observed data (at least the true one and the unconfounded one).
+
+Proof of Claim 1:
+$$
+\begin{align}
+P(A, Y) &= \int_U P(U=u, A, Y) du\\
+&= \int_U P(A) P(U=u \mid A) P(Y \mid A) c(U=u, Y \mid A) du\\
+&= P(A)P(Y \mid A) \int_U P(U=u \mid A) c(U=u, Y \mid A) du
+\end{align}
+$$
+The integral in the final equation integrates to $1$, so the observed distribution $P(A, Y)$ is not a function of the copula.
+Thus, in the absence of additional assumptions about the dependence between $U$ and $Y$ conditional on $X$, this copula is unidentified.
+
+Claim 2 follows immediately.
+
+Proof of Claim 3: Under the independence copula, relation $(*)$ below holds:
+$$
+\begin{align}
+P(Y \mid do(A = a)) &= \int_{\mathcal U} P(Y \mid U=u, A = a) P(U = u)du\\
+  &\stackrel{(*)}{=} \int_{\mathcal U} P(Y \mid A=a) P(U=u)du\\
+  &= P(Y \mid A = a)
+\end{align}
+$$
+
+Claim 4 follows immediately.
+
+## Example with $(U, A, Y)$ Binary
+
+In this example, we assume the following non-parametric data generating process, with all noise distributions independent:
+$$
+\begin{align}
+U &:= \mathrm{Bern}(\pi_U)\\
+A^{(k)} &:= \mathrm{Bern}(p_A(U))\\
+Y &:=\mathrm{Bern}(p_Y(U, A))
+\end{align}
+$$
+The central assumption encoded by the model is that each component $A^{(k)}$ is identically distributed given $U$.
+
+Our gaol is to estimate the intervention distribution for each $a$, which is equal to the following expression under the backdoor criterion.
+$$
+P(Y \mid do(A = a)) = \pi_U P(Y \mid U = 1, A = a) + (1-\pi_U) P(Y \mid U = 0, A = a).
+$$
+
+So long as the number of causes $m \geq 3$, and $p_A(U)$ depends on $U$, the joint distribution $P(A, U)$ is identifiable from $P(A)$ by the conditions outlined in Kruskal and elaborated on by [Allman et al](https://projecteuclid.org/euclid.aos/1250515381).
+Thus, we will assume that the parameters $\pi_U$ and $p_A(U)$ are known.
+
+To attempt to identify $P(Y \mid U = 1, A = a)$, we note that for each stratum $A = a$, $P(U, Y \mid A=a)$ is characterized by 4 probabilities in a $2 \times 2$ table.
+For each $a$, this table is not fully identified, but it is subject to several constraints.
+The entries of this table are constrained to sum to 1.
+Further, the margins of the table are identifiable.
+$\pi_{Y\mid A} := P(Y = 1 \mid A= a)$ is directly observable, and $\pi_{U \mid A} = P(U = 1 \mid A = a)$ can be derived.
+Specifically, letting $S(A) = \sum_{k = 1}^m A^{(k)}$, we can derive $P(U = 1 \mid A)$ from the relation
+$$
+\frac{P(U = 1 \mid A=a)}{P(U = 0 \mid A=a)} = \frac{\pi_U}{1-\pi_U} \cdot
+\left(\frac{p_A(1)}{p_A(0)}\right)^{S(a)} \cdot
+\left(\frac{1-p_A(1)}{1-p_A(0)}\right)^{m-S(a)}
+$$
+Note that this conditional distribution only depends on the number of causes $A^{(k)}$ that are equal to 1.
+
+Thus, for each $a$, the table has one degree of freedom, which corresponds to the unidentified copula.
+We parameterize the copula in terms of $p_{11} := P(U = 1, Y = 1 \mid A = a)$.
+For purposes of interpretation, $p_{11}$ is linearly related to the $cor(U, Y, \mid A = a)$ ([Joe 1997](https://books.google.com/books?id=iJbRZL2QzMAC&lr=&source=gbs_navlinks_s) Sec 7.1.1):
+$$
+cor(U, Y \mid A = a) = \frac{p_{11} - \pi_{U \mid A}\pi_{Y \mid A}}{\pi_{U \mid A}(1-\pi_{U \mid A})\pi_{Y \mid A}(1-\pi_{Y \mid A})}
+$$
+
+The table margins constrain $p_{11}$ to lie in the following range ([Joe 1997](https://books.google.com/books?id=iJbRZL2QzMAC&lr=&source=gbs_navlinks_s) Sec 7.1.1):
+$$
+\max\{0, \pi_{U \mid A} + \pi_{Y \mid A} - 1\} \leq p_{11} \leq \min\{\pi_{U \mid A}, \pi_{Y \mid A}\}.
+$$
+Given the above constraints, proposing a value for $p_{11}$ in this range determines the values of all four cells in the table.
+This table implies an intervention distribution $P(Y \mid do(A = a))$, which is a function of the proposed $p_{11}$.
+By varying $p_{11}$ in this valid range, we can conduct a **sensitivity analysis** that enumerates all of the intervention distributions $P(Y \mid do(A = a))$ that are compatible with the observed data.
+
+### Specific Case
+
+In this section, we instantiate the example with 4 binary cause variables.
+We expore the special case where $p_A(0) = 1 - p_A(1)$, because this implies that $P(Y \mid A = a) = P(Y \mid do(A = a))$ for one value of $a$.
+Specifically, when $S(a) = m/2 = 2$, $P(U = 1 \mid A) = P(U = 1)$, so the intervention distribution and the observed conditional distribution are the same.
+
+Note that in this example, the intervention distribution $P(Y \mid do(A = a))$ is fully characterized by the probability $P(Y = 1 \mid do(A = a))$.
+Further, note that $P(Y = 1 \mid do(A = a))$ only depends on $S(a)$.
+Below, we plot the ignorance region of this parameter at each value of $S(a)$.
+
+```{r}
+library(matrixStats)
+
+logistic <- function(x) 1 / (1 + exp(-x))
+logit <- function(p) p / (1 - p)
+odds2prob <- function(o) o / (1 + o)
+
+m_ <- 4
+plot_m <- 4
+alpha0_ <- -1
+alpha1_ <- 2
+beta0_ <- -2
+beta1_ <- 0.5
+gamma0_ <- 1.5#0.2
+piU_ <- 0.3
+
+# Conditional distributions
+
+pAk_U <- function(U){
+  logistic(alpha0_ + alpha1_ * U)
+}
+
+oddsU_A <- function(A){
+  prior <- piU_ / (1-piU_)
+  positive <- (pAk_U(1) / pAk_U(0))^sum(A)
+  negative <- ((1-pAk_U(1)) / (1-pAk_U(0)))^(m_ - sum(A))
+  prior * positive * negative
+}
+
+pU_A <- function(A){
+  odds2prob(oddsU_A(A))
+}
+
+pY_AU <- function(A, U){
+  logistic(beta0_ + sum(beta1_ * A) + gamma0_ * U)
+}
+
+pY_A <- function(A){
+  pU_A(A) * pY_AU(A, 1) + (1-pU_A(A)) * pY_AU(A, 0)
+}
+
+pY_doA <- function(A, condfun=pY_AU){
+  piU_ * condfun(A, 1) + (1-piU_) * condfun(A, 0)
+}
+```
+
+
+```{r}
+# Plot conditional distributions of U given A
+A_classes <- lapply(0:m_, function(i) c(rep(1, i), rep(0, m_-i)))
+#A_classes <- list(c(0,0,0), c(0,0,1), c(0,1,1), c(1,1,1))
+pU_A_vec <- sapply(A_classes, pU_A)
+pY_A_vec <- sapply(A_classes, pY_A)
+pY_doA_vec <- sapply(A_classes, pY_doA)
+
+make_row <- function(p){
+  c(1-p, p)
+}
+
+# Contingency table utilities
+
+p11_bound <- function(pi1, pi2){
+  c(max(0, pi1 + pi2 - 1), min(pi1, pi2))
+}
+
+rho <- function(p11, pi1, pi2) (p11 - pi1 * pi2) / sqrt(pi1 * (1-pi1) * pi2 * (1-pi2))
+
+ctable_fill <- function(pi1, pi2, p11){
+  p10 <- pi1 - p11
+  p01 <- pi2 - p11
+  p00 <- 1 - (p11 + p10 + p01)
+  matrix(c(p00, p10, p01, p11), nr=2)
+}
+
+make_condfun <- function(piU, piY, p11){
+  ct <- ctable_fill(piU, piY, p11)
+  normalizer <- rowSums(ct)
+  function(A, U){
+    ct[U+1,2] / normalizer[U+1]
+  }
+}
+
+# For each p(U, Y | A), calculate bounds on p11
+
+num_sens <- 2
+pY_doA_sensmat <- matrix(nc=0, nr=num_sens)
+for(A_class in A_classes[1:(plot_m+1)]){
+  piU <- pU_A(A_class)
+  piY <- pY_A(A_class)
+  pUY_bound <- p11_bound(piU, piY)
+  
+  p11_seq <- seq(pUY_bound[1], pUY_bound[2], length.out=num_sens)
+  tabs <- sapply(p11_seq, function(p11) ctable_fill(piU, piY, p11))
+  rhos <- sapply(p11_seq, function(p11) rho(p11, piU, piY))
+  pY_doA_sweep <- sapply(p11_seq, function(p11) pY_doA(A_class, make_condfun(piU, piY, p11)))
+  
+  pY_doA_sensmat <- cbind(pY_doA_sensmat, pY_doA_sweep)
+}
+
+library('RColorBrewer')
+
+pal <- brewer.pal(9, 'Set1')
+shadecol <- "#00000022"
+
+#pdf('binary_ignorance.pdf', width=7, height=5)
+#png("binary_ignorance.png", width=7, height=5, units='in', res=300)
+matplot(0:plot_m, t(rbind(pY_doA_sensmat)), type='n',
+        ylab=expression(paste("P(Y = 1", " | ", "do(A))")),
+        xlab=expression(Number~of~Active~Causes~(S(a))),
+        #main="Ignorance Region for Binary (U, A, Y)",
+        bty='n', xaxt='n', ylim=c(0,1))
+abline(h=c(0,1), col="#cccccc")
+abline(v=c(0:plot_m), col="#cccccc")
+
+yvals <- c(colMaxs(pY_doA_sensmat), rev(colMins(pY_doA_sensmat)))
+xvals <- c(0:plot_m, plot_m:0)
+polygon(xvals, yvals, col=shadecol, border=NA)
+
+plotmat <- t(rbind(pY_doA_sensmat, pY_doA_vec[1:(plot_m+1)], pY_A_vec[1:(plot_m+1)]))
+matplot(0:plot_m, plotmat, type='b',
+        lwd=c(rep(2, num_sens), 6), pch=1, col=pal[1:4],
+        add=TRUE)
+library(matrixStats)
+
+#axis(1, at=0:plot_m, labels=NA)
+axis(1, at=0:plot_m, labels=0:plot_m)
+
+legend(0, 0.9, c("True", "Observed P(Y | A)", "Minimum cor(Y, U | A)", "Maximum cor(Y, U | A)", "Ignorance Region"),
+       bty='n', fill=c(NA, NA, NA, NA, shadecol), border = NA,
+       col=pal[c(3,4,1,2)], pch=c(1,1,1,1,NA), lty=c(3,4,1,2,NA), lwd=c(6,2,2,2,NA))
+```
+Here, the x-axis corresponds to equivalence classes of cause vectors $a$.
+For example, $S(a)=1$ corresponds to the vectors $(0,0,0,1)$, $(0,0,1,0)$, $(0,1,0,0)$ and $(1,0,0,0)$.
+For all but one value of $S(a)$, $P(Y \mid do(A = a))$ has a non-trivial ignorance region.
+The ignorance region includes the conditional distribution $P(Y \mid A = a)$ and the true $P(Y \mid do(A = a))$.
+For one value of $S(a)$, it happens that $P(U = 1\mid A= a) = P(U = 1)$, so $P(Y \mid do(A = a)) = P(Y \mid A = a)$.
+This happens because $S(a) = m - S(a)$ and the data generating process specified $P_A(0) = 1- P_A(1)$.
+For this particular $S(a)$, the intervention distribution is identified, but this is because there is no confounding for this value of $a$; one could simply read off the observed conditional distribution $P(Y \mid A = a)$.
+
+Despite the non-trivial ignorance regions, there is some hope -- in some cases, the ignorance regions are rather small, so one may still be able to glean useful information, but the size of these ignorance regions will not shrink as a function of sample size.
+This suggests that parameterizing a copula and exploring sensitivity with respect to the copula parameters could be a useful way to do multi-cause causal inference in the case where no proxy variables are available.
