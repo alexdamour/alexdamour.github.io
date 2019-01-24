@@ -3,6 +3,7 @@
 logistic <- function(x) 1 / (1 + exp(-x))
 logit <- function(p) p / (1 - p)
 odds2prob <- function(o) o / (1 + o)
+library(matrixStats)
 
 # Global values
 # Notes: For following setting, there's an A for which the sensitivity region collapses
@@ -15,7 +16,8 @@ odds2prob <- function(o) o / (1 + o)
 #gamma0_ <- 1.5#0.2
 #piU_ <- 0.3
 
-m_ <- 10
+N_ <- 1000
+m_ <- 4
 plot_m <- 3
 alpha0_ <- -1
 alpha1_ <- 3
@@ -26,32 +28,91 @@ piU_ <- 0.3
 
 # Conditional distributions
 
-pAk_U <- function(U){
-  logistic(alpha0_ + alpha1_ * U)
+pAk_U <- function(U, alpha0=alpha0_, alpha1=alpha1_){
+  logistic(alpha0 + alpha1 * U)
 }
 
-oddsU_A <- function(A){
-  prior <- piU_ / (1-piU_)
-  positive <- (pAk_U(1) / pAk_U(0))^sum(A)
-  negative <- ((1-pAk_U(1)) / (1-pAk_U(0)))^(m_ - sum(A))
+oddsU_A <- function(A, piU=piU_, alpha0=alpha0_, alpha1=alpha1_){
+  pAk_U_tab <- c('0'=pAk_U(0, alpha0, alpha1), '1'=pAk_U(1, alpha0, alpha1))
+  
+  prior <- piU / (1-piU)
+  positive <- (pAk_U_tab['1'] / pAk_U_tab['0'])^sum(A)
+  negative <- ((1-pAk_U_tab['1']) / (1-pAk_U_tab['0']))^(m_ - sum(A))
   prior * positive * negative
 }
 
-pU_A <- function(A){
-  odds2prob(oddsU_A(A))
+pU_A <- function(A, piU=piU_, alpha0=alpha0_, alpha1=alpha1_){
+  odds2prob(oddsU_A(A, piU, alpha0, alpha1))
 }
 
-pY_AU <- function(A, U){
-  logistic(beta0_ + sum(beta1_ * A) + gamma0_ * U)
+pY_AU <- function(A, U, beta0=beta0_, beta1=beta1_, gamma0=gamma0_){
+  logistic(beta0 + sum(beta1 * A) + gamma0 * U)
 }
 
-pY_A <- function(A){
-  pU_A(A) * pY_AU(A, 1) + (1-pU_A(A)) * pY_AU(A, 0)
+pY_SU <- function(S, U, beta0=beta0_, beta1=beta1_, gamma0=gamma0_, gamma1=gamma1_){
+  logistic(beta0 + beta1 * S + gamma0 * U)
+}
+
+pY_A <- function(A, piU=piU_, beta0=beta0_, beta1=beta1_, gamma0=gamma0_){
+  pY_AU_tab <- c('0'=pY_AU(A, 0, beta0, beta1, gamma0),
+                 '1'=pY_AU(A, 1, beta0, beta1, gamma0))
+  
+  pU_A(A, piU) * pY_AU_tab['1'] + (1-pU_A(A, piU)) * pY_AU_tab['0']
 }
 
 pY_doA <- function(A, condfun=pY_AU){
   piU_ * condfun(A, 1) + (1-piU_) * condfun(A, 0)
 }
+
+gen_model_probs <- function(piU, alpha0, alpha1, beta0, beta1, gamma0){
+  list(pAk_U=function(A) pAk_U(A, alpha0, alpha1),
+       oddsU_A=function(A) oddsU_A(A, piU, alpha0, alpha1),
+       pU_A=function(A) pU_A(A, piU, alpha0, alpha1),
+       pY_AU=function(A, U) pY_AU(A, U, beta0, beta1, gamma0),
+       pY_SU=function(S, U) pY_SU(S, U, beta0, beta1, gamma0),
+       pY_A=function(A) pY_A(A, piU, beta0, beta1, gamma0))
+}
+
+gen_bin_dat <- function(N, m, piU, alpha0, alpha1, beta0, beta1, gamma0){
+  U <- rbinom(N, 1, piU)
+  A <- matrix(rbinom(N*m, 1, rep(pAk_U(U), each=m)), nc=m, byrow=TRUE)
+  Y <- rbinom(N, 1, sapply(1:N, function(i){ pY_AU(A[i,], U[i]) }))
+  list(U = U, A = A, Y = Y)
+}
+
+bin_dat_ll <- function(pars, dataset){
+  piU <- logistic(pars[1])
+  alpha0 <- pars[2]
+  alpha1 <- pars[3]
+  #beta0 <- pars[4]
+  #beta1 <- pars[5]
+  #gamma0 <- pars[6]
+  
+  mp <- gen_model_probs(piU, alpha0, alpha1, beta0, beta1, gamma0)
+  
+  U <- dataset$U
+  A <- dataset$A
+  S <- rowSums(A)
+  Y <- dataset$Y
+  m <- ncol(A)
+  
+  U1_ll <- log(piU) + S * log(mp$pAk_U(1)) + (m-S) * log(1-mp$pAk_U(1))# +
+    #Y * log(mp$pY_SU(S, 1)) + (1-Y) * log(1-mp$pY_SU(S, 1))
+  U0_ll <- log(1-piU) + S * log(mp$pAk_U(0)) + (m-S) * log(1-mp$pAk_U(0))# +
+    #Y * log(mp$pY_SU(S, 0)) + (1-Y) * log(1-mp$pY_SU(S, 0))
+  
+  ll_vec <- matrixStats::rowLogSumExps(cbind(U1_ll, U0_ll))
+  
+  sum(ll_vec)
+}
+
+dataset <- gen_bin_dat(N_, m_, piU_, alpha0_, alpha1_, beta0_, beta1_, gamma0_)
+dataset$S <- rowSums(dataset$A)
+table(dataset$Y, dataset$S) / N_
+
+print(bin_dat_ll(c(piU_, alpha0_, alpha1_, beta0_, beta1_, gamma0_), dataset))
+
+stop()
 
 
 
