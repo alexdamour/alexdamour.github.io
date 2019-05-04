@@ -70,6 +70,9 @@
 
   <div class="entry-content">
     <div class="note">
+<p>This post was expanded into a conference paper presented at AISTATS 2019: “On Multi-Cause Causal Inference with Unobserved Confounding: Counterexamples, Impossibility, and Alternatives” (<a href="https://arxiv.org/abs/1902.10286" class="uri">https://arxiv.org/abs/1902.10286</a>).</p>
+</div>
+<div class="note">
 <p>Updated 2018/06/09.</p>
 </div>
 <div class="note">
@@ -229,9 +232,9 @@ make_covmat &lt;- function(alpha, beta, gamma, sigma2_Z, sigma2_X, sigma2_Y){
 print(cov(cbind(t(mmdat$X), mmdat$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covariance:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.203210 1.205536  8.260086
-## [2,] 1.205536 3.209746  8.224341
-## [3,] 8.260086 8.224341 59.967564</code></pre>
+## [1,] 3.202818 1.214590  8.213698
+## [2,] 1.214590 3.206653  8.275731
+## [3,] 8.213698 8.275731 60.084902</code></pre>
 <pre class="r"><code># Theoretical covariance matrix from structural model
 XX_theory &lt;- alpha %*% t(alpha) * sigma2_Z + diag(sigma2_X)
 XY_theory &lt;- XX_theory %*% beta + sigma2_Z * gamma * alpha
@@ -293,9 +296,9 @@ mmdat1 &lt;- gendat2(N, alpha * hi_par$cc, hi_par$beta1, gamma,
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from High-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.208346 1.190982  8.192123
-## [2,] 1.190982 3.189323  8.128469
-## [3,] 8.192123 8.128469 59.585737</code></pre>
+## [1,] 3.208999 1.209977  8.232093
+## [2,] 1.209977 3.210856  8.272401
+## [3,] 8.232093 8.272401 60.094671</code></pre>
 <pre class="r"><code># Do the same for the low-end of cc.
 Sigma_lo &lt;- make_covmat(alpha * lo_par$cc, lo_par$beta1, gamma, sigma2_Z / lo_par$cc^2,
                         sigma2_X, lo_par$sigma2_Y1)
@@ -312,9 +315,9 @@ print(Sigma_lo[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 print(cov(cbind(t(mmdat1$X), mmdat1$Y))[(m-1):(m+1), (m-1):(m+1)])}</code></pre>
 <pre><code>## Empirical Covmat from Low-End Shift:
 ##          [,1]     [,2]      [,3]
-## [1,] 3.208496 1.211990  8.234142
-## [2,] 1.211990 3.223363  8.298284
-## [3,] 8.234142 8.298284 60.203217</code></pre>
+## [1,] 3.200404 1.191330  8.211661
+## [2,] 1.191330 3.189953  8.155188
+## [3,] 8.211661 8.155188 60.017063</code></pre>
 <p>Examine the extreme parameter estimates:</p>
 <pre class="r"><code>res &lt;- rbind(c(beta[1], hi_par$beta1[1], lo_par$beta1[1]),
             c(1, hi_par$beta[1] / beta[1], lo_par$beta1[1] / beta[1]))

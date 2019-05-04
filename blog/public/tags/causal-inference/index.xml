@@ -17,9 +17,10 @@
       <pubDate>Tue, 10 Jul 2018 21:13:14 -0500</pubDate>
       
       <guid>/2018/07/10/positivity-and-latent-confounder-reconstruction-are-mutually-exclusive/</guid>
-      <description>Last updated 2018-07-24.
+      <description>This post was expanded into a conference paper presented at AISTATS 2019: “On Multi-Cause Causal Inference with Unobserved Confounding: Counterexamples, Impossibility, and Alternatives” (https://arxiv.org/abs/1902.10286).
+ Last updated 2018-07-24.
  Note: This post is the second in a series motivated by several recent papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding. See the first post here.
- Goal In observational causal inference, unobserved confounding is a constant threat to drawing valid causal inferences. If there are unobserved variables that affect both treatment assignment and outcomes, then one cannot, in general, precisely quantify causal relationships from observational data, even as the sample size goes to infinity.</description>
+ Goal In observational causal inference, unobserved confounding is a constant threat to drawing valid causal inferences.</description>
     </item>
     
     <item>
@@ -28,9 +29,10 @@
       <pubDate>Fri, 18 May 2018 21:13:14 -0500</pubDate>
       
       <guid>/2018/05/18/non-identification-in-latent-confounder-models/</guid>
-      <description>Updated 2018/06/09.
+      <description>This post was expanded into a conference paper presented at AISTATS 2019: “On Multi-Cause Causal Inference with Unobserved Confounding: Counterexamples, Impossibility, and Alternatives” (https://arxiv.org/abs/1902.10286).
+ Updated 2018/06/09.
  Note: This post was motivated by recent drafts of several papers about causal inference from observational data when there are multiple causes or treatments being assessed and there is unobserved confounding.
- Tran and Blei, 2017. Implicit Causal Models for Genome-wide Association Studies. (https://arxiv.org/abs/1710.10742) Wang and Blei, 2018. Blessings of Multiple Causes (https://arxiv.org/abs/1805.06826) Ranganath and Perotte, 2018. Multiple Causal Inference with Latent Confounding (https://arxiv.org/abs/1805.08273)  These papers explore a setting that departs from the standard “single cause” setting that is widely studied in the causal inference literature, and therefore make a significant contribution.</description>
+ Tran and Blei, 2017. Implicit Causal Models for Genome-wide Association Studies.</description>
     </item>
     
   </channel>
